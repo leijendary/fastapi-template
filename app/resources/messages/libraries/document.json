@@ -1,0 +1,9 @@
+{
+  "translation_list": "A set of translations where each record has it's own language equivalent",
+  "translation_language": "Language of the translation in two-digit format",
+  "translation_ordinal": "Sort order of the translation. Lowest value is the default",
+  "translation_name": "Translated name field based on the language",
+  "translation_description": "Translated description field based on the language",
+  "sample_field_1": "A sample field that is a string and is required",
+  "sample_field_2": "A sample field that is an integer and should be greater than 0"
+}

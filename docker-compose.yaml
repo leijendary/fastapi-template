@@ -1,0 +1,37 @@
+version: '3.9'
+services:
+  fastapi-template:
+    build: .
+    container_name: fastapi-template
+    ports:
+      - '80:80'
+    environment:
+      - DATABASE=
+      - DATABASE_HOST=
+      - DATABASE_PORT=
+      - DATABASE_USER=
+      - DATABASE_PASSWORD=
+    networks:
+      - postgres_network
+      - redis_network
+      - kafka_network
+      - elastic_network
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 512M
+
+networks:
+  postgres_network:
+    name: postgres_network
+    external: true
+  redis_network:
+    name: redis_network
+    external: true
+  kafka_network:
+    name: kafka_network
+    external: true
+  elastic_network:
+    name: elastic_network
+    external: true
