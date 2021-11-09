@@ -1,6 +1,6 @@
 FROM python:3.10-alpine
 WORKDIR /code
-RUN apk add --no-cache build-base
+RUN apk add --no-cache build-base librdkafka
 COPY ./requirements.txt /code/requirements.txt
 ARG PIP_CACHE_DIR=".cache/pip"
 RUN --mount=type=cache,target=${PIP_CACHE_DIR} \

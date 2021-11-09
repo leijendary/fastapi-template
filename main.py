@@ -1,3 +1,4 @@
+
 import uvicorn
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
@@ -8,6 +9,7 @@ from app.configs.app import app_config
 from app.data.error_response import ErrorResponse
 from app.errors.integrity import integrity_handler
 from app.errors.validation import validation_handler
+from app.events.consumers import consumer_group
 from app.v1.routers import sample_router as sample_router_v1
 
 
@@ -32,8 +34,10 @@ def get_application():
         }
     )
 
-    # Configurations
-    database.init(app)
+    # Event handlers
+    app.add_event_handler('startup', database.init)
+    app.add_event_handler('shutdown', database.close)
+    app.add_event_handler('startup', consumer_group.init)
 
     # Exception handlers
     app.add_exception_handler(RequestValidationError, validation_handler)
@@ -52,4 +56,4 @@ if __name__ == '__main__':
     port = config.port
     reload = config.environment == 'local'
 
-    uvicorn.run("main:app", host='0.0.0.0', port=port, reload=reload)
+    uvicorn.run('main:app', host='0.0.0.0', port=port, reload=reload)

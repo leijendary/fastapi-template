@@ -1,4 +1,3 @@
-import logging
 from functools import lru_cache
 
 from fastapi import FastAPI
@@ -6,7 +5,9 @@ from pydantic.env_settings import BaseSettings
 from tortoise import Tortoise
 from tortoise.contrib.fastapi import register_tortoise
 
-logger = logging.getLogger(__name__)
+from app.configs.logging import get_logger
+
+logger = get_logger(__name__)
 
 
 class DatabaseConfig(BaseSettings):
@@ -58,11 +59,19 @@ TORTOISE_ORM = {
 }
 
 
-def init(app: FastAPI):
+async def init():
     logger.info('Initializing connection to the database...')
 
     Tortoise.init_models(MODELS, MODULE)
 
-    register_tortoise(app, modules={MODULE: MODELS}, config=TORTOISE_ORM)
+    await Tortoise.init(config=TORTOISE_ORM, modules={MODULE: MODELS})
 
     logger.info('Database connection is initialized!')
+
+
+async def close():
+    logger.info('Shutting down database connection...')
+
+    await Tortoise.close_connections()
+
+    logger.info('Database connection shutdown completed!')

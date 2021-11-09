@@ -1,5 +1,4 @@
 from functools import lru_cache
-from typing import List
 
 from pydantic import BaseSettings
 
@@ -7,7 +6,7 @@ from pydantic import BaseSettings
 class KafkaConfig(BaseSettings):
     kafka_client_id: str
     kafka_group_id: str
-    kafka_brokers: List[str]
+    kafka_brokers: str
 
     class Config:
         env_prefix = ''
