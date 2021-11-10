@@ -2,9 +2,10 @@ from asyncio import create_task
 
 from app.events.consumers import sample_consumer
 from app.events.consumers.app_consumer import create_consumer
+from app.events.topic import SAMPLE_CREATE
 
 topic = {
-    'leijendary.sample.create': sample_consumer.create
+    SAMPLE_CREATE: sample_consumer.create
 }
 
 

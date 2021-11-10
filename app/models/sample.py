@@ -1,12 +1,13 @@
 from app.models.app_model import AppModel
+from app.models.localized_model import LocalizedModel
 from app.models.sample_translation import SampleTranslation
-from tortoise.contrib.pydantic import pydantic_model_creator
+from app.models.translation import TranslationModel
 from tortoise.fields import (CharField, DatetimeField, ManyToManyField,
                              UUIDField)
-from tortoise.fields.relational import ManyToManyRelation, ReverseRelation
+from tortoise.fields.relational import ManyToManyRelation
 
 
-class Sample(AppModel):
+class Sample(LocalizedModel):
     id = UUIDField(pk=True)
     column_1 = CharField(max_length=150)
     column_2 = CharField(null=True, max_length=1000)

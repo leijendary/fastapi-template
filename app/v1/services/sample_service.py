@@ -1,8 +1,9 @@
+from app.events.producers.app_producer import produce
+from app.events.topic import SAMPLE_CREATE
 from app.models.sample import Sample
 from app.models.sample_translation import SampleTranslation
 from app.v1.data.sample_in import SampleIn
 from app.v1.data.sample_out import SampleOut
-from app.v1.data.sample_translation_out import SampleTranslationOut
 from tortoise.transactions import in_transaction
 
 
@@ -31,7 +32,7 @@ async def save(sample_in: SampleIn) -> SampleOut:
     # Get the result of the saved translations
     await sample.fetch_related('translations')
 
-    return SampleOut(**sample.dict(), translations=[
-        SampleTranslationOut(**translation.dict())
-        for translation in sample.translations
-    ])
+    # Send the data to kafka
+    await produce(SAMPLE_CREATE, sample.kafka_dict())
+
+    return SampleOut(**sample.dict())

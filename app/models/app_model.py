@@ -1,3 +1,6 @@
+from typing import Any, Dict
+
+from app.utils.dict import to_dict
 from tortoise.models import Model
 
 
@@ -6,4 +9,7 @@ class AppModel(Model):
         abstract = True
 
     def dict(self):
-        return self.__dict__
+        return to_dict(self)
+
+    def kafka_data(self):
+        return self.dict()
