@@ -19,15 +19,11 @@ class LocalizedModel(Model):
     def dict(self):
         return {
             **super().dict(),
-            **{
-                'translations': self.translations_dict()
-            }
+            **{'translations': self.translations_dict()}
         }
 
     def kafka_dict(self):
         return {
             **super().kafka_dict(),
-            **{
-                'translations': self.translations_dict()
-            }
+            **{'translations': self.translations_dict()}
         }
