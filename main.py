@@ -68,7 +68,6 @@ app = get_application()
 
 if __name__ == '__main__':
     config = app_config()
-
     port = config.port
     reload = config.environment == 'local'
 
