@@ -1,9 +1,10 @@
-from app.events.producers.producer import produce
-from app.events.topics import TOPIC_SAMPLE_CREATE
-from app.models.sample import Sample
-from app.models.sample_translation import SampleTranslation
 from app.api.v1.data.sample_in import SampleIn
 from app.api.v1.data.sample_out import SampleOut
+from app.api.v1.search import sample_search
+from app.configs.constants import TOPIC_SAMPLE_CREATE
+from app.configs.kafka_config import produce
+from app.models.sample import Sample
+from app.models.sample_translation import SampleTranslation
 from tortoise.transactions import in_transaction
 
 
@@ -31,6 +32,9 @@ async def save(sample_in: SampleIn) -> SampleOut:
 
     # Get the result of the saved translations
     await sample.fetch_related('translations')
+
+    # Save the model to elasticsearch
+    await sample_search.save(sample)
 
     # Send the data to kafka
     await produce(TOPIC_SAMPLE_CREATE, sample.kafka_dict())

@@ -2,7 +2,7 @@ import json
 import os
 from functools import lru_cache
 
-from app.configs.app import app_config
+from app.configs.app_config import app_config
 
 message_path = app_config().message_path
 

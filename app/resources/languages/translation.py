@@ -2,7 +2,7 @@ import json
 import os
 from functools import lru_cache
 
-from app.configs.app import app_config
+from app.configs.app_config import app_config
 
 internationalization_path = app_config().internationalization_path
 language_default = app_config().language_default

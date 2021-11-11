@@ -6,3 +6,4 @@ asyncpg==0.24.0
 python-dotenv==0.19.1
 aerich==0.5.8
 aiokafka==0.7.2
+elasticsearch==7.15.2

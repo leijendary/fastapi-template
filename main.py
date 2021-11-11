@@ -7,15 +7,14 @@ from pydantic.json import ENCODERS_BY_TYPE
 from tortoise.exceptions import DoesNotExist, IntegrityError
 
 from app.api.v1.routers import sample_router as sample_router_v1
-from app.configs import database
-from app.configs.app import app_config
+from app.configs import database_config, elasticsearch_config, kafka_config
+from app.configs.app_config import app_config
 from app.data.data_response import DataResponse
 from app.data.error_response import ErrorResponse
 from app.errors.integrity_error import integrity_handler
 from app.errors.not_exists_error import not_exists_handler
 from app.errors.not_found_error import not_found_handler
 from app.errors.validation_error import validation_handler
-from app.events.consumers import consumer
 from app.utils.date import to_epoch
 
 # Override datetime encoder for the json response
@@ -56,9 +55,10 @@ def get_application():
     )
 
     # Event handlers
-    app.add_event_handler('startup', database.init)
-    app.add_event_handler('shutdown', database.close)
-    app.add_event_handler('startup', consumer.init)
+    app.add_event_handler('startup', database_config.init)
+    app.add_event_handler('shutdown', database_config.close)
+    app.add_event_handler('startup', kafka_config.init)
+    app.add_event_handler('startup', elasticsearch_config.init)
 
     # Exception handlers
     app.add_exception_handler(404, not_found_handler)
