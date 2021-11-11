@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Generic, TypeVar
 
-from app.utils.date import to_epoch
+from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel
 
 T = TypeVar('T')
@@ -14,7 +14,7 @@ class DataResponse(BaseModel, Generic[T]):
     def __init__(self, data: T, status=200, meta={}, **others) -> None:
         meta = {
             'status': status,
-            'timestamp': datetime.utcnow(),
+            'timestamp': jsonable_encoder(datetime.utcnow()),
             **meta
         }
 

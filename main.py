@@ -4,14 +4,16 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 from pydantic.json import ENCODERS_BY_TYPE
-from tortoise.exceptions import IntegrityError
+from tortoise.exceptions import DoesNotExist, IntegrityError
 
 from app.configs import database
 from app.configs.app import app_config
 from app.data.data_response import DataResponse
 from app.data.error_response import ErrorResponse
-from app.errors.integrity import integrity_handler
-from app.errors.validation import validation_handler
+from app.errors.integrity_error import integrity_handler
+from app.errors.not_exists_error import not_exists_handler
+from app.errors.not_found_error import not_found_handler
+from app.errors.validation_error import validation_handler
 from app.events.consumers import consumer
 from app.utils.date import to_epoch
 from app.v1.routers import sample_router as sample_router_v1
@@ -34,6 +36,10 @@ def get_application():
                 'description': 'Resource created',
                 'model': DataResponse
             },
+            400: {
+                'description': 'Resource not found',
+                'model': ErrorResponse
+            },
             409: {
                 'description': 'Unique constraint error',
                 'model': ErrorResponse
@@ -55,8 +61,10 @@ def get_application():
     app.add_event_handler('startup', consumer.init)
 
     # Exception handlers
-    app.add_exception_handler(RequestValidationError, validation_handler)
+    app.add_exception_handler(404, not_found_handler)
+    app.add_exception_handler(DoesNotExist, not_exists_handler)
     app.add_exception_handler(IntegrityError, integrity_handler)
+    app.add_exception_handler(RequestValidationError, validation_handler)
 
     # Routers
     app.include_router(sample_router_v1.router)

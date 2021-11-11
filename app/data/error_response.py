@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import List
 
 from app.data.error_source import ErrorSource
-from app.utils.date import to_epoch
+from fastapi.encoders import jsonable_encoder
 from pydantic.main import BaseModel
 
 
@@ -19,7 +19,7 @@ class ErrorResponse(BaseModel):
     ) -> None:
         meta = {
             'status': status,
-            'timestamp': datetime.utcnow(),
+            'timestamp': jsonable_encoder(datetime.utcnow()),
             **meta
         }
 
