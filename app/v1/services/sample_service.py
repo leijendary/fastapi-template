@@ -1,4 +1,4 @@
-from app.events.producers.app_producer import produce
+from app.events.producers.producer import produce
 from app.events.topic import SAMPLE_CREATE
 from app.models.sample import Sample
 from app.models.sample_translation import SampleTranslation

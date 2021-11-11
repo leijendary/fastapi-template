@@ -1,25 +1,33 @@
-from typing import Any, Generic, TypeVar
+from typing import Any
 
-from app.models.app_model import AppModel
+from app.models.model import Model
 from tortoise.fields.relational import ManyToManyRelation
 
 
-class LocalizedModel(AppModel):
+class LocalizedModel(Model):
     translations: ManyToManyRelation[Any]
 
     class Meta:
         abstract = True
 
     def translations_dict(self):
-        return {
-            'translations': [
-                translation.dict()
-                for translation in self.translations
-            ]
-        }
+        return [
+            translation.dict()
+            for translation in self.translations
+        ]
 
     def dict(self):
-        return {**super().dict(), **self.translations_dict()}
+        return {
+            **super().dict(),
+            **{
+                'translations': self.translations_dict()
+            }
+        }
 
     def kafka_dict(self):
-        return {**super().kafka_data(), **self.translations_dict()}
+        return {
+            **super().kafka_dict(),
+            **{
+                'translations': self.translations_dict()
+            }
+        }

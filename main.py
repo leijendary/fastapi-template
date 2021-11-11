@@ -9,7 +9,7 @@ from app.configs.app import app_config
 from app.data.error_response import ErrorResponse
 from app.errors.integrity import integrity_handler
 from app.errors.validation import validation_handler
-from app.events.consumers import consumer_group
+from app.events.consumers import consumer
 from app.v1.routers import sample_router as sample_router_v1
 
 
@@ -37,7 +37,7 @@ def get_application():
     # Event handlers
     app.add_event_handler('startup', database.init)
     app.add_event_handler('shutdown', database.close)
-    app.add_event_handler('startup', consumer_group.init)
+    app.add_event_handler('startup', consumer.init)
 
     # Exception handlers
     app.add_exception_handler(RequestValidationError, validation_handler)

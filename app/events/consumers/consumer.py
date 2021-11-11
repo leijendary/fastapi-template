@@ -1,13 +1,26 @@
 import json
+from asyncio import create_task
 from typing import Awaitable
 
 from aiokafka import AIOKafkaConsumer
 from aiokafka.structs import ConsumerRecord
 from app.configs.kafka import kafka_config
 from app.configs.logging import get_logger
+from app.events.consumers import sample_consumer
+from app.events.topic import SAMPLE_CREATE
 
 logger = get_logger(__name__)
 config = kafka_config()
+
+
+topic = {
+    SAMPLE_CREATE: sample_consumer.create
+}
+
+
+async def init():
+    for key, value in topic.items():
+        create_task(consume(key, value))
 
 
 def string_deserializer(value: bytes):
@@ -21,7 +34,7 @@ def json_deserializer(value: bytes):
     return json.loads(value.decode('utf-8'))
 
 
-async def create_consumer(
+async def consume(
     topic: str,
     callback: Awaitable,
     value_deserializer=json_deserializer,

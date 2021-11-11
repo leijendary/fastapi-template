@@ -1,5 +1,4 @@
 from app.models.translation import TranslationModel
-from tortoise.contrib.pydantic.creator import pydantic_queryset_creator
 from tortoise.fields import CharField
 from tortoise.fields.relational import ForeignKeyField
 
