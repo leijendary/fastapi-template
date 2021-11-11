@@ -1,6 +1,5 @@
 from app.models.localized_model import LocalizedModel
 from app.models.sample_translation import SampleTranslation
-from app.models.translation import TranslationModel
 from tortoise.fields import (CharField, DatetimeField, ManyToManyField,
                              UUIDField)
 from tortoise.fields.relational import ManyToManyRelation

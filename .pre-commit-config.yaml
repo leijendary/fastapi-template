@@ -1,0 +1,14 @@
+repos:
+  - repo: https://github.com/myint/autoflake
+    rev: v1.4
+    hooks:
+      - id: autoflake
+        args:
+          [
+            -i,
+            -r,
+            --expand-star-imports,
+            --remove-all-unused-imports,
+            --remove-unused-variables,
+            .,
+          ]

@@ -1,9 +1,7 @@
 from functools import lru_cache
 
-from fastapi import FastAPI
 from pydantic.env_settings import BaseSettings
 from tortoise import Tortoise
-from tortoise.contrib.fastapi import register_tortoise
 
 from app.configs.logging import get_logger
 

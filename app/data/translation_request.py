@@ -1,6 +1,5 @@
 from app.resources.messages.message import get_message
 from pydantic import BaseModel
-from pydantic.dataclasses import dataclass
 from pydantic.fields import Field
 
 
