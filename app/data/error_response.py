@@ -18,7 +18,7 @@ class ErrorResponse(BaseModel):
     ) -> None:
         meta = {
             'status': status,
-            'timestamp': time.time_ns() // 100000,
+            'timestamp': time.time_ns() // 1000000,
             **meta
         }
 

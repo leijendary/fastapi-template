@@ -13,7 +13,7 @@ class DataResponse(BaseModel, Generic[T]):
     def __init__(self, data: T, status=200, meta={}, **others) -> None:
         meta = {
             'status': status,
-            'timestamp': time.time_ns() // 100000,
+            'timestamp': time.time_ns() // 1000000,
             **meta
         }
 
