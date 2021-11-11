@@ -7,14 +7,14 @@ from aiokafka.structs import ConsumerRecord
 from app.configs.kafka import kafka_config
 from app.configs.logging import get_logger
 from app.events.consumers import sample_consumer
-from app.events.topic import SAMPLE_CREATE
+from app.events.topics import TOPIC_SAMPLE_CREATE
 
 logger = get_logger(__name__)
 config = kafka_config()
 
 
 topic = {
-    SAMPLE_CREATE: sample_consumer.create
+    TOPIC_SAMPLE_CREATE: sample_consumer.create
 }
 
 

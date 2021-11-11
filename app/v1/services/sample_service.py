@@ -1,5 +1,5 @@
 from app.events.producers.producer import produce
-from app.events.topic import SAMPLE_CREATE
+from app.events.topics import TOPIC_SAMPLE_CREATE
 from app.models.sample import Sample
 from app.models.sample_translation import SampleTranslation
 from app.v1.data.sample_in import SampleIn
@@ -33,6 +33,6 @@ async def save(sample_in: SampleIn) -> SampleOut:
     await sample.fetch_related('translations')
 
     # Send the data to kafka
-    await produce(SAMPLE_CREATE, sample.kafka_dict())
+    await produce(TOPIC_SAMPLE_CREATE, sample.kafka_dict())
 
     return SampleOut(**sample.dict())
