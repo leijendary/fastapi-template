@@ -1,7 +1,8 @@
-import time
+from datetime import datetime
 from typing import List
 
 from app.data.error_source import ErrorSource
+from app.utils.date import to_epoch
 from pydantic.main import BaseModel
 
 
@@ -18,7 +19,7 @@ class ErrorResponse(BaseModel):
     ) -> None:
         meta = {
             'status': status,
-            'timestamp': time.time_ns() // 1000000,
+            'timestamp': datetime.utcnow(),
             **meta
         }
 

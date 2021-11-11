@@ -1,6 +1,5 @@
 from datetime import datetime
 
-import pydantic
 import uvicorn
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
@@ -14,10 +13,11 @@ from app.data.error_response import ErrorResponse
 from app.errors.integrity import integrity_handler
 from app.errors.validation import validation_handler
 from app.events.consumers import consumer
+from app.utils.date import to_epoch
 from app.v1.routers import sample_router as sample_router_v1
 
 # Override datetime encoder for the json response
-ENCODERS_BY_TYPE[datetime] = lambda dt: int(dt.timestamp() * 1000)
+ENCODERS_BY_TYPE[datetime] = to_epoch
 
 
 def get_application():
