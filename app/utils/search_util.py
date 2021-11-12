@@ -12,8 +12,7 @@ _match_all = {
 }
 
 
-def translation_page(locale, query, fields, page, size, sort):
-    locale = locale if locale else language_default
+def translation_page(query, fields, page, size, sort):
     body = {
         'query': match_fuzziness(query, fields),
         **sorting(sort),

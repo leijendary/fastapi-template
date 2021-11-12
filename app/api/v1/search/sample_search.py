@@ -7,7 +7,7 @@ from app.utils.search_util import to_page, translation_page
 
 async def page(locale, query='', page: int = 1, size: int = 10, sort=None):
     fields = ['translations.name', 'translations.description']
-    body = translation_page(locale, query, fields, page, size, sort)
+    body = translation_page(query, fields, page, size, sort)
     result = await elasticsearch.search(body, INDEX_SAMPLE)
 
     return to_page(result, page, size, SampleSearchOut, locale)
