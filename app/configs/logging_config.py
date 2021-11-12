@@ -49,7 +49,7 @@ def get_logger(name: str):
     log_handler.setLevel(config.log_level)
     log_handler.setFormatter(ColoredFormatter())
 
-    logger = logging.getLogger(name)
+    logger = logging.getLogger(name.ljust(30)[-30:])
     logger.setLevel(config.log_level)
     logger.addHandler(log_handler)
 
