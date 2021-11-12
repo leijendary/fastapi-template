@@ -4,6 +4,7 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 from fastapi_pagination import add_pagination
+from pydantic.error_wrappers import ValidationError
 from pydantic.json import ENCODERS_BY_TYPE
 from tortoise.exceptions import DoesNotExist, IntegrityError
 
@@ -41,6 +42,7 @@ exception_handlers = {
     DoesNotExist: not_exists_handler,
     IntegrityError: integrity_handler,
     RequestValidationError: validation_handler,
+    ValidationError: validation_handler
 }
 
 on_startup = [
