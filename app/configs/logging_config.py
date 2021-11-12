@@ -1,12 +1,14 @@
-import logging
 from functools import lru_cache
-from logging import Formatter
+from logging import (CRITICAL, DEBUG, ERROR, INFO, WARNING, Formatter,
+                     StreamHandler, getLogger)
 
 from pydantic import BaseSettings
 
+NAME_MAX_LENGTH = 25
+
 
 class LoggingConfig(BaseSettings):
-    log_level = logging.INFO
+    log_level = INFO
 
     class Config:
         env_prefix = ''
@@ -21,19 +23,20 @@ class ColoredFormatter(Formatter):
     bold_red = '\x1b[31;1m'
     reset = '\x1b[0m'
     level_name = '%(levelname)s:\t  '
+    untabbed_level_name = '%(levelname)s: '
     format = '%(asctime)s: %(name)s:\t%(message)s'
 
     FORMATS = {
-        logging.DEBUG: grey + level_name + reset + format,
-        logging.INFO: green + level_name + reset + format,
-        logging.WARNING: yellow + level_name + reset + format,
-        logging.ERROR: red + level_name + reset + format,
-        logging.CRITICAL: bold_red + level_name + reset + format,
+        DEBUG: grey + level_name + reset + format,
+        INFO: green + level_name + reset + format,
+        WARNING: yellow + untabbed_level_name + reset + format,
+        ERROR: red + level_name + reset + format,
+        CRITICAL: bold_red + untabbed_level_name + reset + format,
     }
 
     def format(self, record):
         log_format = self.FORMATS.get(record.levelno)
-        formatter = logging.Formatter(log_format)
+        formatter = Formatter(log_format)
 
         return formatter.format(record)
 
@@ -45,12 +48,25 @@ def logging_config():
 
 def get_logger(name: str):
     config = logging_config()
-    log_handler = logging.StreamHandler()
+    log_handler = StreamHandler()
     log_handler.setLevel(config.log_level)
     log_handler.setFormatter(ColoredFormatter())
 
-    logger = logging.getLogger(name.ljust(30)[-30:])
+    name = format_name(name)
+    logger = getLogger(name)
     logger.setLevel(config.log_level)
     logger.addHandler(log_handler)
 
     return logger
+
+
+def format_name(name: str):
+    if len(name) > NAME_MAX_LENGTH and '.' in name:
+        splits = name.split('.')
+
+        for i, value in enumerate(splits[:-1]):
+            splits[i] = value[:1]
+
+        name = '.'.join(splits)
+
+    return name.ljust(NAME_MAX_LENGTH)[-NAME_MAX_LENGTH:]
