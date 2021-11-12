@@ -1,8 +1,8 @@
 from typing import Optional
 
-from app.data.translation_request import TranslationRequest
+from app.data.translation_out import TranslationOut
 
 
-class SampleTranslationOut(TranslationRequest):
+class SampleTranslationOut(TranslationOut):
     name: str
     description: Optional[str]

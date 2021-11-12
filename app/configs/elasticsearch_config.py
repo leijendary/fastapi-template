@@ -2,9 +2,12 @@ import json
 from functools import lru_cache
 
 from app.configs.constants import INDEX_SAMPLE
+from app.configs.logging_config import get_logger
 from pydantic import BaseSettings
 
 from elasticsearch import AsyncElasticsearch
+
+logger = get_logger(__name__)
 
 indices = {
     INDEX_SAMPLE: {
@@ -44,6 +47,20 @@ elasticsearch = AsyncElasticsearch(
 
 
 async def init():
+    logger.info('Initializing elasticsearch...')
+
     for index, body in indices.items():
-        if not await elasticsearch.indices.exists(index):
+        if await elasticsearch.indices.exists(index):
+            await elasticsearch.indices.put_mapping(body['mappings'], index)
+        else:
             await elasticsearch.indices.create(index, body)
+
+    logger.info('Elasticsearch initialized!')
+
+
+async def close():
+    logger.info('Closing elasticsearch...')
+
+    await elasticsearch.close()
+
+    logger.info('Elasticsearch closed!')
