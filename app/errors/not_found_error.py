@@ -2,10 +2,9 @@ from app.data.error_response import ErrorResponse
 from app.data.error_source import ErrorSource
 from app.resources.messages.message import get_message
 from starlette.requests import Request
-from starlette.responses import JSONResponse
 
 
-async def not_found_handler(request: Request, _):
+async def not_found_handler(request: Request, _) -> ErrorResponse:
     sources = ['path']
     code = 'error.mapping_not_found'
     path = request.url.path
@@ -15,8 +14,6 @@ async def not_found_handler(request: Request, _):
         path += '?' + query
 
     message = get_message(code, path)
-    error = ErrorSource(sources=sources, code=code, message=message)
-    status_code = 404
-    response = ErrorResponse([error], status_code)
+    source = ErrorSource(sources=sources, code=code, message=message)
 
-    return JSONResponse(response.dict(), status_code)
+    return ErrorResponse([source], 404)

@@ -1,36 +1,38 @@
 from datetime import datetime
-from typing import Generic, TypeVar
+from typing import Any
 
 from fastapi.encoders import jsonable_encoder
 from fastapi_pagination import Page
-from pydantic import BaseModel
-
-T = TypeVar('T')
+from starlette.responses import JSONResponse
 
 
-class DataResponse(BaseModel, Generic[T]):
-    data: T
+class DataResponse(JSONResponse):
+    data: Any
     meta: dict = {}
 
-    def __init__(self, data: T, status=200, meta={}, **others) -> None:
-        if isinstance(data, Page):
-            meta = self.page_meta(data, meta)
-
-            data = data.items
-
+    def render(self, content: Any) -> bytes:
         meta = {
-            'status': status,
+            'status': self.status_code,
             'timestamp': jsonable_encoder(datetime.utcnow()),
-            **meta
         }
 
-        super().__init__(data=data, meta=meta, **others)
+        if isinstance(content, Page):
+            meta = self.page_meta(content, meta)
 
-    def page_meta(self, data: T, meta={}):
+            content = content.items
+
+        content = {
+            'data': {**content},
+            'meta': meta
+        }
+
+        return super().render(content)
+
+    def page_meta(self, content: Any, meta={}):
         return {
             **meta,
-            'count': len(data.items),
-            'total': data.total,
-            'page': data.page,
-            'size': data.size
+            'count': len(content.items),
+            'total': content.total,
+            'page': content.page,
+            'size': content.size
         }
