@@ -18,6 +18,7 @@ from app.errors.not_found_error import not_found_handler
 from app.errors.validation_error import validation_handler
 from app.utils.date_util import to_epoch
 
+# Possible responses
 responses = {
     400: {
         'description': 'Resource not found',
@@ -37,6 +38,7 @@ responses = {
     }
 }
 
+# Global exception handlers
 exception_handlers = {
     404: not_found_handler,
     DoesNotExist: not_exists_handler,
@@ -45,12 +47,14 @@ exception_handlers = {
     ValidationError: validation_handler
 }
 
+# Startup event
 on_startup = [
     database_config.init,
     kafka_config.init,
     elasticsearch_config.init
 ]
 
+# Shutdown event
 on_shutdown = [
     database_config.close,
     elasticsearch_config.close
