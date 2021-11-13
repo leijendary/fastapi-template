@@ -8,10 +8,10 @@ NAME_MAX_LENGTH = 25
 
 
 class LoggingConfig(BaseSettings):
-    log_level = INFO
+    level = INFO
 
     class Config:
-        env_prefix = ''
+        env_prefix = 'log_'
         env_file = '.env'
 
 
@@ -49,12 +49,12 @@ def logging_config():
 def get_logger(name: str):
     config = logging_config()
     log_handler = StreamHandler()
-    log_handler.setLevel(config.log_level)
+    log_handler.setLevel(config.level)
     log_handler.setFormatter(ColoredFormatter())
 
     name = format_name(name)
     logger = getLogger(name)
-    logger.setLevel(config.log_level)
+    logger.setLevel(config.level)
     logger.addHandler(log_handler)
 
     return logger
