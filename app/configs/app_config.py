@@ -7,8 +7,8 @@ class AppConfig(BaseSettings):
     port: int = 80
     environment: str = 'local'
     language_default: str = 'en'
-    internationalization_path: str = 'app/resources/languages/i18n/'
-    message_path: str = 'app/resources/messages/libraries/'
+    internationalization_path: str = 'app/core/libraries/i18n/'
+    message_path: str = 'app/core/libraries/messages/'
 
     class Config:
         env_prefix = ''

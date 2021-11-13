@@ -9,18 +9,21 @@ from pydantic.json import ENCODERS_BY_TYPE
 from tortoise.exceptions import DoesNotExist, IntegrityError
 
 from app.api.v1.routers import sample_router as sample_router_v1
-from app.configs import (cache_config, client_config, database_config,
-                         elasticsearch_config, kafka_config)
 from app.configs.app_config import app_config
-from app.data.data_response import DataResponse
-from app.data.error_response import ErrorResponse
-from app.errors.exceptions.invalid_token_exception import InvalidTokenException
-from app.errors.generic_error import generic_handler
-from app.errors.integrity_error import integrity_handler
-from app.errors.invalid_token import invalid_token_handler
-from app.errors.not_exists_error import not_exists_handler
-from app.errors.not_found_error import not_found_handler
-from app.errors.validation_error import validation_handler
+from app.core.cache import redis_cache
+from app.core.clients import httpx_client
+from app.core.data.data_response import DataResponse
+from app.core.data.error_response import ErrorResponse
+from app.core.databases import tortoise_orm
+from app.core.errors.generic_error import generic_handler
+from app.core.errors.integrity_error import integrity_handler
+from app.core.errors.invalid_token import invalid_token_handler
+from app.core.errors.not_exists_error import not_exists_handler
+from app.core.errors.not_found_error import not_found_handler
+from app.core.errors.validation_error import validation_handler
+from app.core.events import kafka_consumer
+from app.core.exceptions.invalid_token_exception import InvalidTokenException
+from app.core.search import elasticsearch
 from app.utils.date_util import to_epoch
 
 # Possible responses
@@ -64,18 +67,18 @@ exception_handlers = {
 
 # Startup event
 on_startup = [
-    database_config.init,
-    kafka_config.init,
-    elasticsearch_config.init,
-    cache_config.init
+    tortoise_orm.init,
+    kafka_consumer.init,
+    elasticsearch.init,
+    redis_cache.init
 ]
 
 # Shutdown event
 on_shutdown = [
-    database_config.close,
-    elasticsearch_config.close,
-    client_config.close,
-    cache_config.close
+    tortoise_orm.close,
+    elasticsearch.close,
+    httpx_client.close,
+    redis_cache.close
 ]
 
 # App instance

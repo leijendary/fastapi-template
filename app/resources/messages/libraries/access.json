@@ -1,6 +1,0 @@
-{
-  "unauthorized": "You are unauthorized to access this resource",
-  "denied": "You do not have enough permissions",
-  "invalid": "Invalid Token Signature",
-  "expired": "Access Token is expired"
-}

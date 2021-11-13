@@ -1,7 +1,7 @@
 from typing import List
 
 from app.configs.app_config import app_config
-from app.data.search_out import SearchOut
+from app.core.data.search_out import SearchOut
 from fastapi_pagination import Page, Params, create_page
 
 config = app_config()

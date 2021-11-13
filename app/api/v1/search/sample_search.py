@@ -1,6 +1,6 @@
 from app.api.v1.data.sample_search_out import SampleSearchOut
 from app.configs.constants import INDEX_SAMPLE
-from app.configs.elasticsearch_config import elasticsearch
+from app.core.search.elasticsearch import elasticsearch
 from app.models.sample import Sample
 from app.utils.search_util import to_page, translation_page
 

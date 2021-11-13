@@ -1,4 +1,4 @@
-from app.models.localized_model import LocalizedModel
+from app.core.models.localized_model import LocalizedModel
 from app.models.sample_translation import SampleTranslation
 from tortoise.fields import (CharField, DatetimeField, ManyToManyField,
                              UUIDField)

@@ -1,4 +1,4 @@
-from app.models.translation import TranslationModel
+from app.core.models.translation import TranslationModel
 from tortoise.fields import CharField
 from tortoise.fields.relational import ForeignKeyField
 

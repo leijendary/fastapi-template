@@ -5,8 +5,8 @@ from app.api.v1.data.sample_out import SampleOut
 from app.api.v1.data.sample_search_out import SampleSearchOut
 from app.api.v1.search import sample_search
 from app.api.v1.services import sample_service
-from app.data.data_response import DataResponse
-from app.security.scope_validator import check_scope
+from app.core.data.data_response import DataResponse
+from app.core.security.scope_validator import check_scope
 from fastapi import APIRouter
 from fastapi.param_functions import Security
 from fastapi_pagination.default import Page

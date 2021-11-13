@@ -1,7 +1,7 @@
 from typing import List
 
 from app.api.v1.data.sample_translation_in import SampleTranslationIn
-from app.resources.messages.message import get_message
+from app.core.libraries.message import get_message
 from pydantic import BaseModel
 from pydantic.fields import Field
 

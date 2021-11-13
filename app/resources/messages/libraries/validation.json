@@ -1,5 +1,0 @@
-{
-  "required": "Required Field",
-  "max_length": "Exceeds limit of {max} characters",
-  "already_exists": "{0} with value {1} already exists"
-}

@@ -1,6 +1,6 @@
 from app.configs.cache_config import cache_config
-from app.configs.client_config import client
 from app.configs.security_config import security_config
+from app.core.clients.httpx_client import client
 from fastapi_cache.decorator import cache
 
 security_config = security_config()

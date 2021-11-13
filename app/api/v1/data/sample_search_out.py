@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from app.data.search_out import SearchOut
+from app.core.data.search_out import SearchOut
 
 
 class SampleSearchOut(SearchOut):

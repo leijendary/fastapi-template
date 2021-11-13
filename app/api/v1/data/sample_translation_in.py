@@ -1,7 +1,7 @@
 from typing import Optional
 
-from app.data.translation_in import TranslationIn
-from app.resources.messages.message import get_message
+from app.core.data.translation_in import TranslationIn
+from app.core.libraries.message import get_message
 from pydantic import Field
 
 
