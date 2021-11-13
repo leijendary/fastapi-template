@@ -12,11 +12,40 @@ from app.api.v1.routers import sample_router as sample_router_v1
 from app.configs import database_config, elasticsearch_config, kafka_config
 from app.configs.app_config import app_config
 from app.data.data_response import DataResponse
+from app.data.error_response import ErrorResponse
 from app.errors.integrity_error import integrity_handler
 from app.errors.not_exists_error import not_exists_handler
 from app.errors.not_found_error import not_found_handler
 from app.errors.validation_error import validation_handler
 from app.utils.date_util import to_epoch
+
+# Possible responses
+responses = {
+    200: {
+        'description': 'Success',
+        'model': DataResponse
+    },
+    201: {
+        'description': 'Resource created',
+        'model': DataResponse
+    },
+    400: {
+        'description': 'Resource not found',
+        'model': ErrorResponse
+    },
+    409: {
+        'description': 'Unique constraint error',
+        'model': ErrorResponse
+    },
+    422: {
+        'description': 'Validation error',
+        'model': ErrorResponse
+    },
+    500: {
+        'description': 'Internal server error',
+        'model': ErrorResponse
+    }
+}
 
 # Global exception handlers
 exception_handlers = {
@@ -44,7 +73,7 @@ on_shutdown = [
 app = FastAPI(
     title='FastAPI Template',
     version='0.0.1',
-    default_response_class=DataResponse,
+    responses=responses,
     exception_handlers=exception_handlers,
     on_startup=on_startup,
     on_shutdown=on_shutdown

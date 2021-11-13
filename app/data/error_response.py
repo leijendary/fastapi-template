@@ -1,23 +1,26 @@
 from datetime import datetime
-from typing import Any, List
+from typing import List
 
 from app.data.error_source import ErrorSource
 from fastapi.encoders import jsonable_encoder
-from starlette.responses import JSONResponse
+from pydantic.main import BaseModel
 
 
-class ErrorResponse(JSONResponse):
+class ErrorResponse(BaseModel):
     errors: List[ErrorSource] = []
     meta: dict = {}
 
-    def render(self, content: Any) -> bytes:
+    def __init__(
+        self,
+        errors: List[ErrorSource] = [],
+        status=500,
+        meta={},
+        **others
+    ) -> None:
         meta = {
-            'status': self.status_code,
+            'status': status,
             'timestamp': jsonable_encoder(datetime.utcnow()),
-        }
-        content = {
-            'errors': jsonable_encoder(content),
-            'meta': meta
+            **meta
         }
 
-        return super().render(content)
+        super().__init__(errors=errors, meta=meta, **others)
