@@ -6,7 +6,7 @@ from pydantic import BaseSettings
 
 class LoggingConfig(BaseSettings):
     level = INFO
-    name_max_length = 25
+    name_max_length = 20
 
     class Config:
         env_prefix = 'log_'

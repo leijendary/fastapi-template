@@ -15,7 +15,7 @@ class ColoredFormatter(Formatter):
     reset = '\x1b[0m'
     level_name = '%(levelname)s:\t  '
     untabbed_level_name = '%(levelname)s: '
-    format = '%(asctime)s: %(name)s:\t%(message)s'
+    format = '%(asctime)s: %(name)s: %(message)s'
 
     FORMATS = {
         DEBUG: grey + level_name + reset + format,
