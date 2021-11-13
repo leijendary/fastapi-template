@@ -64,7 +64,7 @@ async def consume(
     value_deserializer=json_deserializer,
     auto_offset_reset='earliest'
 ):
-    logger.info(f"Initializing Kafka consumer for topic {topic}...")
+    logger.info(f"Initializing kafka consumer for topic {topic}...")
 
     consumer = AIOKafkaConsumer(
         topic,
