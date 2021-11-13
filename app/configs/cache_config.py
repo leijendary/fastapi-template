@@ -1,15 +1,25 @@
 from functools import lru_cache
+from typing import Optional
 
-from aiocache import Cache
-from aiocache import cached as aio_cached
-from aiocache import caches
+from aioredis import from_url
+from app.configs.logging_config import get_logger
+from fastapi_cache import FastAPICache
+from fastapi_cache.backends.redis import RedisBackend
 from pydantic import BaseSettings
+from starlette.requests import Request
+from starlette.responses import Response
+
+logger = get_logger(__name__)
 
 
 class CacheConfig(BaseSettings):
     redis_host: str
     redis_port = 6379
+    username: str = None
+    password: str = None
+    use_ssl = False
     ttl = 43200
+    max_connections = 10
 
     class Config:
         env_prefix = 'cache_'
@@ -21,21 +31,46 @@ def cache_config():
     return CacheConfig()
 
 
+def key_builder(
+    func,
+    namespace: Optional[str] = "",
+    request: Optional[Request] = None,
+    response: Optional[Response] = None,
+    args: Optional[tuple] = None,
+    kwargs: Optional[dict] = None,
+):
+    return namespace
+
+
 config = cache_config()
+scheme = 'rediss' if config.use_ssl else 'redis'
+credentials = ''
 
-caches.set_config({
-    'default': {
-        'cache': 'aiocache.RedisCache',
-        'endpoint': config.redis_host,
-        'port': config.redis_port,
-        'serializer': {'class': 'aiocache.serializers.JsonSerializer'},
-        'plugins': [
-            {'class': 'aiocache.plugins.HitMissRatioPlugin'},
-            {'class': 'aiocache.plugins.TimingPlugin'}
-        ]
-    }
-})
+if config.username and config.password:
+    credentials = f"{config.username}:{config.password}@"
+
+redis = from_url(
+    f"{scheme}://{credentials}{config.redis_host}:{config.redis_port}",
+    decode_responses=True,
+    max_connections=config.max_connections
+)
 
 
-def cached(key: str, ttl=config.ttl, cache=Cache.REDIS):
-    return aio_cached(key=key, ttl=ttl, cache=cache)
+async def init():
+    logger.info('Initializing redis cache...')
+
+    FastAPICache.init(
+        RedisBackend(redis),
+        expire=config.ttl,
+        key_builder=key_builder
+    )
+
+    logger.info('Redis cache initialized!')
+
+
+async def close():
+    logger.info('Closing redis cache...')
+
+    await redis.close()
+
+    logger.info('Redis cache closed!')

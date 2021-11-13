@@ -9,8 +9,8 @@ from pydantic.json import ENCODERS_BY_TYPE
 from tortoise.exceptions import DoesNotExist, IntegrityError
 
 from app.api.v1.routers import sample_router as sample_router_v1
-from app.configs import (client_config, database_config, elasticsearch_config,
-                         kafka_config)
+from app.configs import (cache_config, client_config, database_config,
+                         elasticsearch_config, kafka_config)
 from app.configs.app_config import app_config
 from app.data.data_response import DataResponse
 from app.data.error_response import ErrorResponse
@@ -66,14 +66,16 @@ exception_handlers = {
 on_startup = [
     database_config.init,
     kafka_config.init,
-    elasticsearch_config.init
+    elasticsearch_config.init,
+    cache_config.init
 ]
 
 # Shutdown event
 on_shutdown = [
     database_config.close,
     elasticsearch_config.close,
-    client_config.close
+    client_config.close,
+    cache_config.close
 ]
 
 # App instance
