@@ -18,12 +18,12 @@ topic = {
 
 
 class KafkaConfig(BaseSettings):
-    kafka_client_id: str
-    kafka_group_id: str
-    kafka_brokers: str
+    client_id: str
+    group_id: str
+    brokers: str
 
     class Config:
-        env_prefix = ''
+        env_prefix = 'kafka_'
         env_file = '.env'
 
 
@@ -68,9 +68,9 @@ async def consume(
 
     consumer = AIOKafkaConsumer(
         topic,
-        client_id=config.kafka_client_id,
-        group_id=config.kafka_group_id,
-        bootstrap_servers=config.kafka_brokers,
+        client_id=config.client_id,
+        group_id=config.group_id,
+        bootstrap_servers=config.brokers,
         value_deserializer=value_deserializer,
         auto_offset_reset=auto_offset_reset
     )
@@ -103,8 +103,8 @@ async def consume(
 
 async def produce(topic: str, value: Dict = None, key: str = None):
     producer = AIOKafkaProducer(
-        client_id=config.kafka_client_id,
-        bootstrap_servers=config.kafka_brokers,
+        client_id=config.client_id,
+        bootstrap_servers=config.brokers,
         enable_idempotence=True
     )
 

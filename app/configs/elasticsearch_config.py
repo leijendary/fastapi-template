@@ -18,15 +18,15 @@ indices = {
 
 
 class ElasticsearchConfig(BaseSettings):
-    elasticsearch_hosts: str
-    elasticsearch_use_ssl = False
-    elasticsearch_verify_certs = False
-    elasticsearch_ca_certs: str = None
-    elasticsearch_client_cert: str = None
-    elasticsearch_client_key: str = None
+    hosts: str
+    use_ssl = False
+    verify_certs = False
+    ca_certs: str = None
+    client_cert: str = None
+    client_key: str = None
 
     class Config:
-        env_prefix = ''
+        env_prefix = 'elasticsearch_'
         env_file = '.env'
 
 
@@ -37,12 +37,12 @@ def elasticsearch_config():
 
 config = elasticsearch_config()
 elasticsearch = AsyncElasticsearch(
-    hosts=config.elasticsearch_hosts.split(','),
-    use_ssl=config.elasticsearch_use_ssl,
-    verify_certs=config.elasticsearch_verify_certs,
-    ca_certs=config.elasticsearch_ca_certs,
-    client_cert=config.elasticsearch_client_cert,
-    client_key=config.elasticsearch_client_key
+    hosts=config.hosts.split(','),
+    use_ssl=config.use_ssl,
+    verify_certs=config.verify_certs,
+    ca_certs=config.ca_certs,
+    client_cert=config.client_cert,
+    client_key=config.client_key
 )
 
 

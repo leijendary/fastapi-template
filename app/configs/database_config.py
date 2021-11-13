@@ -8,16 +8,16 @@ logger = get_logger(__name__)
 
 
 class DatabaseConfig(BaseSettings):
-    database: str
-    database_host: str
-    database_port: str
-    database_user: str
-    database_password: str
-    database_connection_min_size: int = 1
-    database_connection_max_size: int = 20
+    name: str
+    host: str
+    port: str
+    user: str
+    password: str
+    connection_min_size: int = 1
+    connection_max_size: int = 20
 
     class Config:
-        env_prefix = ''
+        env_prefix = 'database_'
         env_file = '.env'
 
 
@@ -37,13 +37,13 @@ TORTOISE_ORM = {
         'default': {
             'engine': 'tortoise.backends.asyncpg',
             'credentials': {
-                'database': CONFIG.database,
-                'host': CONFIG.database_host,
-                'port': CONFIG.database_port,
-                'user': CONFIG.database_user,
-                'password': CONFIG.database_password,
-                'minsize': CONFIG.database_connection_min_size,
-                'maxsize': CONFIG.database_connection_max_size
+                'database': CONFIG.name,
+                'host': CONFIG.host,
+                'port': CONFIG.port,
+                'user': CONFIG.user,
+                'password': CONFIG.password,
+                'minsize': CONFIG.connection_min_size,
+                'maxsize': CONFIG.connection_max_size
             }
         }
     },
