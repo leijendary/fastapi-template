@@ -14,7 +14,7 @@ async def integrity_handler(_, exc: IntegrityError) -> JSONResponse:
     if isinstance(cause, UniqueViolationError):
         return await unique_violation_handler(_, cause)
 
-    sources = ['Model']
+    sources = ['body', 'model']
     code = 'error.data_integrity'
     message = get_message(code, cause.detail)
     source = ErrorSource(sources=sources, code=code, message=message)

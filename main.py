@@ -15,14 +15,18 @@ from app.core.clients import httpx_client
 from app.core.data.data_response import DataResponse
 from app.core.data.error_response import ErrorResponse
 from app.core.databases import tortoise_orm
+from app.core.errors.access_denied_error import access_denied_handler
 from app.core.errors.generic_error import generic_handler
 from app.core.errors.integrity_error import integrity_handler
-from app.core.errors.invalid_token import invalid_token_handler
+from app.core.errors.invalid_token_error import invalid_token_handler
 from app.core.errors.not_exists_error import not_exists_handler
 from app.core.errors.not_found_error import not_found_handler
+from app.core.errors.unauthorized_error import unauthorized_handler
 from app.core.errors.validation_error import validation_handler
 from app.core.events import kafka_consumer
+from app.core.exceptions.access_denied_exception import AccessDeniedException
 from app.core.exceptions.invalid_token_exception import InvalidTokenException
+from app.core.exceptions.unauthorized_exception import UnauthorizedException
 from app.core.search import elasticsearch
 from app.utils.date_util import to_epoch
 
@@ -37,6 +41,14 @@ responses = {
         'model': DataResponse
     },
     400: {
+        'description': 'Unauthorized',
+        'model': ErrorResponse
+    },
+    403: {
+        'description': 'Access Denied',
+        'model': ErrorResponse
+    },
+    404: {
         'description': 'Resource not found',
         'model': ErrorResponse
     },
@@ -57,6 +69,8 @@ responses = {
 # Global exception handlers
 exception_handlers = {
     404: not_found_handler,
+    AccessDeniedException: access_denied_handler,
+    UnauthorizedException: unauthorized_handler,
     InvalidTokenException: invalid_token_handler,
     DoesNotExist: not_exists_handler,
     IntegrityError: integrity_handler,

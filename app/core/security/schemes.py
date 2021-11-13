@@ -8,4 +8,9 @@ scopes = {
     for scope in config.scopes.split(',')
 }
 
-oauth2_scheme = OAuth2PasswordBearer(token_url, 'Bearer', scopes)
+oauth2_scheme = OAuth2PasswordBearer(
+    token_url,
+    'Bearer',
+    scopes,
+    auto_error=False
+)
