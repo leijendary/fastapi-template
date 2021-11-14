@@ -9,7 +9,7 @@ class DatabaseConfig(BaseSettings):
     port: str
     user: str
     password: str
-    connection_min_size: int = 1
+    connection_min_size: int = 10
     connection_max_size: int = 20
 
     class Config:
