@@ -16,7 +16,7 @@ def json_serializer(value: Any):
     return json.dumps(value).encode('utf-8')
 
 
-async def produce(topic: str, value: Dict = None, key: str = None):
+async def send(topic: str, value: Dict = None, key: str = None):
     producer = AIOKafkaProducer(
         client_id=config.client_id,
         bootstrap_servers=config.brokers,

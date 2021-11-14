@@ -1,4 +1,4 @@
-from app.utils.dict_util import to_dict
+from app.core.utils.dict_util import to_dict
 from tortoise.models import Model as TortoiseModel
 
 

@@ -1,15 +1,28 @@
+from uuid import UUID
+
 from app.api.v1.data.sample_in import SampleIn
 from app.api.v1.data.sample_out import SampleOut
 from app.api.v1.search import sample_search
 from app.configs.constants import TOPIC_SAMPLE_CREATE
 from app.core.events import kafka_producer
+from app.core.exceptions.resource_not_found_exception import \
+    ResourceNotFoundException
 from app.models.sample import Sample
 from app.models.sample_translation import SampleTranslation
 from tortoise.transactions import in_transaction
 
+RESOURCE_NAME = 'Sample'
 
-async def page():
-    pass
+
+async def get(id: UUID) -> SampleOut:
+    sample = await Sample.filter(id=id) \
+        .first() \
+        .prefetch_related('translations')
+
+    if not sample:
+        raise ResourceNotFoundException(resource=RESOURCE_NAME, identifier=id)
+
+    return SampleOut(**sample.dict())
 
 
 async def save(sample_in: SampleIn) -> SampleOut:
@@ -37,6 +50,10 @@ async def save(sample_in: SampleIn) -> SampleOut:
     await sample_search.save(sample)
 
     # Send the data to kafka
-    await kafka_producer.produce(TOPIC_SAMPLE_CREATE, sample.kafka_dict())
+    await kafka_producer.send(TOPIC_SAMPLE_CREATE, sample.kafka_dict())
 
     return SampleOut(**sample.dict())
+
+
+async def delete(id: UUID) -> None:
+    await Sample.filter(id=id).delete()

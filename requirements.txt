@@ -10,5 +10,4 @@ elasticsearch==7.15.2
 fastapi-pagination==0.9.1
 python-jose==3.3.0
 httpx==0.20.0
-fastapi-cache2==0.1.7
 aioredis==2.0.0

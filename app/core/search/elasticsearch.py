@@ -7,6 +7,7 @@ from app.core.logs.logging import get_logger
 from elasticsearch import AsyncElasticsearch
 
 logger = get_logger(__name__)
+config = elasticsearch_config()
 
 indices = {
     INDEX_SAMPLE: {
@@ -19,7 +20,6 @@ indices = {
     }
 }
 
-config = elasticsearch_config()
 elasticsearch = AsyncElasticsearch(
     hosts=config.hosts.split(','),
     use_ssl=config.use_ssl,

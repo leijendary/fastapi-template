@@ -1,7 +1,7 @@
 from typing import Any
 
 from app.configs.app_config import app_config
-from app.utils.locale_util import localize
+from app.core.utils.locale_util import localize
 from pydantic.main import BaseModel
 
 config = app_config()

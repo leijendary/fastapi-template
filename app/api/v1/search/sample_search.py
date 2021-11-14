@@ -2,7 +2,7 @@ from app.api.v1.data.sample_search_out import SampleSearchOut
 from app.configs.constants import INDEX_SAMPLE
 from app.core.search.elasticsearch import elasticsearch
 from app.models.sample import Sample
-from app.utils.search_util import to_page, translation_page
+from app.core.utils.search_util import to_page, translation_page
 
 
 async def page(locale, query='', page: int = 1, size: int = 10, sort=None):
