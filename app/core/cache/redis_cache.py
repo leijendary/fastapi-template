@@ -163,7 +163,12 @@ def is_no_store(request):
 
 
 async def set(key: str, value: Any):
-    await redis.set(key, value.json(), config.ttl)
+    if hasattr(value, 'json'):
+        value = value.json()
+    else:
+        value = json.dumps(value)
+
+    await redis.set(key, value, config.ttl)
 
 
 async def get(key: str):
