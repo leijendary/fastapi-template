@@ -2,6 +2,7 @@ from calendar import timegm
 from datetime import datetime
 
 from app.clients import jwks_client
+from app.configs.security_config import security_config
 from app.core.exceptions.invalid_token_exception import InvalidTokenException
 from app.core.exceptions.unauthorized_exception import UnauthorizedException
 from app.core.security.schemes import oauth2_scheme
@@ -9,6 +10,8 @@ from fastapi.param_functions import Depends
 from jose import jwk, jwt
 from jose.exceptions import ExpiredSignatureError
 from jose.utils import base64url_decode
+
+config = security_config()
 
 
 async def check_token(token: str = Depends(oauth2_scheme)):
@@ -20,6 +23,7 @@ async def check_token(token: str = Depends(oauth2_scheme)):
     claims = jwt.get_unverified_claims(token)
 
     validate_expiry(claims['exp'])
+    validate_audience(claims['aud'])
 
     return claims
 
@@ -55,3 +59,8 @@ def validate_expiry(exp: int):
 
     if exp < now:
         raise ExpiredSignatureError('Signature expired')
+
+
+def validate_audience(aud: str):
+    if aud != config.audience:
+        raise UnauthorizedException('Invalid audience')
