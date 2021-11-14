@@ -1,13 +1,11 @@
 fastapi==0.70.0
-uvicorn==0.15.0
-pydantic==1.8.2
-tortoise-orm==0.17.8
-asyncpg==0.24.0
+uvicorn[standard]==0.15.0
+tortoise-orm[asyncpg]==0.17.8
 python-dotenv==0.19.1
 aerich==0.5.8
 aiokafka==0.7.2
-elasticsearch==7.15.2
-fastapi-pagination==0.9.1
+elasticsearch[async]==7.15.2
+fastapi-pagination[tortoise]==0.9.1
 python-jose==3.3.0
 httpx==0.20.0
 aioredis==2.0.0
