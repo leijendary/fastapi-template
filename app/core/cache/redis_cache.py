@@ -18,8 +18,7 @@ redis = from_url(
     f"{scheme}://{config.redis_host}:{config.redis_port}",
     username=config.username,
     password=config.password,
-    decode_responses=True,
-    max_connections=config.max_connections
+    decode_responses=True
 )
 
 

@@ -10,7 +10,6 @@ class CacheConfig(BaseSettings):
     password: str = None
     use_ssl = False
     ttl = 43200
-    max_connections = 10
 
     class Config:
         env_prefix = 'cache_'
