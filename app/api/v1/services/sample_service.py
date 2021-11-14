@@ -43,14 +43,14 @@ async def save(sample_in: SampleIn) -> SampleOut:
             using_db=connection
         )
 
-    # Get the result of the saved translations
-    await sample.fetch_related('translations')
+        # Get the result of the saved translations
+        await sample.fetch_related('translations', using_db=connection)
 
-    # Save the model to elasticsearch
-    await sample_search.save(sample)
+        # Save the model to elasticsearch
+        await sample_search.save(sample)
 
-    # Send the data to kafka
-    await kafka_producer.send(TOPIC_SAMPLE_CREATE, sample.kafka_dict())
+        # Send the data to kafka
+        await kafka_producer.send(TOPIC_SAMPLE_CREATE, sample.kafka_dict())
 
     return SampleOut(**sample.dict())
 
