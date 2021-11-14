@@ -4,11 +4,11 @@ from pydantic import BaseSettings
 
 
 class SecurityConfig(BaseSettings):
-    token_url: str
-    scopes: str
     jwks_url: str
     jwks_cache_key = 'fastapi:jwks'
     audience: str
+    token_url = ''
+    scopes = ''
 
     class Config:
         env_prefix = 'security_'
