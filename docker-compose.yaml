@@ -6,11 +6,18 @@ services:
     ports:
       - '80:80'
     environment:
-      - DATABASE=
+      - DATABASE_NAME=
       - DATABASE_HOST=
       - DATABASE_PORT=
       - DATABASE_USER=
       - DATABASE_PASSWORD=
+      - KAFKA_CLIENT_ID=
+      - KAFKA_GROUP_ID=
+      - KAFKA_BROKERS=
+      - ELASTICSEARCH_HOSTS=
+      - SECURITY_JWKS_URL=
+      - SECURITY_AUDIENCE=
+      - CACHE_REDIS_HOST=
     networks:
       - postgres_network
       - redis_network
