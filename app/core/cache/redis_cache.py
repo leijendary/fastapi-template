@@ -141,6 +141,7 @@ def cache_evict(
 def get_key(
     func,
     namespace: str,
+    identifier: Optional[str],
     key_builder: Optional[Callable],
     result: Optional[DataResponse] = None,
     args: Optional[tuple] = None,
@@ -151,6 +152,7 @@ def get_key(
     return key_builder(
         func=func,
         namespace=namespace,
+        identifier=identifier,
         result=result,
         args=args,
         kwargs=kwargs
