@@ -6,6 +6,7 @@ from app.core.data.data_response import DataResponse
 def default_key_builder(
     func,
     namespace: str,
+    identifier: Optional[str] = None,
     result: Optional[DataResponse] = None,
     args: Optional[tuple] = None,
     kwargs: Optional[dict] = None,
@@ -16,7 +17,7 @@ def default_key_builder(
 def request_key_builder(
     func,
     namespace: str,
-    identifier='id',
+    identifier: str,
     result: Optional[DataResponse] = None,
     args: Optional[tuple] = None,
     kwargs: Optional[dict] = None,
@@ -29,7 +30,7 @@ def request_key_builder(
 def result_key_builder(
     func,
     namespace: str,
-    identifier='id',
+    identifier: str,
     result: DataResponse = None,
     args: Optional[tuple] = None,
     kwargs: Optional[dict] = None,
