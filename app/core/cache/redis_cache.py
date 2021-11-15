@@ -30,7 +30,11 @@ async def close():
     logger.info('Redis cache closed!')
 
 
-def cache_get(namespace: str, key_builder=request_key_builder):
+def cache_get(
+    namespace: str,
+    identifier='id',
+    key_builder=request_key_builder
+):
     def wrapper(func):
 
         @wraps(func)
@@ -42,6 +46,7 @@ def cache_get(namespace: str, key_builder=request_key_builder):
             key = get_key(
                 func=func,
                 namespace=namespace,
+                identifier=identifier,
                 args=args,
                 kwargs=kwargs_copy,
                 key_builder=key_builder
@@ -68,7 +73,11 @@ def cache_get(namespace: str, key_builder=request_key_builder):
     return wrapper
 
 
-def cache_put(namespace: str, key_builder=result_key_builder):
+def cache_put(
+    namespace: str,
+    identifier='id',
+    key_builder=result_key_builder
+):
     def wrapper(func):
 
         @wraps(func)
@@ -84,6 +93,7 @@ def cache_put(namespace: str, key_builder=result_key_builder):
             key = get_key(
                 func=func,
                 namespace=namespace,
+                identifier=identifier,
                 result=result,
                 args=args,
                 kwargs=kwargs_copy,
@@ -99,7 +109,11 @@ def cache_put(namespace: str, key_builder=result_key_builder):
     return wrapper
 
 
-def cache_evict(namespace: str, key_builder=request_key_builder):
+def cache_evict(
+    namespace: str,
+    identifier='id',
+    key_builder=request_key_builder
+):
     def wrapper(func):
 
         @wraps(func)
@@ -109,6 +123,7 @@ def cache_evict(namespace: str, key_builder=request_key_builder):
             key = get_key(
                 func=func,
                 namespace=namespace,
+                identifier=identifier,
                 args=args,
                 kwargs=kwargs,
                 key_builder=key_builder
