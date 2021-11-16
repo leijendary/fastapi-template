@@ -3,14 +3,17 @@ from datetime import datetime
 import uvicorn
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
+from fastapi.middleware.gzip import GZipMiddleware
 from fastapi_pagination import add_pagination
 from jose.exceptions import ExpiredSignatureError
 from pydantic.error_wrappers import ValidationError
 from pydantic.json import ENCODERS_BY_TYPE
+from starlette.middleware import Middleware
 from tortoise.exceptions import IntegrityError
 
 from app.api.v1.routers import sample_router as sample_router_v1
 from app.configs.app_config import app_config
+from app.configs.logging_config import logging_config
 from app.configs.security_config import security_config
 from app.core.cache import redis_cache
 from app.core.clients import httpx_client
@@ -85,6 +88,11 @@ exception_handlers = {
     Exception: generic_handler
 }
 
+# Middlewares
+middleware = [
+    Middleware(GZipMiddleware),
+]
+
 # Startup event
 on_startup = [
     tortoise_orm.init,
@@ -105,6 +113,7 @@ app = FastAPI(
     version='0.0.1',
     responses=responses,
     exception_handlers=exception_handlers,
+    middleware=middleware,
     on_startup=on_startup,
     on_shutdown=on_shutdown
 )
@@ -121,6 +130,7 @@ add_pagination(app)
 if __name__ == '__main__':
     config = app_config()
     security = security_config()
+    log = logging_config()
     reload = config.environment == 'local'
 
     uvicorn.run(
@@ -128,8 +138,8 @@ if __name__ == '__main__':
         host='0.0.0.0',
         port=config.port,
         reload=reload,
-        access_log=config.access_log,
-        use_colors=config.use_colors,
+        access_log=log.access,
+        use_colors=log.use_colors,
         ssl_certfile=security.ssl_certfile,
         ssl_keyfile=security.ssl_keyfile
     )
