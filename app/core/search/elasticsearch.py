@@ -10,6 +10,7 @@ from elasticsearch import AsyncElasticsearch
 logger = get_logger(__name__)
 _elasticsearch_config = elasticsearch_config()
 
+# Override elasticsearch log level
 tracer = logging.getLogger('elasticsearch')
 tracer.setLevel(_elasticsearch_config.log_level)
 
