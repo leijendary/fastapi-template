@@ -1,6 +1,5 @@
-FROM python:3.10-alpine
+FROM tiangolo/uvicorn-gunicorn:python3.9-slim
 WORKDIR /code
-RUN apk add --no-cache build-base
 COPY ./requirements.txt /code/requirements.txt
 ARG PIP_CACHE_DIR=".cache/pip"
 RUN --mount=type=cache,target=${PIP_CACHE_DIR} \
@@ -11,6 +10,7 @@ COPY ./app /code/app
 COPY ./migrations /code/migrations
 COPY ./ssl /code/ssl
 COPY ./aerich.ini /code/aerich.ini
+COPY ./gunicorn.conf.py /code/gunicorn.conf.py
 COPY ./main.py /code/main.py
 COPY ./run.sh /code/run.sh
 ENTRYPOINT ["/code/run.sh"]

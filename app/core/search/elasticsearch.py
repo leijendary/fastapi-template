@@ -1,4 +1,5 @@
 import json
+import logging
 
 from app.configs.constants import INDEX_SAMPLE
 from app.configs.elasticsearch_config import elasticsearch_config
@@ -7,7 +8,10 @@ from app.core.logs.logging import get_logger
 from elasticsearch import AsyncElasticsearch
 
 logger = get_logger(__name__)
-config = elasticsearch_config()
+_elasticsearch_config = elasticsearch_config()
+
+tracer = logging.getLogger('elasticsearch')
+tracer.setLevel(_elasticsearch_config.log_level)
 
 indices = {
     INDEX_SAMPLE: {
@@ -21,12 +25,12 @@ indices = {
 }
 
 elasticsearch = AsyncElasticsearch(
-    hosts=config.hosts.split(','),
-    use_ssl=config.use_ssl,
-    verify_certs=config.verify_certs,
-    ca_certs=config.ca_certs,
-    client_cert=config.client_cert,
-    client_key=config.client_key
+    hosts=_elasticsearch_config.hosts.split(','),
+    use_ssl=_elasticsearch_config.use_ssl,
+    verify_certs=_elasticsearch_config.verify_certs,
+    ca_certs=_elasticsearch_config.ca_certs,
+    client_cert=_elasticsearch_config.client_cert,
+    client_key=_elasticsearch_config.client_key
 )
 
 

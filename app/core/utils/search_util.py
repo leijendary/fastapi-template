@@ -4,8 +4,8 @@ from app.configs.app_config import app_config
 from app.core.data.search_out import SearchOut
 from fastapi_pagination import Page, Params, create_page
 
-config = app_config()
-language_default = config.language_default
+app_config = app_config()
+language_default = app_config.language_default
 
 _match_all = {
     'match_all': {}

@@ -3,7 +3,7 @@ from app.core.logs.logging import get_logger
 from tortoise import Tortoise
 
 logger = get_logger(__name__)
-config = database_config()
+_database_config = database_config()
 
 MODULE = 'app'
 MODELS = [
@@ -15,13 +15,13 @@ TORTOISE_ORM = {
         'default': {
             'engine': 'tortoise.backends.asyncpg',
             'credentials': {
-                'database': config.name,
-                'host': config.host,
-                'port': config.port,
-                'user': config.user,
-                'password': config.password,
-                'minsize': config.connection_min_size,
-                'maxsize': config.connection_max_size
+                'database': _database_config.name,
+                'host': _database_config.host,
+                'port': _database_config.port,
+                'user': _database_config.user,
+                'password': _database_config.password,
+                'minsize': _database_config.connection_min_size,
+                'maxsize': _database_config.connection_max_size
             }
         }
     },

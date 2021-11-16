@@ -6,7 +6,7 @@ from app.configs.kafka_config import kafka_config
 from app.core.logs.logging import get_logger
 
 logger = get_logger(__name__)
-config = kafka_config()
+_kafka_config = kafka_config()
 
 
 def json_serializer(value: Any):
@@ -18,8 +18,8 @@ def json_serializer(value: Any):
 
 async def send(topic: str, value: Dict = None, key: str = None):
     producer = AIOKafkaProducer(
-        client_id=config.client_id,
-        bootstrap_servers=config.brokers,
+        client_id=_kafka_config.client_id,
+        bootstrap_servers=_kafka_config.brokers,
         enable_idempotence=True
     )
 

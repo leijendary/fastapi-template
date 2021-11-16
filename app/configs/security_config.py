@@ -9,6 +9,8 @@ class SecurityConfig(BaseSettings):
     audience: str
     token_url = ''
     scopes = ''
+    ssl_certfile = 'ssl/certificate.pem'
+    ssl_keyfile = 'ssl/key.pem'
 
     class Config:
         env_prefix = 'security_'

@@ -1,3 +1,3 @@
 #!/bin/sh
 aerich upgrade
-python main.py
+gunicorn main:app

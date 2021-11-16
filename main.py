@@ -11,6 +11,7 @@ from tortoise.exceptions import IntegrityError
 
 from app.api.v1.routers import sample_router as sample_router_v1
 from app.configs.app_config import app_config
+from app.configs.security_config import security_config
 from app.core.cache import redis_cache
 from app.core.clients import httpx_client
 from app.core.data.data_response import DataResponse
@@ -119,16 +120,16 @@ add_pagination(app)
 
 if __name__ == '__main__':
     config = app_config()
-    port = config.port
+    security = security_config()
     reload = config.environment == 'local'
 
     uvicorn.run(
         'main:app',
         host='0.0.0.0',
-        port=port,
+        port=config.port,
         reload=reload,
-        access_log=False,
-        use_colors=False,
-        ssl_certfile='ssl/certificate.pem',
-        ssl_keyfile='ssl/key.pem'
+        access_log=config.access_log,
+        use_colors=config.use_colors,
+        ssl_certfile=security.ssl_certfile,
+        ssl_keyfile=security.ssl_keyfile
     )

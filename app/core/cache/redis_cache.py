@@ -11,13 +11,13 @@ from .redis_key_builder import (default_key_builder, request_key_builder,
                                 result_key_builder)
 
 logger = get_logger(__name__)
-config = cache_config()
-scheme = 'rediss' if config.use_ssl else 'redis'
+_cache_config = cache_config()
+scheme = 'rediss' if _cache_config.use_ssl else 'redis'
 
 redis = from_url(
-    f"{scheme}://{config.redis_host}:{config.redis_port}",
-    username=config.username,
-    password=config.password,
+    f"{scheme}://{_cache_config.redis_host}:{_cache_config.redis_port}",
+    username=_cache_config.username,
+    password=_cache_config.password,
     decode_responses=True
 )
 
@@ -185,7 +185,7 @@ async def set(key: str, value: Any):
     else:
         value = json.dumps(value)
 
-    await redis.set(key, value, config.ttl)
+    await redis.set(key, value, _cache_config.ttl)
 
 
 async def get(key: str):
