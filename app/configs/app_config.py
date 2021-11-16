@@ -4,7 +4,7 @@ from pydantic import BaseSettings
 
 
 class AppConfig(BaseSettings):
-    port: int = 80
+    port: int = 443
     environment: str = 'local'
     language_default: str = 'en'
     internationalization_path: str = 'app/core/libraries/i18n/'

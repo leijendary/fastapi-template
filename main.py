@@ -122,4 +122,13 @@ if __name__ == '__main__':
     port = config.port
     reload = config.environment == 'local'
 
-    uvicorn.run('main:app', host='0.0.0.0', port=port, reload=reload)
+    uvicorn.run(
+        'main:app',
+        host='0.0.0.0',
+        port=port,
+        reload=reload,
+        access_log=False,
+        use_colors=False,
+        ssl_certfile='ssl/certificate.pem',
+        ssl_keyfile='ssl/key.pem'
+    )

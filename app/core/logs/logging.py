@@ -6,23 +6,17 @@ from app.configs.logging_config import logging_config
 config = logging_config()
 
 
-class ColoredFormatter(Formatter):
-    grey = '\x1b[38;21m'
-    green = '\x1b[32m'
-    yellow = '\x1b[33;21m'
-    red = '\x1b[31;21m'
-    bold_red = '\x1b[31;1m'
-    reset = '\x1b[0m'
+class LogFormatter(Formatter):
     level_name = '%(levelname)s:\t  '
-    untabbed_level_name = '%(levelname)s: '
+    untabbed_level_name = '%(levelname)s:  '
     format = '%(asctime)s: %(name)s: %(message)s'
 
     FORMATS = {
-        DEBUG: grey + level_name + reset + format,
-        INFO: green + level_name + reset + format,
-        WARNING: yellow + untabbed_level_name + reset + format,
-        ERROR: red + level_name + reset + format,
-        CRITICAL: bold_red + untabbed_level_name + reset + format,
+        DEBUG: level_name + format,
+        INFO: level_name + format,
+        WARNING: untabbed_level_name + format,
+        ERROR: level_name + format,
+        CRITICAL: untabbed_level_name + format,
     }
 
     def format(self, record):
@@ -35,7 +29,7 @@ class ColoredFormatter(Formatter):
 def get_logger(name: str):
     log_handler = StreamHandler()
     log_handler.setLevel(config.level)
-    log_handler.setFormatter(ColoredFormatter())
+    log_handler.setFormatter(LogFormatter())
 
     name = format_name(name)
     logger = getLogger(name)

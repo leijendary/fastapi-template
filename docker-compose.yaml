@@ -4,7 +4,7 @@ services:
     build: .
     container_name: fastapi-template
     ports:
-      - '80:80'
+      - '443:443'
     environment:
       - DATABASE_NAME=
       - DATABASE_HOST=

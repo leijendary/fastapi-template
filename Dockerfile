@@ -5,10 +5,11 @@ COPY ./requirements.txt /code/requirements.txt
 ARG PIP_CACHE_DIR=".cache/pip"
 RUN --mount=type=cache,target=${PIP_CACHE_DIR} \
     pip install --cache-dir ${PIP_CACHE_DIR} -r requirements.txt
-ARG PORT=80
+ARG PORT=443
 ENV PORT=$PORT
 COPY ./app /code/app
 COPY ./migrations /code/migrations
+COPY ./ssl /code/ssl
 COPY ./aerich.ini /code/aerich.ini
 COPY ./main.py /code/main.py
 COPY ./run.sh /code/run.sh
