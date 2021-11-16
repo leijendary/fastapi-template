@@ -6,6 +6,7 @@ services:
     ports:
       - '443:443'
     environment:
+      - ENVIRONMENT=
       - DATABASE_NAME=
       - DATABASE_HOST=
       - DATABASE_PORT=
