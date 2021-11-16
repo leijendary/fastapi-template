@@ -28,26 +28,11 @@ def get_logger(name: str):
     log_handler.setLevel(_logging_config.level)
     log_handler.setFormatter(LogFormatter())
 
-    name = format_name(name)
     logger = getLogger(name)
     logger.setLevel(_logging_config.level)
     logger.addHandler(log_handler)
 
     return logger
-
-
-def format_name(name: str):
-    name_max_length = _logging_config.name_max_length
-
-    if len(name) > name_max_length and '.' in name:
-        splits = name.split('.')
-
-        for i, value in enumerate(splits[:-1]):
-            splits[i] = value[:1]
-
-        name = '.'.join(splits)
-
-    return name.ljust(name_max_length)[-name_max_length:]
 
 
 def format_date(record):
