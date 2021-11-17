@@ -39,7 +39,6 @@ def cache_get(
 
         @wraps(func)
         async def inner(*args, **kwargs):
-            nonlocal key_builder
             kwargs_copy = kwargs.copy()
             request = kwargs_copy.pop("request", None)
             response = kwargs_copy.pop("response", None)
@@ -82,7 +81,6 @@ def cache_put(
 
         @wraps(func)
         async def inner(*args, **kwargs):
-            nonlocal key_builder
             kwargs_copy = kwargs.copy()
             request = kwargs_copy.pop("request", None)
             result = await func(*args, **kwargs)
@@ -118,8 +116,6 @@ def cache_evict(
 
         @wraps(func)
         async def inner(*args, **kwargs):
-            nonlocal key_builder
-
             key = get_key(
                 func=func,
                 namespace=namespace,
