@@ -5,7 +5,5 @@ _config = app_config()
 _security = security_config()
 
 bind = f"0.0.0.0:{_config.port}"
-workers = _config.workers
-worker_class = 'uvicorn.workers.UvicornWorker'
 certfile = _security.ssl_certfile
 keyfile = _security.ssl_keyfile

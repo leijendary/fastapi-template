@@ -139,7 +139,7 @@ if __name__ == '__main__':
         port=config.port,
         reload=reload,
         access_log=log.access,
-        use_colors=log.use_colors,
+        use_colors=False,
         ssl_certfile=security.ssl_certfile,
         ssl_keyfile=security.ssl_keyfile
     )

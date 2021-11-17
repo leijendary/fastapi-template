@@ -1,3 +1,4 @@
+from aerich import Command
 from app.configs.database_config import database_config
 from app.core.logs.logging import get_logger
 from tortoise import Tortoise
@@ -36,6 +37,10 @@ TORTOISE_ORM = {
 
 async def init():
     logger.info('Initializing connection to the database...')
+
+    command = Command(tortoise_config=TORTOISE_ORM, app=MODULE)
+    await command.init()
+    await command.upgrade()
 
     Tortoise.init_models(MODELS, MODULE)
 
