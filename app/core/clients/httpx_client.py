@@ -3,7 +3,7 @@ from httpx import AsyncClient
 
 logger = get_logger(__name__)
 
-client = AsyncClient()
+client = AsyncClient(http2=True)
 
 
 async def close():

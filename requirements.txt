@@ -8,5 +8,5 @@ aiokafka==0.7.2
 elasticsearch[async]==7.15.2
 fastapi-pagination[tortoise]==0.9.1
 python-jose==3.3.0
-httpx==0.20.0
+httpx[http2]==0.20.0
 aioredis==2.0.0
