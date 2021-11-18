@@ -7,7 +7,7 @@ from pydantic.env_settings import BaseSettings
 class DatabaseConfig(BaseSettings):
     name: Optional[str]
     host: Optional[str]
-    port: Optional[str]
+    port = 5432
     user: Optional[str]
     password: Optional[str]
     connection_min_size: int = 10
