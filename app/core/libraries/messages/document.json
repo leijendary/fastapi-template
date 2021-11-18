@@ -5,5 +5,9 @@
   "translation_name": "Translated name field based on the language",
   "translation_description": "Translated description field based on the language",
   "sample_field_1": "A sample field that is a string and is required",
-  "sample_field_2": "A sample field that is an integer and should be greater than 0"
+  "sample_field_2": "A sample field that is an integer and should be greater than 0",
+  "sample_column_1": "A sample field that is a string and is required",
+  "sample_column_2": "A sample field that is an integer and should be greater than 0",
+  "created_at": "Timestamp the record was first created",
+  "modified_at": "Timestamp the record was last modified"
 }
