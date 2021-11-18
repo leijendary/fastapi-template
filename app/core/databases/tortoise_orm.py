@@ -38,9 +38,7 @@ TORTOISE_ORM = {
 async def init():
     logger.info('Initializing connection to the database...')
 
-    command = Command(tortoise_config=TORTOISE_ORM, app=MODULE)
-    await command.init()
-    await command.upgrade()
+    await migrate()
 
     Tortoise.init_models(MODELS, MODULE)
 
@@ -55,3 +53,13 @@ async def close():
     await Tortoise.close_connections()
 
     logger.info('Database connection shutdown completed!')
+
+
+async def migrate():
+    command = Command(tortoise_config=TORTOISE_ORM, app=MODULE)
+    await command.init()
+
+    version_files = await command.upgrade()
+
+    for version_file in version_files:
+        logger.info(f"Migrated {version_file}")
