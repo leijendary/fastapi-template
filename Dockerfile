@@ -3,8 +3,7 @@ COPY ./requirements.txt /app/requirements.txt
 ARG PIP_CACHE_DIR=".cache/pip"
 RUN --mount=type=cache,target=${PIP_CACHE_DIR} \
     pip install --cache-dir ${PIP_CACHE_DIR} -r requirements.txt
-ARG PORT=443
-ENV PORT=$PORT
+ENV PORT=443
 COPY ./app /app/app
 COPY ./migrations /app/migrations
 COPY ./ssl /app/ssl
