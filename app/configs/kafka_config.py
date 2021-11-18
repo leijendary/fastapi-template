@@ -1,12 +1,13 @@
 from functools import lru_cache
+from typing import Optional
 
 from pydantic import BaseSettings
 
 
 class KafkaConfig(BaseSettings):
-    client_id: str
-    group_id: str
-    brokers: str
+    client_id: Optional[str]
+    group_id: Optional[str]
+    brokers: Optional[str]
 
     class Config:
         env_prefix = 'kafka_'

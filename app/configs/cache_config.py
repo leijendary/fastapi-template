@@ -1,10 +1,11 @@
 from functools import lru_cache
+from typing import Optional
 
 from pydantic import BaseSettings
 
 
 class CacheConfig(BaseSettings):
-    redis_host: str
+    redis_host: Optional[str]
     redis_port = 6379
     username: str = None
     password: str = None

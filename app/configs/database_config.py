@@ -1,14 +1,15 @@
 from functools import lru_cache
+from typing import Optional
 
 from pydantic.env_settings import BaseSettings
 
 
 class DatabaseConfig(BaseSettings):
-    name: str
-    host: str
-    port: str
-    user: str
-    password: str
+    name: Optional[str]
+    host: Optional[str]
+    port: Optional[str]
+    user: Optional[str]
+    password: Optional[str]
     connection_min_size: int = 10
     connection_max_size: int = 20
 

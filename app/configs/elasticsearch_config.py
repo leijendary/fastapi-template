@@ -1,11 +1,12 @@
 from functools import lru_cache
 from logging import WARNING
+from typing import Optional
 
 from pydantic import BaseSettings
 
 
 class ElasticsearchConfig(BaseSettings):
-    hosts: str
+    hosts: Optional[str]
     log_level = WARNING
     use_ssl = False
     verify_certs = False

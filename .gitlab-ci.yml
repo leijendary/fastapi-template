@@ -57,7 +57,7 @@ cache: &global_cache
     - docker push $REPOSITORY_URL:$CI_COMMIT_SHA
     - echo "Pushed images."
   tags:
-    - MediumRunner
+    - MicroRunner
 
 # 1. Test
 # 2. Build
@@ -81,7 +81,7 @@ Test Merge Request:
     - pytest --disable-warnings -p no:warnings
     - echo "Tests completed."
   tags:
-    - MediumRunner
+    - MicroRunner
   only:
     - merge_requests
 
@@ -94,7 +94,7 @@ Test:
     - pytest --disable-warnings -p no:warnings
     - echo "Tests completed."
   tags:
-    - MediumRunner
+    - MicroRunner
   only:
     - develop
     - /^release/.*$/i
