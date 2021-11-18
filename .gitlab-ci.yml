@@ -1,0 +1,193 @@
+image: docker:20
+
+variables:
+  PIP_CACHE_DIR: $CI_PROJECT_DIR/.cache/pip
+  REPOSITORY_URL: $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$REPOSITORY_NAME
+
+services:
+  - docker:20-dind
+
+# Cache downloaded dependencies and plugins between builds.
+# To keep cache across branches add 'key: "$CI_JOB_NAME"'
+cache: &global_cache
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - $PIP_CACHE_DIR
+
+# Installation of OS and CLI requirements.
+.configuration:
+  before_script:
+    - apk add py-pip
+    - pip install awscli --cache-dir $PIP_CACHE_DIR
+    # We need to login to AWS CLI first before continuing.
+    # Set the AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY and AWS_DEFAULT_REGION first
+    - $(aws ecr get-login --no-include-email --region "${AWS_DEFAULT_REGION}")
+
+# Installation of dev dependencies
+.dev_dependencies:
+  image: python:3.9-slim
+  before_script:
+    - pip install -r requirements-dev.txt -r requirements.txt --cache-dir $PIP_CACHE_DIR
+
+# Deployment to the AWS ECS Service
+.deploy:
+  extends: .configuration
+  script:
+    - echo "Updating ECS service..."
+    - aws ecs update-service --force-new-deployment --region "${AWS_DEFAULT_REGION}" --cluster "${AWS_CLUSTER_NAME}" --service "${AWS_SERVICE_NAME}"
+    - echo "Updated ECS service."
+  tags:
+    - MicroRunner
+
+# Docker Build
+.docker_build:
+  extends: .configuration
+  script:
+    - echo "Building docker image..."
+    - docker pull $REPOSITORY_URL:latest || true
+    - DOCKER_BUILDKIT=1 docker build --cache-from $REPOSITORY_URL:latest -t $REPOSITORY_URL:latest .
+    - echo "Done building docker image."
+    - echo "Pushing images..."
+    - docker tag $REPOSITORY_URL:latest $REPOSITORY_URL:$CI_ENVIRONMENT_NAME
+    # The commit SHA is for archiving purposes
+    - docker tag $REPOSITORY_URL:latest $REPOSITORY_URL:$CI_COMMIT_SHA
+    - docker push $REPOSITORY_URL:latest
+    - docker push $REPOSITORY_URL:$CI_ENVIRONMENT_NAME
+    # The commit SHA is for archiving purposes
+    - docker push $REPOSITORY_URL:$CI_COMMIT_SHA
+    - echo "Pushed images."
+  tags:
+    - MediumRunner
+
+# 1. Test
+# 2. Build
+# 3. Tag
+# 4. Deploy
+stages:
+  - test
+  - build
+  - tag
+  - deploy
+
+# Test the Merge Request
+Test Merge Request:
+  stage: test
+  cache:
+    <<: *global_cache
+    key: merge_requests
+  extends: .dev_dependencies
+  script:
+    - echo "Running tests..."
+    - pytest --disable-warnings -p no:warnings
+    - echo "Tests completed."
+  tags:
+    - MediumRunner
+  only:
+    - merge_requests
+
+# Per-Branch test
+Test:
+  stage: test
+  extends: .dev_dependencies
+  script:
+    - echo "Running tests..."
+    - pytest --disable-warnings -p no:warnings
+    - echo "Tests completed."
+  tags:
+    - MediumRunner
+  only:
+    - develop
+    - /^release/.*$/i
+    - staging
+    - master
+
+# Build the Docker Build for DEV using the JAR file created from the build stage
+Build for Development:
+  stage: build
+  extends: .docker_build
+  environment:
+    name: development
+  only:
+    - develop
+
+# Build the Docker Build for Testing using the JAR file created from the build stage
+Build for Testing:
+  stage: build
+  extends: .docker_build
+  environment:
+    name: testing
+  only:
+    - /^release/.*$/i
+
+# Build the Docker Build for Staging using the JAR file created from the build stage
+Build for Staging:
+  stage: build
+  extends: .docker_build
+  environment:
+    name: staging
+  only:
+    - staging
+
+# Build the Docker Build for Production using the JAR file created from the build stage
+Build for Production:
+  stage: build
+  extends: .docker_build
+  environment:
+    name: production
+  only:
+    - master
+
+# Tag the docker image based on the pushed repository tag
+Tag:
+  stage: tag
+  extends: .configuration
+  script:
+    - echo "Tagging docker image..."
+    - docker pull $REPOSITORY_URL:$CI_COMMIT_SHA
+    - docker tag $REPOSITORY_URL:$CI_COMMIT_SHA $REPOSITORY_URL:$CI_COMMIT_TAG
+    - docker push $REPOSITORY_URL:$CI_COMMIT_TAG
+    - echo "Tagged docker image."
+  tags:
+    - MicroRunner
+  only:
+    - tags
+
+# Deploy the image into the Development cluster
+Deploy to Development:
+  stage: deploy
+  extends: .deploy
+  environment:
+    # We want to isolate AWS_CLUSTER_NAME and AWS_SERVICE_NAME per environment
+    name: development
+  only:
+    - develop
+
+# Deploy the image into the Testing cluster
+Deploy to Testing:
+  stage: deploy
+  extends: .deploy
+  environment:
+    # We want to isolate AWS_CLUSTER_NAME and AWS_SERVICE_NAME per environment
+    name: testing
+  only:
+    - /^release/.*$/i
+
+# Deploy the image into the Staging cluster
+Deploy to Staging:
+  stage: deploy
+  extends: .deploy
+  environment:
+    # We want to isolate AWS_CLUSTER_NAME and AWS_SERVICE_NAME per environment
+    name: staging
+  only:
+    - staging
+
+# Deploy the image into the Production cluster
+Deploy to Production:
+  stage: deploy
+  extends: .deploy
+  environment:
+    # We want to isolate AWS_CLUSTER_NAME and AWS_SERVICE_NAME per environment
+    name: production
+  only:
+    - master

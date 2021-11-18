@@ -2,8 +2,8 @@ import json
 from functools import wraps
 from typing import Any, Callable, List, Optional
 
-from aioredis import from_url
 from app.configs.cache_config import cache_config
+from app.core.context.redis_context import RedisContext
 from app.core.data.data_response import DataResponse
 from app.core.logs.logging import get_logger
 
@@ -11,21 +11,21 @@ from .redis_key_builder import (default_key_builder, request_key_builder,
                                 result_key_builder)
 
 logger = get_logger(__name__)
-_cache_config = cache_config()
-scheme = 'rediss' if _cache_config.use_ssl else 'redis'
+_config = cache_config()
 
-redis = from_url(
-    f"{scheme}://{_cache_config.redis_host}:{_cache_config.redis_port}",
-    username=_cache_config.username,
-    password=_cache_config.password,
-    decode_responses=True
-)
+
+async def init():
+    logger.info('Initializing redis cache...')
+
+    RedisContext.init(_config)
+
+    logger.info('Redis cache initialized!')
 
 
 async def close():
     logger.info('Closing redis cache...')
 
-    await redis.close()
+    await RedisContext.close()
 
     logger.info('Redis cache closed!')
 
@@ -181,22 +181,25 @@ async def set(key: str, value: Any):
     else:
         value = json.dumps(value)
 
-    await redis.set(key, value, _cache_config.ttl)
+    await redis().set(key, value, _config.ttl)
 
 
 async def get(key: str):
-    value = await redis.get(key)
+    value = await redis().get(key)
 
     return json.loads(value)
 
 
 async def delete(keys: List[str]):
-    await redis.delete(keys)
+    await redis().delete(keys)
 
 
 async def get_with_ttl(key: str):
-    async with redis.pipeline(transaction=True) as pipe:
+    async with redis().pipeline(transaction=True) as pipe:
         value, ttl = await (pipe.get(key).ttl(key).execute())
         value = json.loads(value) if value else None
 
         return value, ttl
+
+def redis():
+    return RedisContext.instance

@@ -3,34 +3,38 @@ from app.core.logs.logging import get_logger
 from tortoise import Tortoise
 
 logger = get_logger(__name__)
-_database_config = database_config()
+_config = database_config()
 
 MODULE = 'app'
 MODELS = [
     'app.models.sample',
     'app.models.sample_translation'
 ]
+MODULES = {
+    MODULE: MODELS
+}
+APPS = {
+    MODULE: {
+        'models': [*MODELS, 'aerich.models'],
+        'default_connection': 'default',
+    }
+}
 TORTOISE_ORM = {
     'connections': {
         'default': {
             'engine': 'tortoise.backends.asyncpg',
             'credentials': {
-                'database': _database_config.name,
-                'host': _database_config.host,
-                'port': _database_config.port,
-                'user': _database_config.user,
-                'password': _database_config.password,
-                'minsize': _database_config.connection_min_size,
-                'maxsize': _database_config.connection_max_size
+                'database': _config.name,
+                'host': _config.host,
+                'port': _config.port,
+                'user': _config.user,
+                'password': _config.password,
+                'minsize': _config.connection_min_size,
+                'maxsize': _config.connection_max_size
             }
         }
     },
-    'apps': {
-        MODULE: {
-            'models': [*MODELS, 'aerich.models'],
-            'default_connection': 'default',
-        }
-    }
+    'apps': APPS
 }
 
 
@@ -39,7 +43,7 @@ async def init():
 
     Tortoise.init_models(MODELS, MODULE)
 
-    await Tortoise.init(config=TORTOISE_ORM, modules={MODULE: MODELS})
+    await Tortoise.init(config=TORTOISE_ORM, modules=MODULES)
 
     logger.info('Database connection is initialized!')
 

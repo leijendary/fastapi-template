@@ -1,12 +1,27 @@
 import json
 from typing import Any, Dict
 
-from aiokafka import AIOKafkaProducer
 from app.configs.kafka_config import kafka_config
+from app.core.context.kafka_context import KafkaProducerContext
 from app.core.logs.logging import get_logger
 
 logger = get_logger(__name__)
-_kafka_config = kafka_config()
+
+
+async def init():
+    logger.info('Starting kafka producer...')
+
+    await KafkaProducerContext.init(kafka_config())
+
+    logger.info('Kafka producer started!')
+
+
+async def close():
+    logger.info('Stopping kafka producer...')
+
+    await KafkaProducerContext.close()
+
+    logger.info('Kafka producer stopped!')
 
 
 def json_serializer(value: Any):
@@ -17,19 +32,11 @@ def json_serializer(value: Any):
 
 
 async def send(topic: str, value: Dict = None, key: str = None):
-    producer = AIOKafkaProducer(
-        client_id=_kafka_config.client_id,
-        bootstrap_servers=_kafka_config.brokers,
-        enable_idempotence=True
-    )
+    json_value = json_serializer(value)
 
-    await producer.start()
+    await producer().send_and_wait(topic, json_value, key)
 
-    try:
-        json_value = json_serializer(value)
+    logger.info(f"Sent to topic {topic} with key={key} and value={value}")
 
-        await producer.send_and_wait(topic, json_value, key)
-
-        logger.info(f"Sent to topic {topic} with key={key} and value={value}")
-    finally:
-        await producer.stop()
+def producer():
+    return KafkaProducerContext.instance

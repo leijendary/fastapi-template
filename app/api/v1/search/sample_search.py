@@ -1,14 +1,14 @@
 from app.api.v1.data.sample_search_out import SampleSearchOut
 from app.configs.constants import INDEX_SAMPLE
 from app.core.search.elasticsearch import elasticsearch
-from app.models.sample import Sample
 from app.core.utils.search_util import to_page, translation_page
+from app.models.sample import Sample
 
 
 async def page(locale, query='', page: int = 1, size: int = 10, sort=None):
     fields = ['translations.name', 'translations.description']
     body = translation_page(query, fields, page, size, sort)
-    result = await elasticsearch.search(body, INDEX_SAMPLE)
+    result = await elasticsearch().search(index=INDEX_SAMPLE, body=body)
 
     return to_page(result, page, size, SampleSearchOut, locale)
 
@@ -30,4 +30,8 @@ async def save(sample: Sample):
     }
 
     # Save the object in elasticsearch
-    await elasticsearch.index(INDEX_SAMPLE, document, id=sample.id)
+    await elasticsearch().index(
+        index=INDEX_SAMPLE,
+        document=document,
+        id=sample.id
+    )

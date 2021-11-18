@@ -1,14 +1,23 @@
+from app.core.context.httpx_context import HttpxClientContext
 from app.core.logs.logging import get_logger
-from httpx import AsyncClient
 
 logger = get_logger(__name__)
 
-client = AsyncClient(http2=True)
+
+async def init():
+    logger.info('Initializing http client...')
+
+    HttpxClientContext.init()
+
+    logger.info('Http client initialized!')
 
 
 async def close():
     logger.info('Closing http client...')
 
-    await client.aclose()
+    await HttpxClientContext.close()
 
     logger.info('Http client closed!')
+
+def client():
+    return HttpxClientContext.instance

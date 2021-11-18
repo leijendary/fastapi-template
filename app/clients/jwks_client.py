@@ -12,6 +12,6 @@ jwks_url = _security_config.jwks_url
 async def keys():
     logger.info(f"Getting jwks from {jwks_url}")
 
-    response = await client.get(jwks_url)
+    response = await client().get(jwks_url)
 
     return response.json()['keys']

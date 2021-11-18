@@ -10,7 +10,7 @@ from app.core.logs.logging import get_logger
 from app.events import sample_consumer
 
 logger = get_logger(__name__)
-_kafka_config = kafka_config()
+_config = kafka_config()
 
 topic = {
     TOPIC_SAMPLE_CREATE: sample_consumer.create
@@ -43,9 +43,9 @@ async def consume(
 
     consumer = AIOKafkaConsumer(
         topic,
-        client_id=_kafka_config.client_id,
-        group_id=_kafka_config.group_id,
-        bootstrap_servers=_kafka_config.brokers,
+        client_id=_config.client_id,
+        group_id=_config.group_id,
+        bootstrap_servers=_config.brokers,
         value_deserializer=value_deserializer,
         auto_offset_reset=auto_offset_reset
     )
