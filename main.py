@@ -122,11 +122,11 @@ app = FastAPI(
 # Routers
 app.include_router(sample_router_v1.router)
 
-# Override datetime encoder for the json response
-ENCODERS_BY_TYPE[datetime] = to_epoch
-
 # FastAPI pagination
 add_pagination(app)
+
+# Override datetime encoder for the json response
+ENCODERS_BY_TYPE[datetime] = to_epoch
 
 if __name__ == '__main__':
     config = app_config()
