@@ -1,4 +1,3 @@
-from aerich import Command
 from app.configs.database_config import database_config
 from app.core.logs.logging import get_logger
 from tortoise import Tortoise
@@ -38,8 +37,6 @@ TORTOISE_ORM = {
 async def init():
     logger.info('Initializing connection to the database...')
 
-    await migrate()
-
     Tortoise.init_models(MODELS, MODULE)
 
     await Tortoise.init(config=TORTOISE_ORM, modules={MODULE: MODELS})
@@ -53,13 +50,3 @@ async def close():
     await Tortoise.close_connections()
 
     logger.info('Database connection shutdown completed!')
-
-
-async def migrate():
-    command = Command(tortoise_config=TORTOISE_ORM, app=MODULE)
-    await command.init()
-
-    version_files = await command.upgrade()
-
-    for version_file in version_files:
-        logger.info(f"Migrated {version_file}")

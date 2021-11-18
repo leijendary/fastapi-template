@@ -1,3 +1,4 @@
+import subprocess
 from datetime import datetime
 
 import uvicorn
@@ -132,6 +133,9 @@ if __name__ == '__main__':
     security = security_config()
     log = logging_config()
     reload = config.environment == 'local'
+
+    # Run prestart shell script
+    subprocess.call(['sh', './prestart.sh'])
 
     uvicorn.run(
         'main:app',

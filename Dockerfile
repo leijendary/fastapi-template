@@ -9,4 +9,6 @@ COPY ./app /app/app
 COPY ./migrations /app/migrations
 COPY ./ssl /app/ssl
 COPY ./gunicorn_conf.py /app/gunicorn_conf.py
+COPY ./aerich.ini /app/aerich.ini
+COPY ./prestart.sh /app/prestart.sh
 COPY ./main.py /app/main.py
