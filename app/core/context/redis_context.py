@@ -7,10 +7,10 @@ class RedisContext:
     instance: Redis
 
     @classmethod
-    def init(self, config: CacheConfig):
+    def init(cls, config: CacheConfig):
         scheme = 'rediss' if config.use_ssl else 'redis'
 
-        self.instance = from_url(
+        cls.instance = from_url(
             f"{scheme}://{config.redis_host}:{config.redis_port}",
             username=config.username,
             password=config.password,
@@ -18,5 +18,5 @@ class RedisContext:
         )
 
     @classmethod
-    async def close(self):
-        await self.instance.close()
+    async def close(cls):
+        await cls.instance.close()

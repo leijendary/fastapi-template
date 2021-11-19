@@ -9,8 +9,8 @@ class ElasticsearchContext:
     indices: Dict
 
     @classmethod
-    def init(self, config: ElasticsearchConfig):
-        self.instance = AsyncElasticsearch(
+    def init(cls, config: ElasticsearchConfig):
+        cls.instance = AsyncElasticsearch(
             hosts=config.hosts.split(','),
             use_ssl=config.use_ssl,
             verify_certs=config.verify_certs,
@@ -20,12 +20,12 @@ class ElasticsearchContext:
         )
 
     @classmethod
-    async def close(self):
-        await self.instance.close()
+    async def close(cls):
+        await cls.instance.close()
 
     @classmethod
-    async def init_indices(self, indices: Dict):
-        client = self.instance.indices
+    async def init_indices(cls, indices: Dict):
+        client = cls.instance.indices
 
         for index, body in indices.items():
             if await client.exists(index):

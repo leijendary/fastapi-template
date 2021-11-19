@@ -6,15 +6,15 @@ class KafkaProducerContext:
     instance: AIOKafkaProducer
 
     @classmethod
-    async def init(self, config: KafkaConfig):
-        self.instance = AIOKafkaProducer(
+    async def init(cls, config: KafkaConfig):
+        cls.instance = AIOKafkaProducer(
             client_id=config.client_id,
             bootstrap_servers=config.brokers,
             enable_idempotence=True
         )
 
-        await self.instance.start()
+        await cls.instance.start()
 
     @classmethod
-    async def close(self):
-        await self.instance.stop()
+    async def close(cls):
+        await cls.instance.stop()
