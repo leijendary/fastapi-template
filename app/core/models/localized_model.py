@@ -12,6 +12,9 @@ class LocalizedModel(Model):
         abstract = True
 
     def translations_dict(self):
+        if not self.translations.related_objects:
+            return []
+
         return [
             translation.dict()
             for translation in self.translations

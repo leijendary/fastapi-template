@@ -1,17 +1,29 @@
 from uuid import UUID
 
 from app.api.v1.data.sample_in import SampleIn
+from app.api.v1.data.sample_list_out import SampleListOut
 from app.api.v1.data.sample_out import SampleOut
 from app.api.v1.search import sample_search
 from app.configs.constants import TOPIC_SAMPLE_CREATE
+from app.core.data.params import SortParams
 from app.core.events import kafka_producer
 from app.core.exceptions.resource_not_found_exception import \
     ResourceNotFoundException
+from app.core.utils.model_util import to_page
 from app.models.sample import Sample
 from app.models.sample_translation import SampleTranslation
+from fastapi_pagination.default import Page
+from tortoise.query_utils import Q
 from tortoise.transactions import in_transaction
 
 RESOURCE_NAME = 'Sample'
+
+
+async def list(query, params: SortParams) -> Page[SampleListOut]:
+    filter = Q(column_1__icontains=query) | Q(column_2__icontains=query)
+    query = Sample.filter(filter)
+
+    return await to_page(query, params, SampleListOut)
 
 
 async def get(id: UUID) -> SampleOut:

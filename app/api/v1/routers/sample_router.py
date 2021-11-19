@@ -1,16 +1,17 @@
-from typing import List
 from uuid import UUID
 
 from app.api.v1.data.sample_in import SampleIn
+from app.api.v1.data.sample_list_out import SampleListOut
 from app.api.v1.data.sample_out import SampleOut
 from app.api.v1.data.sample_search_out import SampleSearchOut
 from app.api.v1.search import sample_search
 from app.api.v1.services import sample_service
 from app.core.cache.redis_cache import cache_evict, cache_get, cache_put
 from app.core.data.data_response import DataResponse
+from app.core.data.params import SortParams
 from app.core.security.scope_validator import check_scope
 from fastapi import APIRouter
-from fastapi.param_functions import Header, Security
+from fastapi.param_functions import Depends, Header, Security
 from fastapi_pagination.default import Page
 
 router = APIRouter(
@@ -24,14 +25,26 @@ router = APIRouter(
     response_model=DataResponse[Page[SampleSearchOut]],
     status_code=200
 )
-async def search_page(
+async def search_list(
     query,
-    page=1,
-    size=10,
-    sort: List[str] = None,
+    params: SortParams = Depends(),
     accept_language=Header(None)
 ):
-    result = await sample_search.page(accept_language, query, page, size, sort)
+    result = await sample_search.list(query, params, accept_language)
+
+    return DataResponse(result, 200)
+
+
+@router.get(
+    path='/',
+    response_model=DataResponse[Page[SampleListOut]],
+    status_code=200,
+    dependencies=[
+        Security(check_scope, scopes=['urn:sample:list:v1'])
+    ]
+)
+async def list(query, params: SortParams = Depends()):
+    result = await sample_service.list(query, params)
 
     return DataResponse(result, 200)
 
