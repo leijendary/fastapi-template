@@ -9,7 +9,7 @@ language_default = app_config().language_default
 
 
 @lru_cache
-async def load_translation():
+def load_translation():
     translation = {}
 
     for file_name in [
@@ -23,8 +23,8 @@ async def load_translation():
     return translation
 
 
-async def translate(code: str, language=language_default):
-    translation = await load_translation()
+def translate(code: str, language=language_default):
+    translation = load_translation()
 
     if language not in translation:
         language = language_default
