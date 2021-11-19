@@ -5,7 +5,7 @@ from app.configs.app_config import app_config
 from app.core.logs.logging import get_logger
 from fastapi.testclient import TestClient
 
-_app_config = app_config()
+_config = app_config()
 logger = get_logger(__name__)
 
 
@@ -35,7 +35,7 @@ def test_sample_create(client: TestClient):
         'Authorization': f"Bearer {token}"
     }
     response = client.post(
-        f"{_app_config.prefix}/api/v1/samples/",
+        f"{_config.prefix}/api/v1/samples/",
         json=json,
         headers=headers
     )

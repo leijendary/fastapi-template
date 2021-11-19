@@ -11,7 +11,7 @@ from jose import jwk, jwt
 from jose.exceptions import ExpiredSignatureError
 from jose.utils import base64url_decode
 
-_security_config = security_config()
+_config = security_config()
 
 
 async def check_token(token: str = Depends(oauth2_scheme)):
@@ -36,8 +36,7 @@ async def get_key(kid: str) -> str:
             key = jwk.construct(k)
 
             break
-
-    if not key:
+    else:
         raise InvalidTokenException('Key not found in JWKs')
 
     return key
@@ -62,5 +61,5 @@ def validate_expiry(exp: int):
 
 
 def validate_audience(aud: str):
-    if aud != _security_config.audience:
+    if aud != _config.audience:
         raise UnauthorizedException('Invalid audience')

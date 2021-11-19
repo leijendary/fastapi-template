@@ -8,14 +8,12 @@ def localize(locale: str, translations: List):
         if 'language' in translation and translation['language'] == locale:
             localized = translation
 
-    if not localized:
+            break
+    else:
         localized = sorted(translations, key=sorter)[0]
 
     return localized
 
 
 def sorter(translation: Any):
-    if 'ordinal' in translation:
-        return translation['ordinal']
-
-    return None
+    return translation.get('ordinal', None)

@@ -4,8 +4,8 @@ from app.core.clients.httpx_client import client
 from app.core.logs.logging import get_logger
 
 logger = get_logger(__name__)
-_security_config = security_config()
-jwks_url = _security_config.jwks_url
+_config = security_config()
+jwks_url = _config.jwks_url
 
 
 @cache_get(namespace='fastapi:jwks', key_builder=None)

@@ -4,8 +4,8 @@ from app.configs.app_config import app_config
 from app.core.data.search_out import SearchOut
 from fastapi_pagination import Page, Params, create_page
 
-app_config = app_config()
-language_default = app_config.language_default
+_config = app_config()
+language_default = _config.language_default
 
 _match_all = {
     'match_all': {}
@@ -24,6 +24,7 @@ def translation_page(query, fields, page, size, sort):
 
 def to_page(result: dict, page, size, type: SearchOut, locale=None) -> Page:
     total = result['hits']['total']['value']
+    locale = locale if locale else language_default
     records = [
         type({'id': hit['_id'], **hit['_source']}, locale)
         for hit in result['hits']['hits']

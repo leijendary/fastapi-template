@@ -10,13 +10,30 @@ from app.core.cache.redis_cache import cache_evict, cache_get, cache_put
 from app.core.data.data_response import DataResponse
 from app.core.security.scope_validator import check_scope
 from fastapi import APIRouter
-from fastapi.param_functions import Security
+from fastapi.param_functions import Header, Security
 from fastapi_pagination.default import Page
 
 router = APIRouter(
     prefix='/api/v1/samples',
     tags=['samples']
 )
+
+
+@router.get(
+    path='/search/',
+    response_model=DataResponse[Page[SampleSearchOut]],
+    status_code=200
+)
+async def search_page(
+    query,
+    page=1,
+    size=10,
+    sort: List[str] = None,
+    accept_language=Header(None)
+):
+    result = await sample_search.page(accept_language, query, page, size, sort)
+
+    return DataResponse(result, 200)
 
 
 @router.get(
@@ -59,14 +76,3 @@ async def save(sample_in: SampleIn):
 @cache_evict(namespace='sample:v1')
 async def delete(id: UUID):
     await sample_service.delete(id)
-
-
-@router.get(
-    path='/{locale}/search/',
-    response_model=DataResponse[Page[SampleSearchOut]],
-    status_code=200
-)
-async def search_page(locale, query, page=1, size=10, sort: List[str] = None):
-    result = await sample_search.page(locale, query, page, size, sort)
-
-    return DataResponse(result, 200)
