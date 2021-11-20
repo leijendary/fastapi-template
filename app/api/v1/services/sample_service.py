@@ -129,6 +129,6 @@ def mapping_translations(
     translations: List[SampleTranslationIn]
 ):
     return [
-        SampleTranslation(**translation.dict(), sample=sample)
+        SampleTranslation(**translation.dict(), reference=sample)
         for translation in translations
     ]

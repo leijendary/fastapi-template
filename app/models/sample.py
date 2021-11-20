@@ -12,6 +12,6 @@ class Sample(DeletableMixin, TimestampMixin, LocalizedModel):
     translations: ManyToManyRelation[SampleTranslation] = ManyToManyField(
         'app.SampleTranslation',
         through='sample_translation',
-        backward_key='sample_id',
+        backward_key='reference_id',
         forward_key='id'
     )
