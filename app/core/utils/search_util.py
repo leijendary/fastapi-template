@@ -27,11 +27,15 @@ def to_page(result: dict, params: Params, type: SearchOut, locale=None):
     total = result['hits']['total']['value']
     locale = locale if locale else language_default
     records = [
-        type({'id': hit['_id'], **hit['_source']}, locale)
+        map_type(hit, type, locale)
         for hit in result['hits']['hits']
     ]
 
     return create_page(records, total, params)
+
+
+def map_type(hit: dict, type: SearchOut, locale=None):
+    return type({'id': hit['_id'], **hit['_source']}, locale)
 
 
 def match_fuzziness(

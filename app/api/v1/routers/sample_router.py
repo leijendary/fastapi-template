@@ -36,6 +36,17 @@ async def search_list(
 
 
 @router.get(
+    path='/search/{id}/',
+    response_model=DataResponse[SampleSearchOut],
+    status_code=200
+)
+async def search_get(id: UUID, accept_language=Header(None)):
+    result = await sample_search.get(id, accept_language)
+
+    return DataResponse(result, 200)
+
+
+@router.get(
     path='/',
     response_model=DataResponse[Page[SampleListOut]],
     status_code=200,
@@ -77,6 +88,21 @@ async def save(sample_in: SampleIn):
     result = await sample_service.save(sample_in)
 
     return DataResponse(result, 201)
+
+
+@router.put(
+    path='/{id}/',
+    response_model=DataResponse[SampleOut],
+    status_code=200,
+    dependencies=[
+        Security(check_scope, scopes=['urn:sample:update:v1'])
+    ]
+)
+@cache_put(namespace='sample:v1')
+async def update(id: UUID, sample_in: SampleIn):
+    result = await sample_service.update(id, sample_in)
+
+    return DataResponse(result, 200)
 
 
 @router.delete(

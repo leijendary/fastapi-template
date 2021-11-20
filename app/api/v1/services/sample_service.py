@@ -1,10 +1,13 @@
+from datetime import datetime
+from typing import List
 from uuid import UUID
 
 from app.api.v1.data.sample_in import SampleIn
 from app.api.v1.data.sample_list_out import SampleListOut
 from app.api.v1.data.sample_out import SampleOut
+from app.api.v1.data.sample_translation_in import SampleTranslationIn
 from app.api.v1.search import sample_search
-from app.configs.constants import TOPIC_SAMPLE_CREATE
+from app.configs.constants import TOPIC_SAMPLE_CREATE, TOPIC_SAMPLE_DELETE
 from app.core.data.params import SortParams
 from app.core.events import kafka_producer
 from app.core.exceptions.resource_not_found_exception import \
@@ -16,20 +19,29 @@ from fastapi_pagination.default import Page
 from tortoise.query_utils import Q
 from tortoise.transactions import in_transaction
 
+EXCLUSIONS = {'field_1', 'field_2', 'translations'}
 RESOURCE_NAME = 'Sample'
 
 
 async def list(query, params: SortParams) -> Page[SampleListOut]:
-    filter = Q(column_1__icontains=query) | Q(column_2__icontains=query)
+    filter = Q(
+        Q(
+            Q(column_1__icontains=query),
+            Q(column_2__icontains=query),
+            join_type='OR'
+        ),
+        Q(deleted_at__isnull=True),
+        join_type='AND'
+    )
     query = Sample.filter(filter)
 
     return await to_page(query, params, SampleListOut)
 
 
 async def get(id: UUID) -> SampleOut:
-    sample = await Sample.filter(id=id) \
-        .first() \
-        .prefetch_related('translations')
+    sample = await Sample.filter(id=id, deleted_at__isnull=True) \
+        .prefetch_related('translations') \
+        .first()
 
     if not sample:
         raise ResourceNotFoundException(resource=RESOURCE_NAME, identifier=id)
@@ -39,23 +51,13 @@ async def get(id: UUID) -> SampleOut:
 
 async def save(sample_in: SampleIn) -> SampleOut:
     async with in_transaction() as connection:
-        sample = await Sample.create(
-            **sample_in.dict(exclude={'translations'}),
-            column_1=sample_in.field_1,
-            column_2=sample_in.field_2,
-            using_db=connection
-        )
+        sample = await Sample.create(**mapping(sample_in), using_db=connection)
+        translations = mapping_translations(sample, sample_in.translations)
 
-        # Save the translations of the record
-        await SampleTranslation.bulk_create(
-            [
-                SampleTranslation(**translation.dict(), sample=sample)
-                for translation in sample_in.translations
-            ],
-            using_db=connection
-        )
+        # Create the translations
+        await SampleTranslation.bulk_create(translations, using_db=connection)
 
-        # Get the result of the saved translations
+        # Fetch the related models for returns
         await sample.fetch_related('translations', using_db=connection)
 
         # Save the model to elasticsearch
@@ -67,5 +69,66 @@ async def save(sample_in: SampleIn) -> SampleOut:
     return SampleOut(**sample.dict())
 
 
+async def update(id: UUID, sample_in: SampleIn) -> SampleOut:
+    sample = await Sample.filter(id=id, deleted_at__isnull=True) \
+        .prefetch_related('translations') \
+        .first()
+
+    if not sample:
+        raise ResourceNotFoundException(resource=RESOURCE_NAME, identifier=id)
+
+    async with in_transaction() as connection:
+        # Update the instance from the database
+        await sample.update_from_dict(mapping(sample_in)).save(connection)
+
+        translations = mapping_translations(sample, sample_in.translations)
+
+        # Sync the translations of the reference table
+        await sample.sync_translations(translations, connection)
+
+        # Fetch the related models for returns
+        await sample.fetch_related('translations', using_db=connection)
+
+        # Update the model in elasticsearch
+        await sample_search.save(sample)
+
+        # Send the data to kafka
+        await kafka_producer.send(TOPIC_SAMPLE_CREATE, sample.kafka_dict())
+
+    return SampleOut(**sample.dict())
+
+
 async def delete(id: UUID) -> None:
-    await Sample.filter(id=id).delete()
+    sample = await Sample.filter(id=id, deleted_at__isnull=True).first()
+
+    if not sample:
+        raise ResourceNotFoundException(resource=RESOURCE_NAME, identifier=id)
+
+    async with in_transaction() as connection:
+        sample.deleted_at = datetime.now()
+
+        await sample.save(connection, using_db=connection)
+
+        # Delete the document from elasticsearch
+        await sample_search.delete(id)
+
+        # Send the data to kafka
+        await kafka_producer.send(TOPIC_SAMPLE_DELETE, {'id': str(id)})
+
+
+def mapping(sample_in: SampleIn):
+    return {
+        **sample_in.dict(exclude=EXCLUSIONS),
+        'column_1': sample_in.field_1,
+        'column_2': sample_in.field_2,
+    }
+
+
+def mapping_translations(
+    sample: Sample,
+    translations: List[SampleTranslationIn]
+):
+    return [
+        SampleTranslation(**translation.dict(), sample=sample)
+        for translation in translations
+    ]
