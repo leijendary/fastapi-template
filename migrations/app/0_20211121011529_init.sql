@@ -21,9 +21,9 @@ CREATE TABLE IF NOT EXISTS "aerich" (
     "app" VARCHAR(20) NOT NULL,
     "content" JSONB NOT NULL
 );
-CREATE UNIQUE INDEX sample_column_1_uidx
+CREATE UNIQUE INDEX IF NOT EXISTS sample_column_1_uidx
     ON sample (column_1)
     WHERE deleted_at IS NULL;
 
-CREATE UNIQUE INDEX sample_translation_reference_id_language_uidx
+CREATE UNIQUE INDEX IF NOT EXISTS sample_translation_reference_id_language_uidx
     ON sample_translation (reference_id, language);
