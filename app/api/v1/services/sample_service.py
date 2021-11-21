@@ -25,13 +25,9 @@ RESOURCE_NAME = 'Sample'
 
 async def list(query, params: SortParams) -> Page[SampleListOut]:
     filter = Q(
-        Q(
-            Q(column_1__icontains=query),
-            Q(column_2__icontains=query),
-            join_type='OR'
-        ),
-        Q(deleted_at__isnull=True),
-        join_type='AND'
+        Q(column_1__icontains=query),
+        Q(column_2__icontains=query),
+        join_type='OR'
     )
     query = Sample.filter(filter)
 
@@ -39,7 +35,7 @@ async def list(query, params: SortParams) -> Page[SampleListOut]:
 
 
 async def get(id: UUID) -> SampleOut:
-    sample = await Sample.filter(id=id, deleted_at__isnull=True) \
+    sample = await Sample.filter(id=id) \
         .prefetch_related('translations') \
         .first()
 
@@ -70,7 +66,7 @@ async def save(sample_in: SampleIn) -> SampleOut:
 
 
 async def update(id: UUID, sample_in: SampleIn) -> SampleOut:
-    sample = await Sample.filter(id=id, deleted_at__isnull=True) \
+    sample = await Sample.filter(id=id) \
         .prefetch_related('translations') \
         .first()
 
@@ -99,7 +95,7 @@ async def update(id: UUID, sample_in: SampleIn) -> SampleOut:
 
 
 async def delete(id: UUID) -> None:
-    sample = await Sample.filter(id=id, deleted_at__isnull=True).first()
+    sample = await Sample.filter(id=id).first()
 
     if not sample:
         raise ResourceNotFoundException(resource=RESOURCE_NAME, identifier=id)
@@ -107,7 +103,7 @@ async def delete(id: UUID) -> None:
     async with in_transaction() as connection:
         sample.deleted_at = datetime.now()
 
-        await sample.save(connection, using_db=connection)
+        await sample.save(using_db=connection)
 
         # Delete the document from elasticsearch
         await sample_search.delete(id)

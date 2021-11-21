@@ -1,4 +1,5 @@
 from app.core.models.localized_model import LocalizedModel
+from app.core.models.manager import DeletableManager
 from app.core.models.model import DeletableMixin, TimestampMixin
 from app.models.sample_translation import SampleTranslation
 from tortoise.fields import CharField, ManyToManyField, UUIDField
@@ -15,3 +16,6 @@ class Sample(DeletableMixin, TimestampMixin, LocalizedModel):
         backward_key='reference_id',
         forward_key='id'
     )
+
+    class Meta:
+        manager = DeletableManager()
