@@ -6,7 +6,6 @@ from elasticsearch import AsyncElasticsearch
 
 class ElasticsearchContext:
     instance: AsyncElasticsearch
-    indices: Dict
 
     @classmethod
     def init(cls, config: ElasticsearchConfig):
