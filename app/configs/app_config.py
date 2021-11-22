@@ -6,6 +6,7 @@ from pydantic import BaseSettings
 class AppConfig(BaseSettings):
     prefix = '/sample'
     port = 443
+    workers = 1
     environment: str = 'local'
     language_default: str = 'en'
     internationalization_path: str = 'app/core/libraries/i18n/'
