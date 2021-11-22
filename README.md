@@ -18,6 +18,8 @@
 - JOSE
 - Httpx
 - AIO Redis
+- Boto3 (AWS SDK)
+- PyTest
 
 # FastAPI Microservice Template
 
