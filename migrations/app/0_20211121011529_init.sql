@@ -26,3 +26,5 @@ CREATE UNIQUE INDEX IF NOT EXISTS sample_column_1_uidx
     WHERE deleted_at IS NULL;
 CREATE UNIQUE INDEX IF NOT EXISTS sample_translation_reference_id_language_uidx
     ON sample_translation (reference_id, language);
+CREATE INDEX IF NOT EXISTS sample_id_deleted_at_idx
+    ON sample(id, deleted_at);
