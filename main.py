@@ -2,6 +2,7 @@ import subprocess
 from datetime import datetime
 
 import uvicorn
+from botocore.exceptions import ClientError
 from elasticsearch.exceptions import NotFoundError as SearchNotFoundError
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
@@ -24,6 +25,7 @@ from app.core.data.data_response import DataResponse
 from app.core.data.error_response import ErrorResponse
 from app.core.databases import tortoise_orm
 from app.core.errors.access_denied_error import access_denied_handler
+from app.core.errors.client_error import client_error_handler
 from app.core.errors.expired_token_error import expired_token_handler
 from app.core.errors.generic_error import generic_handler
 from app.core.errors.integrity_error import integrity_handler
@@ -95,6 +97,7 @@ exception_handlers = {
     IntegrityError: integrity_handler,
     RequestValidationError: validation_handler,
     ValidationError: validation_handler,
+    ClientError: client_error_handler,
     Exception: generic_handler
 }
 

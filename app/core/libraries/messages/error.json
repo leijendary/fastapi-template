@@ -3,6 +3,7 @@
   "bad_request": "Bad Request",
   "resource_not_found": "Resource {0} with the identifier {1} was not found",
   "search_not_found": "Search {0} with the identifier {1} was not found",
+  "file_not_found": "File {0} not found",
   "invalid_format": "Field {0} with the value of {1} is not a valid format of {2}",
   "invalid_type": "Could not convert parameter {0} with value {1} of type {2} to required type {3}",
   "method_not_supported": "Request method {0} not supported. Supported methods are {1}",

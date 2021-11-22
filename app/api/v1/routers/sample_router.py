@@ -11,8 +11,11 @@ from app.core.data.data_response import DataResponse
 from app.core.data.params import SortParams
 from app.core.security.scope_validator import check_scope
 from fastapi import APIRouter
+from fastapi.datastructures import UploadFile
 from fastapi.param_functions import Depends, Header, Security
+from fastapi.params import File, Form
 from fastapi_pagination.default import Page
+from starlette.responses import StreamingResponse
 
 router = APIRouter(
     prefix='/api/v1/samples',
@@ -44,6 +47,42 @@ async def search_get(id: UUID, accept_language=Header(None)):
     result = await sample_search.get(id, accept_language)
 
     return DataResponse(result, 200)
+
+
+@router.get(
+    path='/files/{bucket}/{folder}/{name}/',
+    status_code=200
+)
+async def file_download(bucket: str, folder: str, name: str):
+    result = sample_service.file_download(bucket, folder, name)
+
+    return StreamingResponse(
+        result.body,
+        headers=result.headers,
+        media_type=result.media_type
+    )
+
+
+@router.post(
+    path='/files/',
+    status_code=200
+)
+async def file_upload(
+    file: UploadFile = File(...),
+    bucket: str = Form(...),
+    folder: str = Form(...)
+):
+    result = sample_service.file_upload(bucket, folder, file)
+
+    return DataResponse(result, 200)
+
+
+@router.delete(
+    path='/files/{bucket}/{folder}/{name}/',
+    status_code=204
+)
+async def file_delete(bucket: str, folder: str, name: str):
+    sample_service.file_delete(bucket, folder, name)
 
 
 @router.get(
@@ -113,5 +152,5 @@ async def update(id: UUID, sample_in: SampleIn):
     ]
 )
 @cache_evict(namespace='sample:v1')
-async def delete(id: UUID):
+async def file_delete(id: UUID):
     await sample_service.delete(id)

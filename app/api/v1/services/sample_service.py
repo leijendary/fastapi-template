@@ -9,12 +9,16 @@ from app.api.v1.data.sample_translation_in import SampleTranslationIn
 from app.api.v1.search import sample_search
 from app.configs.constants import TOPIC_SAMPLE_CREATE, TOPIC_SAMPLE_DELETE
 from app.core.data.params import SortParams
+from app.core.data.s3_stream import S3FileStream
 from app.core.events import kafka_producer
 from app.core.exceptions.resource_not_found_exception import \
     ResourceNotFoundException
+from app.core.storages import s3_storage
+from app.core.utils.file_util import get_name
 from app.core.utils.model_util import to_page
 from app.models.sample import Sample
 from app.models.sample_translation import SampleTranslation
+from fastapi.datastructures import UploadFile
 from fastapi_pagination.default import Page
 from tortoise.query_utils import Q
 from tortoise.transactions import in_transaction
@@ -112,6 +116,28 @@ async def delete(id: UUID) -> None:
 
         # Send the data to kafka
         await kafka_producer.send(TOPIC_SAMPLE_DELETE, {'id': str(id)})
+
+
+def file_download(bucket: str, folder: str, name: str) -> S3FileStream:
+    return s3_storage.stream_response(bucket, f"{folder}/{name}")
+
+
+def file_upload(bucket: str, folder: str, upload_file: UploadFile):
+    name = get_name(upload_file.filename)
+    key = f"{folder}/{name}"
+
+    s3_storage.upload_file(
+        upload_file.file,
+        upload_file.content_type,
+        bucket,
+        key
+    )
+
+    return [key]
+
+
+def file_delete(bucket: str, folder: str, name: str):
+    s3_storage.delete_file(bucket, f"{folder}/{name}")
 
 
 def mapping(sample_in: SampleIn):

@@ -11,6 +11,6 @@ async def generic_handler(_, exc: Exception) -> JSONResponse:
     message = get_message(code, reason)
     source = ErrorSource(sources=sources, code=code, message=message)
     status_code = 500
-    response = ErrorResponse([source], 500)
+    response = ErrorResponse([source], status_code)
 
     return JSONResponse(response.dict(), status_code)

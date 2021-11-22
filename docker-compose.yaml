@@ -19,6 +19,8 @@ services:
       - SECURITY_JWKS_URL=
       - SECURITY_AUDIENCE=
       - CACHE_REDIS_HOST=
+      - AWS_PROFILE=
+      - AWS_DEFAULT_REGION=
     networks:
       - postgres_network
       - redis_network
