@@ -29,6 +29,8 @@ services:
         limits:
           cpus: '0.25'
           memory: 512M
+    mem_limit: 536870912
+    cpus: 0.25
 
 networks:
   postgres_network:
