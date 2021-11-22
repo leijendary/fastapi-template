@@ -19,6 +19,7 @@ from fastapi_pagination.default import Page
 from tortoise.query_utils import Q
 from tortoise.transactions import in_transaction
 
+FIELDS_FOR_SELECT = ['id', 'column_1', 'column_2', 'created_at', 'modified_at']
 EXCLUSIONS = {'field_1', 'field_2', 'translations'}
 RESOURCE_NAME = 'Sample'
 
@@ -29,13 +30,14 @@ async def list(query, params: SortParams) -> Page[SampleListOut]:
         Q(column_2__icontains=query),
         join_type='OR'
     )
-    query = Sample.filter(filter)
+    query = Sample.filter(filter).only(*FIELDS_FOR_SELECT)
 
     return await to_page(query, params, SampleListOut)
 
 
 async def get(id: UUID) -> SampleOut:
     sample = await Sample.filter(id=id) \
+        .only(*FIELDS_FOR_SELECT) \
         .prefetch_related('translations') \
         .first()
 

@@ -26,10 +26,7 @@ def translation_page(query, params: SortParams, fields):
 def to_page(result: dict, params: Params, type: SearchOut, locale=None):
     total = result['hits']['total']['value']
     locale = locale if locale else language_default
-    records = [
-        map_type(hit, type, locale)
-        for hit in result['hits']['hits']
-    ]
+    records = [map_type(hit, type, locale) for hit in result['hits']['hits']]
 
     return create_page(records, total, params)
 

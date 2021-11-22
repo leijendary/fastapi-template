@@ -14,9 +14,6 @@ async def to_page(query: QuerySet[Model], params: SortParams, type: Any):
         .order_by(*params.sort.split(',')) \
         .all()
     total = await query.count()
-    records = [
-        type(**item.dict())
-        for item in items
-    ]
+    records = [type(**item.dict()) for item in items]
 
     return create_page(records, total, params)
