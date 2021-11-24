@@ -35,7 +35,7 @@ from app.core.errors.resource_not_found_error import resource_not_found_handler
 from app.core.errors.search_not_found_error import search_not_found_handler
 from app.core.errors.unauthorized_error import unauthorized_handler
 from app.core.errors.validation_error import validation_handler
-from app.core.events import kafka_consumer, kafka_producer
+from app.core.events import kafka_producer
 from app.core.exceptions.access_denied_exception import AccessDeniedException
 from app.core.exceptions.invalid_token_exception import InvalidTokenException
 from app.core.exceptions.resource_not_found_exception import \
@@ -43,6 +43,7 @@ from app.core.exceptions.resource_not_found_exception import \
 from app.core.exceptions.unauthorized_exception import UnauthorizedException
 from app.core.search import elasticsearch
 from app.core.utils.date_util import to_epoch
+from app.events import consumers
 
 # Override datetime encoder for the json response
 ENCODERS_BY_TYPE[datetime] = to_epoch
@@ -122,10 +123,10 @@ routers = [
 on_startup = [
     tortoise_orm.init,
     elasticsearch.init,
-    kafka_consumer.init,
     kafka_producer.init,
     httpx_client.init,
     redis_cache.init,
+    consumers.init
 ]
 
 # Shutdown event

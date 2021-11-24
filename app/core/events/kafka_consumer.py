@@ -1,28 +1,13 @@
 import json
-from asyncio import create_task
 from typing import Awaitable
 
 from aiokafka import AIOKafkaConsumer
 from aiokafka.structs import ConsumerRecord
-from app.configs.constants import (TOPIC_SAMPLE_CREATE, TOPIC_SAMPLE_DELETE,
-                                   TOPIC_SAMPLE_UPDATE)
 from app.configs.kafka_config import kafka_config
 from app.core.logs.logging import get_logger
-from app.events import sample_consumer
 
 logger = get_logger(__name__)
 _config = kafka_config()
-
-topic = {
-    TOPIC_SAMPLE_CREATE: sample_consumer.create,
-    TOPIC_SAMPLE_UPDATE: sample_consumer.update,
-    TOPIC_SAMPLE_DELETE: sample_consumer.delete,
-}
-
-
-async def init():
-    for key, value in topic.items():
-        create_task(consume(key, value))
 
 
 def string_deserializer(value: bytes):
