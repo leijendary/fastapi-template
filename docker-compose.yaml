@@ -19,7 +19,8 @@ services:
       - SECURITY_JWKS_URL=
       - SECURITY_AUDIENCE=
       - CACHE_REDIS_HOST=
-      - AWS_PROFILE=
+      - AWS_ACCESS_KEY_ID=
+      - AWS_SECRET_ACCESS_KEY=
       - AWS_DEFAULT_REGION=
     networks:
       - postgres_network
