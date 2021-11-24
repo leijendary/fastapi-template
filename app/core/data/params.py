@@ -10,5 +10,5 @@ class SortParams(PageParams):
     sort: str = Query(
         None,
         description='Sort fields and direction',
-        example='-created_at,-_score,+first_name'
+        example='-created_at,-_score,first_name'
     )
