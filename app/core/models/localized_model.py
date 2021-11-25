@@ -1,6 +1,7 @@
 from typing import List
 
 from app.core.models.translation import TranslationModel
+from tortoise.backends.base.client import TransactionContext
 from tortoise.fields.relational import ManyToManyRelation
 
 from .model import Model
@@ -24,7 +25,7 @@ class LocalizedModel(Model):
     async def sync_translations(
         self,
         translations: List[TranslationModel],
-        connection
+        connection: TransactionContext
     ):
         creates = []
         deletes = []
