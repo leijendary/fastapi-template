@@ -1,13 +1,11 @@
-from typing import Optional
-
-from app.core.data.data_response import DataResponse
+from typing import Any, Optional
 
 
 def default_key_builder(
     func,
     namespace: str,
     identifier: Optional[str] = None,
-    result: Optional[DataResponse] = None,
+    result: Optional[Any] = None,
     args: Optional[tuple] = None,
     kwargs: Optional[dict] = None,
 ):
@@ -18,7 +16,7 @@ def request_key_builder(
     func,
     namespace: str,
     identifier: str,
-    result: Optional[DataResponse] = None,
+    result: Optional[Any] = None,
     args: Optional[tuple] = None,
     kwargs: Optional[dict] = None,
 ):
@@ -31,10 +29,10 @@ def result_key_builder(
     func,
     namespace: str,
     identifier: str,
-    result: DataResponse = None,
+    result: Any = None,
     args: Optional[tuple] = None,
     kwargs: Optional[dict] = None,
 ):
-    value = getattr(result.data, identifier)
+    value = getattr(result, identifier)
 
     return f"{namespace}:{value}"

@@ -5,7 +5,7 @@ from pydantic.main import BaseModel
 
 
 class SearchOut(BaseModel):
-    def __init__(self, data: Any, locale) -> None:
+    def __init__(self, locale=None, **data: Any) -> None:
         if 'translations' in data:
             translation = localize(locale, data['translations'])
             data = {**data, **translation}

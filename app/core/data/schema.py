@@ -6,15 +6,6 @@ from pydantic.fields import Field
 from pydantic.main import BaseModel
 
 
-class ResponseMetaSchema(BaseModel):
-    status: int = Field(..., title=get_message('document.status'), example=200)
-    timestamp: datetime = Field(
-        ...,
-        title=get_message('document.timestamp'),
-        example=to_epoch(datetime.utcnow())
-    )
-
-
 class TranslationSchema(BaseModel):
     language: str = Field(
         ...,

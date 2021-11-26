@@ -3,7 +3,7 @@ from typing import Dict
 from botocore.response import StreamingBody
 
 
-class S3FileStream:
+class FileStream:
     body: StreamingBody
     headers: Dict[str, str]
     media_type: str

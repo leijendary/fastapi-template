@@ -3,15 +3,12 @@ from typing import Dict
 from app.core.data.error_response import ErrorResponse
 from app.core.data.error_source import ErrorSource
 from pydantic import ValidationError
-from starlette.responses import JSONResponse
 
 
-async def validation_handler(_, exc: ValidationError) -> JSONResponse:
+async def validation_handler(_, exc: ValidationError) -> ErrorResponse:
     sources = list(map(mapper, exc.errors()))
-    status_code = 422
-    response = ErrorResponse(sources, status_code)
 
-    return JSONResponse(response.dict(), status_code)
+    return ErrorResponse(sources, 422)
 
 
 def mapper(error: Dict[str, object]):

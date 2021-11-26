@@ -1,38 +1,34 @@
 from datetime import datetime
-from typing import Generic, TypeVar
+from typing import Any, TypeVar
 
-from app.core.data.schema import ResponseMetaSchema
 from fastapi.encoders import jsonable_encoder
-from fastapi_pagination import Page
-from pydantic import BaseModel
-from pydantic.fields import Field
+from fastapi.responses import JSONResponse
 
 T = TypeVar('T')
 
 
-class DataResponse(BaseModel, Generic[T]):
-    data: T
-    meta: ResponseMetaSchema = Field(...)
-
-    def __init__(self, data: T, status=200, meta={}, **others) -> None:
-        if isinstance(data, Page):
+class DataResponse(JSONResponse):
+    def render(self, data: Any, meta={}) -> bytes:
+        if set({'items', 'total', 'page', 'size'}) <= set(data):
             meta = self.page_meta(data, meta)
+            data = data['items']
 
-            data = data.items
-
-        meta = {
-            'status': status,
-            'timestamp': jsonable_encoder(datetime.utcnow()),
-            **meta
+        content = {
+            'data': data,
+            'meta': {
+                'status': self.status_code,
+                'timestamp': datetime.utcnow(),
+                **meta
+            }
         }
 
-        super().__init__(data=data, meta=meta, **others)
+        return super().render(jsonable_encoder(content))
 
     def page_meta(self, data: T, meta={}):
         return {
             **meta,
-            'count': len(data.items),
-            'total': data.total,
-            'page': data.page,
-            'size': data.size
+            'count': len(data['items']),
+            'total': data['total'],
+            'page': data['page'],
+            'size': data['size']
         }

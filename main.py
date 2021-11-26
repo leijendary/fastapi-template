@@ -8,7 +8,6 @@ from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
-from fastapi_pagination import add_pagination
 from jose.exceptions import ExpiredSignatureError
 from pydantic.error_wrappers import ValidationError
 from pydantic.json import ENCODERS_BY_TYPE
@@ -21,7 +20,7 @@ from app.configs.logging_config import logging_config
 from app.configs.security_config import security_config
 from app.core.cache import redis_cache
 from app.core.clients import httpx_client
-from app.core.data.error_response import ErrorResponse
+from app.core.data.data_response import DataResponse
 from app.core.databases import tortoise_orm
 from app.core.errors.access_denied_error import access_denied_handler
 from app.core.errors.client_error import client_error_handler
@@ -49,38 +48,6 @@ from app.events import consumers
 ENCODERS_BY_TYPE[datetime] = to_epoch
 
 _config = app_config()
-
-# Possible responses
-responses = {
-    400: {
-        'description': 'Unauthorized',
-        'model': ErrorResponse
-    },
-    403: {
-        'description': 'Access Denied',
-        'model': ErrorResponse
-    },
-    404: {
-        'description': 'Resource not found',
-        'model': ErrorResponse
-    },
-    405: {
-        'description': 'Method not allowed',
-        'model': ErrorResponse
-    },
-    409: {
-        'description': 'Unique constraint error',
-        'model': ErrorResponse
-    },
-    422: {
-        'description': 'Validation error',
-        'model': ErrorResponse
-    },
-    500: {
-        'description': 'Internal server error',
-        'model': ErrorResponse
-    }
-}
 
 # Global exception handlers
 exception_handlers = {
@@ -141,7 +108,7 @@ def create_app() -> FastAPI:
     app = FastAPI(
         title='FastAPI Template',
         version='0.0.1',
-        responses=responses,
+        default_response_class=DataResponse,
         exception_handlers=exception_handlers,
         middleware=middleware,
         on_startup=on_startup,
@@ -151,9 +118,6 @@ def create_app() -> FastAPI:
     # Include all routers
     for router in routers:
         app.include_router(router, prefix=_config.prefix)
-
-    # FastAPI pagination
-    add_pagination(app)
 
     return app
 

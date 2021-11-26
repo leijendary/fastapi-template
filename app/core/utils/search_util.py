@@ -32,7 +32,7 @@ def to_page(result: dict, params: Params, type: SearchOut, locale=None):
 
 
 def map_type(hit: dict, type: SearchOut, locale=None):
-    return type({'id': hit['_id'], **hit['_source']}, locale)
+    return type(locale=locale, id=hit['_id'], **hit['_source'])
 
 
 def match_fuzziness(

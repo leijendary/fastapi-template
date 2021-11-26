@@ -8,8 +8,8 @@ from app.api.v1.data.sample_out import SampleOut
 from app.api.v1.data.sample_translation_in import SampleTranslationIn
 from app.api.v1.search import sample_search
 from app.configs.constants import TOPIC_SAMPLE_CREATE, TOPIC_SAMPLE_DELETE
+from app.core.data.file_stream import FileStream
 from app.core.data.params import SortParams
-from app.core.data.s3_stream import S3FileStream
 from app.core.events import kafka_producer
 from app.core.exceptions.resource_not_found_exception import \
     ResourceNotFoundException
@@ -118,7 +118,7 @@ async def delete(id: UUID) -> None:
         await kafka_producer.send(TOPIC_SAMPLE_DELETE, {'id': str(id)})
 
 
-def file_download(bucket: str, folder: str, name: str) -> S3FileStream:
+def file_download(bucket: str, folder: str, name: str) -> FileStream:
     return s3_storage.stream_response(bucket, f"{folder}/{name}")
 
 

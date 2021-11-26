@@ -9,7 +9,6 @@ from app.api.v1.data.sample_search_out import SampleSearchOut
 from app.api.v1.search import sample_search
 from app.api.v1.services import sample_service
 from app.core.cache.redis_cache import cache_evict, cache_get, cache_put
-from app.core.data.data_response import DataResponse
 from app.core.data.params import SortParams
 from app.core.security.scope_validator import check_scope
 from fastapi import APIRouter
@@ -25,7 +24,7 @@ router = APIRouter(
 
 @router.get(
     path='/search/',
-    response_model=DataResponse[Page[SampleSearchOut]],
+    response_model=Page[SampleSearchOut],
     status_code=200
 )
 async def search_list(
@@ -33,20 +32,16 @@ async def search_list(
     params: SortParams = Depends(),
     accept_language=Header(None)
 ):
-    result = await sample_search.list(query, params, accept_language)
-
-    return DataResponse(result, 200)
+    return await sample_search.list(query, params, accept_language)
 
 
 @router.get(
     path='/search/{id}/',
-    response_model=DataResponse[SampleSearchOut],
+    response_model=SampleSearchOut,
     status_code=200
 )
 async def search_get(id: UUID, accept_language=Header(None)):
-    result = await sample_search.get(id, accept_language)
-
-    return DataResponse(result, 200)
+    return await sample_search.get(id, accept_language)
 
 
 @router.get(
@@ -65,13 +60,11 @@ async def file_download(bucket: str, folder: str, name: str):
 
 @router.post(
     path='/files/',
-    response_model=DataResponse[List[str]],
+    response_model=List[str],
     status_code=200,
 )
 async def file_upload(body: FileIn = Depends(FileIn.as_form)):
-    result = sample_service.file_upload(body.bucket, body.folder, body.file)
-
-    return DataResponse(result, 200)
+    return sample_service.file_upload(body.bucket, body.folder, body.file)
 
 
 @router.delete(
@@ -84,21 +77,19 @@ async def file_delete(bucket: str, folder: str, name: str):
 
 @router.get(
     path='/',
-    response_model=DataResponse[Page[SampleListOut]],
+    response_model=Page[SampleListOut],
     status_code=200,
     dependencies=[
         Security(check_scope, scopes=['urn:sample:list:v1'])
     ]
 )
 async def list(query, params: SortParams = Depends()):
-    result = await sample_service.list(query, params)
-
-    return DataResponse(result, 200)
+    return await sample_service.list(query, params)
 
 
 @router.get(
     path='/{id}/',
-    response_model=DataResponse[SampleOut],
+    response_model=SampleOut,
     status_code=200,
     dependencies=[
         Security(check_scope, scopes=['urn:sample:get:v1'])
@@ -106,14 +97,12 @@ async def list(query, params: SortParams = Depends()):
 )
 @cache_get(namespace='sample:v1')
 async def get(id: UUID):
-    result = await sample_service.get(id)
-
-    return DataResponse(result, 200)
+    return await sample_service.get(id)
 
 
 @router.post(
     path='/',
-    response_model=DataResponse[SampleOut],
+    response_model=SampleOut,
     status_code=201,
     dependencies=[
         Security(check_scope, scopes=['urn:sample:create:v1'])
@@ -121,14 +110,12 @@ async def get(id: UUID):
 )
 @cache_put(namespace='sample:v1')
 async def save(sample_in: SampleIn):
-    result = await sample_service.save(sample_in)
-
-    return DataResponse(result, 201)
+    return await sample_service.save(sample_in)
 
 
 @router.put(
     path='/{id}/',
-    response_model=DataResponse[SampleOut],
+    response_model=SampleOut,
     status_code=200,
     dependencies=[
         Security(check_scope, scopes=['urn:sample:update:v1'])
@@ -136,9 +123,7 @@ async def save(sample_in: SampleIn):
 )
 @cache_put(namespace='sample:v1')
 async def update(id: UUID, sample_in: SampleIn):
-    result = await sample_service.update(id, sample_in)
-
-    return DataResponse(result, 200)
+    return await sample_service.update(id, sample_in)
 
 
 @router.delete(

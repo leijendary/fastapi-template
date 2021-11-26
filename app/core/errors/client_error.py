@@ -3,10 +3,9 @@ from app.core.data.error_source import ErrorSource
 from app.core.libraries.message import get_message
 from app.core.utils.file_util import get_name
 from botocore.exceptions import ClientError
-from starlette.responses import JSONResponse
 
 
-async def client_error_handler(_, exc: ClientError) -> JSONResponse:
+async def client_error_handler(_, exc: ClientError) -> ErrorResponse:
     error = exc.response['Error']
     key = error['Key']
     sources = ['File']
@@ -23,6 +22,5 @@ async def client_error_handler(_, exc: ClientError) -> JSONResponse:
     message = get_message(code, reason)
     source = ErrorSource(sources=sources, code=code, message=message)
     status_code = exc.response['ResponseMetadata']['HTTPStatusCode']
-    response = ErrorResponse([source], status_code)
 
-    return JSONResponse(response.dict(), status_code)
+    return ErrorResponse([source], status_code)
