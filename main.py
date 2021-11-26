@@ -30,6 +30,7 @@ from app.core.errors.expired_token_error import expired_token_handler
 from app.core.errors.generic_error import generic_handler
 from app.core.errors.integrity_error import integrity_handler
 from app.core.errors.invalid_token_error import invalid_token_handler
+from app.core.errors.method_not_allowed_error import method_not_allowed_handler
 from app.core.errors.not_found_error import not_found_handler
 from app.core.errors.resource_not_found_error import resource_not_found_handler
 from app.core.errors.search_not_found_error import search_not_found_handler
@@ -72,6 +73,10 @@ responses = {
         'description': 'Resource not found',
         'model': ErrorResponse
     },
+    405: {
+        'description': 'Method not allowed',
+        'model': ErrorResponse
+    },
     409: {
         'description': 'Unique constraint error',
         'model': ErrorResponse
@@ -89,6 +94,7 @@ responses = {
 # Global exception handlers
 exception_handlers = {
     404: not_found_handler,
+    405: method_not_allowed_handler,
     InvalidTokenException: invalid_token_handler,
     UnauthorizedException: unauthorized_handler,
     ExpiredSignatureError: expired_token_handler,

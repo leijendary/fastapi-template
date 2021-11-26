@@ -6,7 +6,7 @@
   "file_not_found": "File {0} not found",
   "invalid_format": "Field {0} with the value of {1} is not a valid format of {2}",
   "invalid_type": "Could not convert parameter {0} with value {1} of type {2} to required type {3}",
-  "method_not_supported": "Request method {0} not supported. Supported methods are {1}",
+  "method_not_supported": "Request method {0} not supported",
   "mapping_not_found": "Mapping not found: {0}",
   "data_integrity": "Data Integrity Error: {0}"
 }
