@@ -6,7 +6,13 @@ from pydantic.fields import Field
 from pydantic.main import BaseModel
 
 
-class TranslationSchema(BaseModel):
+class Schema(BaseModel):
+
+    class Config:
+        anystr_strip_whitespace = True
+
+
+class TranslationSchema(Schema):
     language: str = Field(
         ...,
         title=get_message('document.translation_language'),
