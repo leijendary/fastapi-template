@@ -1,5 +1,7 @@
+from typing import List
 from uuid import UUID
 
+from app.api.v1.data.file_in import FileIn
 from app.api.v1.data.sample_in import SampleIn
 from app.api.v1.data.sample_list_out import SampleListOut
 from app.api.v1.data.sample_out import SampleOut
@@ -11,9 +13,7 @@ from app.core.data.data_response import DataResponse
 from app.core.data.params import SortParams
 from app.core.security.scope_validator import check_scope
 from fastapi import APIRouter
-from fastapi.datastructures import UploadFile
 from fastapi.param_functions import Depends, Header, Security
-from fastapi.params import File, Form
 from fastapi_pagination.default import Page
 from starlette.responses import StreamingResponse
 
@@ -65,14 +65,11 @@ async def file_download(bucket: str, folder: str, name: str):
 
 @router.post(
     path='/files/',
-    status_code=200
+    response_model=DataResponse[List[str]],
+    status_code=200,
 )
-async def file_upload(
-    file: UploadFile = File(...),
-    bucket: str = Form(...),
-    folder: str = Form(...)
-):
-    result = sample_service.file_upload(bucket, folder, file)
+async def file_upload(body: FileIn = Depends(FileIn.as_form)):
+    result = sample_service.file_upload(body.bucket, body.folder, body.file)
 
     return DataResponse(result, 200)
 

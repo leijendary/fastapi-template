@@ -8,6 +8,8 @@
   "sample_field_2": "A sample field that is an integer and should be greater than 0",
   "sample_column_1": "A sample field that is a string and is required",
   "sample_column_2": "A sample field that is an integer and should be greater than 0",
+  "status": "HTTP status code of the response",
+  "timestamp": "Current timestamp of the response. Can be earlier than now if cached",
   "created_at": "Timestamp the record was first created",
   "modified_at": "Timestamp the record was last modified"
 }

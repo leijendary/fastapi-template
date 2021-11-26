@@ -1,11 +1,11 @@
 from typing import Optional
 
-from app.core.data.translation_in import TranslationIn
+from app.core.data.schema import TranslationSchema
 from app.core.libraries.message import get_message
 from pydantic import Field
 
 
-class SampleTranslationIn(TranslationIn):
+class SampleTranslationIn(TranslationSchema):
     name: str = Field(
         ...,
         title=get_message('document.translation_name'),

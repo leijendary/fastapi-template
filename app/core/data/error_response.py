@@ -1,15 +1,17 @@
 from datetime import datetime
 from typing import List
 
+from app.core.data.schema import ResponseMetaSchema
 from fastapi.encoders import jsonable_encoder
+from pydantic import Field
 from pydantic.main import BaseModel
 
 from .error_source import ErrorSource
 
 
 class ErrorResponse(BaseModel):
-    errors: List[ErrorSource] = []
-    meta: dict = {}
+    errors: List[ErrorSource] = Field(...)
+    meta: ResponseMetaSchema = Field(...)
 
     def __init__(
         self,

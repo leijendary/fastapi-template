@@ -21,7 +21,6 @@ from app.configs.logging_config import logging_config
 from app.configs.security_config import security_config
 from app.core.cache import redis_cache
 from app.core.clients import httpx_client
-from app.core.data.data_response import DataResponse
 from app.core.data.error_response import ErrorResponse
 from app.core.databases import tortoise_orm
 from app.core.errors.access_denied_error import access_denied_handler
@@ -53,14 +52,6 @@ _config = app_config()
 
 # Possible responses
 responses = {
-    200: {
-        'description': 'Success',
-        'model': DataResponse
-    },
-    201: {
-        'description': 'Resource created',
-        'model': DataResponse
-    },
     400: {
         'description': 'Unauthorized',
         'model': ErrorResponse

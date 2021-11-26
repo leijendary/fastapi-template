@@ -1,16 +1,18 @@
 from datetime import datetime
 from typing import Generic, TypeVar
 
+from app.core.data.schema import ResponseMetaSchema
 from fastapi.encoders import jsonable_encoder
 from fastapi_pagination import Page
 from pydantic import BaseModel
+from pydantic.fields import Field
 
 T = TypeVar('T')
 
 
 class DataResponse(BaseModel, Generic[T]):
     data: T
-    meta: dict = {}
+    meta: ResponseMetaSchema = Field(...)
 
     def __init__(self, data: T, status=200, meta={}, **others) -> None:
         if isinstance(data, Page):
