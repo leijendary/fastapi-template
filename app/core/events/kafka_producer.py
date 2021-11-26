@@ -36,7 +36,7 @@ async def send(topic: str, value: Dict = None, key: str = None):
 
     await producer().send_and_wait(topic, json_value, key)
 
-    logger.info(f"Sent to topic {topic} with key={key} and value={value}")
+    logger.info(f"Sent to topic {topic} key={key} value={value}")
 
 def producer():
     return KafkaProducerContext.instance
