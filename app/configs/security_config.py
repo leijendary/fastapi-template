@@ -12,6 +12,8 @@ class SecurityConfig(BaseSettings):
     scopes = ''
     ssl_certfile = 'ssl/certificate.pem'
     ssl_keyfile = 'ssl/key.pem'
+    encryption_password: str
+    encryption_salt: str
 
     class Config:
         env_prefix = 'security_'

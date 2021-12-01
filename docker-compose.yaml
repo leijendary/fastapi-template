@@ -22,6 +22,8 @@ services:
       - AWS_ACCESS_KEY_ID=
       - AWS_SECRET_ACCESS_KEY=
       - AWS_DEFAULT_REGION=
+      - SECURITY_ENCRYPTION_PASSWORD=
+      - SECURITY_ENCRYPTION_SALT=
     networks:
       - postgres_network
       - redis_network

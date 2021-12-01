@@ -10,6 +10,7 @@ from app.api.v1.search import sample_search
 from app.api.v1.services import sample_service
 from app.core.cache.redis_cache import cache_evict, cache_get, cache_put
 from app.core.data.params import SortParams
+from app.core.security import encryption
 from app.core.security.scope_validator import check_scope
 from fastapi import APIRouter
 from fastapi.param_functions import Depends, Header, Security
@@ -73,6 +74,22 @@ async def file_upload(body: FileIn = Depends(FileIn.as_form)):
 )
 async def file_delete(bucket: str, folder: str, name: str):
     sample_service.file_delete(bucket, folder, name)
+
+
+@router.post(
+    path='/encrypt/',
+    status_code=200
+)
+async def encrypt(plaintext: str):
+    return encryption.encrypt(plaintext)
+
+
+@router.post(
+    path='/decrypt/',
+    status_code=200
+)
+async def decrypt(encrypted: str):
+    return encryption.decrypt(encrypted)
 
 
 @router.get(
