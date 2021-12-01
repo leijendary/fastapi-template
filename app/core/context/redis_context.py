@@ -20,3 +20,12 @@ class RedisContext:
     @classmethod
     async def close(cls):
         await cls.instance.close()
+
+    @classmethod
+    async def health(cls):
+        try:
+            pong = await cls.instance.ping()
+
+            return 'UP' if pong else 'DOWN'
+        except:
+            return 'DOWN'

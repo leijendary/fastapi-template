@@ -40,6 +40,7 @@ from app.core.exceptions.invalid_token_exception import InvalidTokenException
 from app.core.exceptions.resource_not_found_exception import \
     ResourceNotFoundException
 from app.core.exceptions.unauthorized_exception import UnauthorizedException
+from app.core.routers import healthcheck_router
 from app.core.search import elasticsearch
 from app.core.utils.date_util import to_epoch
 from app.events import consumers
@@ -80,6 +81,7 @@ middleware = [
 
 # Routers
 routers = [
+    healthcheck_router.router,
     sample_router_v1.router
 ]
 

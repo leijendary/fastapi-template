@@ -181,25 +181,22 @@ async def set(key: str, value: Any):
     else:
         value = json.dumps(value)
 
-    await redis().set(key, value, _config.ttl)
+    await RedisContext.instance.set(key, value, _config.ttl)
 
 
 async def get(key: str):
-    value = await redis().get(key)
+    value = await RedisContext.instance.get(key)
 
     return json.loads(value)
 
 
 async def delete(keys: List[str]):
-    await redis().delete(keys)
+    await RedisContext.instance.delete(keys)
 
 
 async def get_with_ttl(key: str):
-    async with redis().pipeline(transaction=True) as pipe:
+    async with RedisContext.instance.pipeline(transaction=True) as pipe:
         value, ttl = await (pipe.get(key).ttl(key).execute())
         value = json.loads(value) if value else None
 
         return value, ttl
-
-def redis():
-    return RedisContext.instance

@@ -31,3 +31,12 @@ class ElasticsearchContext:
                 await client.put_mapping(body['mappings'], index)
             else:
                 await client.create(index, body)
+
+    @classmethod
+    async def health(cls):
+        try:
+            info = await cls.instance.info()
+
+            return 'UP' if info else 'DOWN'
+        except:
+            return 'DOWN'

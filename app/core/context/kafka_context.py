@@ -18,3 +18,12 @@ class KafkaProducerContext:
     @classmethod
     async def close(cls):
         await cls.instance.stop()
+
+    @classmethod
+    async def health(cls):
+        try:
+            version = await cls.instance.client.check_version()
+
+            return 'UP' if version else 'DOWN'
+        except:
+            return 'DOWN'

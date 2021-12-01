@@ -18,6 +18,3 @@ async def close():
     await HttpxClientContext.close()
 
     logger.info('Http client closed!')
-
-def client():
-    return HttpxClientContext.instance

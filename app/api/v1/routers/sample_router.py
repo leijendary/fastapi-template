@@ -45,10 +45,7 @@ async def search_get(id: UUID, accept_language=Header(None)):
     return await sample_search.get(id, accept_language)
 
 
-@router.get(
-    path='/files/{bucket}/{folder}/{name}/',
-    status_code=200
-)
+@router.get(path='/files/{bucket}/{folder}/{name}/', status_code=200)
 async def file_download(bucket: str, folder: str, name: str):
     result = sample_service.file_download(bucket, folder, name)
 
@@ -59,35 +56,22 @@ async def file_download(bucket: str, folder: str, name: str):
     )
 
 
-@router.post(
-    path='/files/',
-    response_model=List[str],
-    status_code=200,
-)
+@router.post(path='/files/', response_model=List[str], status_code=200)
 async def file_upload(body: FileIn = Depends(FileIn.as_form)):
     return sample_service.file_upload(body.bucket, body.folder, body.file)
 
 
-@router.delete(
-    path='/files/{bucket}/{folder}/{name}/',
-    status_code=204
-)
+@router.delete(path='/files/{bucket}/{folder}/{name}/', status_code=204)
 async def file_delete(bucket: str, folder: str, name: str):
     sample_service.file_delete(bucket, folder, name)
 
 
-@router.post(
-    path='/encrypt/',
-    status_code=200
-)
+@router.post(path='/encrypt/', status_code=200)
 async def encrypt(plaintext: str):
     return encryption.encrypt(plaintext)
 
 
-@router.post(
-    path='/decrypt/',
-    status_code=200
-)
+@router.post(path='/decrypt/', status_code=200)
 async def decrypt(encrypted: str):
     return encryption.decrypt(encrypted)
 

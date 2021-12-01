@@ -41,7 +41,3 @@ async def close():
     await ElasticsearchContext.close()
 
     logger.info('Elasticsearch closed!')
-
-
-def elasticsearch():
-    return ElasticsearchContext.instance

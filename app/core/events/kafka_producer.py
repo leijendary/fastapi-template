@@ -34,9 +34,6 @@ def json_serializer(value: Any):
 async def send(topic: str, value: Dict = None, key: str = None):
     json_value = json_serializer(value)
 
-    await producer().send_and_wait(topic, json_value, key)
+    await KafkaProducerContext.instance.send_and_wait(topic, json_value, key)
 
     logger.info(f"Sent to topic {topic} key={key} value={value}")
-
-def producer():
-    return KafkaProducerContext.instance

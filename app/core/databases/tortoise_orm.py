@@ -54,3 +54,14 @@ async def close():
     await Tortoise.close_connections()
 
     logger.info('Database connection shutdown completed!')
+
+
+async def health():
+    try:
+        result = await Tortoise \
+            .get_connection('default') \
+            .execute_query_dict("SELECT 'UP' as status")
+
+        return result[0]['status'] or 'DOWN'
+    except:
+        return 'DOWN'
