@@ -1,8 +1,6 @@
 FROM tiangolo/uvicorn-gunicorn-fastapi:python3.9-slim
 COPY ./requirements.txt /app/requirements.txt
-ARG PIP_CACHE_DIR=".cache/pip"
-RUN --mount=type=cache,target=${PIP_CACHE_DIR} \
-    pip install --cache-dir ${PIP_CACHE_DIR} -r requirements.txt
+RUN pip install --no-cache-dir --upgrade -r requirements.txt
 ENV PORT=443
 COPY ./app /app/app
 COPY ./migrations /app/migrations
