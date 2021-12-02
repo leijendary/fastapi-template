@@ -19,6 +19,8 @@
 - Httpx
 - AIO Redis
 - Boto3 (AWS SDK)
+- Python Multipart
+- PyCryptodome
 - PyTest
 
 # FastAPI Microservice Template
