@@ -45,7 +45,7 @@ cache: &global_cache
   script:
     - echo "Building docker image..."
     - docker pull $REPOSITORY_URL:latest || true
-    - DOCKER_BUILDKIT=1 docker build --cache-from $REPOSITORY_URL:latest -t $REPOSITORY_URL:latest .
+    - docker build --cache-from $REPOSITORY_URL:latest -t $REPOSITORY_URL:latest .
     - echo "Done building docker image."
     - echo "Pushing images..."
     - docker tag $REPOSITORY_URL:latest $REPOSITORY_URL:$CI_ENVIRONMENT_NAME
