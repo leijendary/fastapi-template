@@ -1,8 +1,8 @@
 from calendar import timegm
 from datetime import datetime
 
-from app.clients import jwks_client
 from app.configs.security_config import security_config
+from app.core.clients import jwks_client
 from app.core.exceptions.invalid_token_exception import InvalidTokenException
 from app.core.exceptions.unauthorized_exception import UnauthorizedException
 from app.core.security.schemes import oauth2_scheme
