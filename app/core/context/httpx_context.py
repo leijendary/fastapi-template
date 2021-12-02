@@ -10,4 +10,4 @@ class HttpxClientContext:
 
     @classmethod
     async def close(cls):
-        cls.instance.aclose()
+        await cls.instance.aclose()
