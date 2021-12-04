@@ -1,7 +1,6 @@
 FROM tiangolo/uvicorn-gunicorn-fastapi:python3.9-slim
 COPY requirements.txt /app/requirements.txt
-COPY .cache/pip /root/.cache/pip
-RUN pip install -r requirements.txt
+RUN --mount=type=cache,target=/root/.cache pip install -r requirements.txt
 ENV PORT=443
 COPY app /app/app
 COPY migrations /app/migrations
