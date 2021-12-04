@@ -6,9 +6,8 @@ from app.core.data.search_out import SearchOut
 from fastapi_pagination import Params, create_page
 
 _config = app_config()
-language_default = _config.language_default
 
-_match_all = {
+MATCH_ALL = {
     'match_all': {}
 }
 
@@ -25,7 +24,7 @@ def translation_page(query, params: SortParams, fields):
 
 def to_page(result: dict, params: Params, type: SearchOut, locale=None):
     total = result['hits']['total']['value']
-    locale = locale if locale else language_default
+    locale = locale if locale else _config.language_default
     records = [map_type(hit, type, locale) for hit in result['hits']['hits']]
 
     return create_page(records, total, params)
@@ -39,7 +38,7 @@ def match_fuzziness(
     query='',
     fields: List[str] = [],
     fuzziness='AUTO',
-    default=_match_all
+    default=MATCH_ALL
 ):
     if not query:
         return default
