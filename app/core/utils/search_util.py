@@ -5,11 +5,11 @@ from app.core.data.params import SortParams
 from app.core.data.search_out import SearchOut
 from fastapi_pagination import Params, create_page
 
-_config = app_config()
-
 MATCH_ALL = {
     'match_all': {}
 }
+
+_config = app_config()
 
 
 def translation_page(query, params: SortParams, fields):
