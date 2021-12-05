@@ -187,7 +187,7 @@ async def set(key: str, value: Any):
 async def get(key: str):
     value = await RedisContext.instance.get(key)
 
-    return json.loads(value)
+    return json.loads(value) if value else None
 
 
 async def delete(keys: List[str]):
