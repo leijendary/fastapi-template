@@ -106,6 +106,7 @@ async def list(query, params: SortParams = Depends()):
     ]
 )
 @cache_get(namespace='sample:v1')
+# Request and response are here to cater the headers for caching
 async def get(id: UUID, request: Request, response: Response):
     return await sample_service.get(id)
 
