@@ -76,7 +76,7 @@ middleware = [
         allow_headers=['*'],
         allow_credentials=True,
     ),
-    Middleware(GZipMiddleware),
+    Middleware(GZipMiddleware)
 ]
 
 # Routers

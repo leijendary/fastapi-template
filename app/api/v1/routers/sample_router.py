@@ -120,7 +120,8 @@ async def get(id: UUID, request: Request, response: Response):
     ]
 )
 @cache_put(namespace='sample:v1')
-async def save(sample_in: SampleIn):
+# Request is here to cater the headers for caching
+async def save(sample_in: SampleIn, request: Request):
     return await sample_service.save(sample_in)
 
 
@@ -133,7 +134,8 @@ async def save(sample_in: SampleIn):
     ]
 )
 @cache_put(namespace='sample:v1')
-async def update(id: UUID, sample_in: SampleIn):
+# Request is here to cater the headers for caching
+async def update(id: UUID, sample_in: SampleIn, request: Request):
     return await sample_service.update(id, sample_in)
 
 
