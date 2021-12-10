@@ -16,7 +16,8 @@ from app.core.security.scope_validator import check_scope
 from fastapi import APIRouter
 from fastapi.param_functions import Depends, Header, Security
 from fastapi_pagination.default import Page
-from starlette.responses import HTMLResponse, StreamingResponse
+from starlette.requests import Request
+from starlette.responses import HTMLResponse, Response, StreamingResponse
 
 router = APIRouter(
     prefix='/api/v1/samples',
@@ -105,7 +106,7 @@ async def list(query, params: SortParams = Depends()):
     ]
 )
 @cache_get(namespace='sample:v1')
-async def get(id: UUID):
+async def get(id: UUID, request: Request, response: Response):
     return await sample_service.get(id)
 
 

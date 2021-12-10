@@ -46,7 +46,7 @@ async def consume(
         message: ConsumerRecord
 
         async for message in consumer:
-            log = "Consuming {}:{}:{} key={} value={}".format(
+            log = 'Consuming {}:{}:{} key={} value={}'.format(
                 message.topic,
                 message.partition,
                 message.offset,

@@ -25,7 +25,7 @@ def load_message():
 
 def get_message(code: str, *params):
     message = load_message()
-    library, key = code.split(".")
+    library, key = code.split('.')
 
     if library not in message:
         return code

@@ -1,11 +1,14 @@
 import json
 from functools import wraps
+from hashlib import md5
 from typing import Any, Callable, List, Optional
 
 from app.configs.cache_config import cache_config
 from app.core.context.redis_context import RedisContext
 from app.core.data.data_response import DataResponse
 from app.core.logs.logging import get_logger
+from starlette.requests import Request
+from starlette.responses import Response
 
 from .redis_key_builder import (default_key_builder, request_key_builder,
                                 result_key_builder)
@@ -39,22 +42,21 @@ def cache_get(
 
         @wraps(func)
         async def inner(*args, **kwargs):
-            kwargs_copy = kwargs.copy()
-            request = kwargs_copy.pop("request", None)
-            response = kwargs_copy.pop("response", None)
+            request = kwargs.get('request')
+            response = kwargs.get('response')
             key = get_key(
                 func=func,
                 namespace=namespace,
                 identifier=identifier,
                 args=args,
-                kwargs=kwargs_copy,
+                kwargs=kwargs,
                 key_builder=key_builder
             )
             result, ttl = await get_with_ttl(key)
 
             if result:
                 if response:
-                    return with_headers(result, ttl, request, response)
+                    with_headers(result, ttl, request, response)
 
                 return result
 
@@ -81,8 +83,7 @@ def cache_put(
 
         @wraps(func)
         async def inner(*args, **kwargs):
-            kwargs_copy = kwargs.copy()
-            request = kwargs_copy.pop("request", None)
+            request = kwargs.get('request')
             result = await func(*args, **kwargs)
 
             if is_no_store(request):
@@ -94,7 +95,7 @@ def cache_put(
                 identifier=identifier,
                 result=result,
                 args=args,
-                kwargs=kwargs_copy,
+                kwargs=kwargs,
                 key_builder=key_builder
             )
 
@@ -155,24 +156,23 @@ def get_key(
     )
 
 
-def with_headers(request, ttl, response, result):
-    etag = f"W/{hash(result)}"
-    response.headers["Cache-Control"] = f"max-age={ttl}"
-    response.headers["ETag"] = etag
+def with_headers(result, ttl, request: Request, response: Response):
+    dump = json.dumps(result, sort_keys=True).encode('utf-8')
+    etag = md5(dump).hexdigest()
+    response.headers['Cache-Control'] = f"max-age={ttl}"
+    response.headers['ETag'] = etag
 
     if not request:
-        return response
+        return
 
-    if_none_match = request.headers.get("if-none-match")
+    if_none_match = request.headers.get('if-none-match')
 
     if if_none_match == etag:
         response.status_code = 304
 
-    return response
 
-
-def is_no_store(request):
-    return request and request.headers.get("Cache-Control") == "no-store"
+def is_no_store(request: Request):
+    return request and request.headers.get('Cache-Control') == 'no-store'
 
 
 async def set(key: str, value: Any):
