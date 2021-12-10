@@ -149,5 +149,6 @@ if __name__ == '__main__':
         access_log=log.access,
         use_colors=False,
         ssl_certfile=security.ssl_certfile,
-        ssl_keyfile=security.ssl_keyfile
+        ssl_keyfile=security.ssl_keyfile,
+        server_header=False
     )
