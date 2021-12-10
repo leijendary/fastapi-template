@@ -4,7 +4,8 @@ from functools import lru_cache
 
 from app.configs.app_config import app_config
 
-message_path = app_config().message_path
+_config = app_config()
+message_path = _config.message_path
 
 
 @lru_cache
