@@ -6,7 +6,7 @@ from tortoise.fields import CharField, ManyToManyField, UUIDField
 from tortoise.fields.relational import ManyToManyRelation
 
 
-class Sample(DeletableMixin, TimestampMixin, LocalizedModel):
+class Sample(LocalizedModel, TimestampMixin, DeletableMixin):
     id = UUIDField(pk=True)
     column_1 = CharField(max_length=150)
     column_2 = CharField(null=True, max_length=1000)
