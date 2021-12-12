@@ -19,6 +19,8 @@ from fastapi_pagination.default import Page
 from starlette.requests import Request
 from starlette.responses import HTMLResponse, Response, StreamingResponse
 
+CACHE_KEY = 'sample:v1'
+
 router = APIRouter(
     prefix='/api/v1/samples',
     tags=['samples']
@@ -105,7 +107,7 @@ async def list(query, params: SortParams = Depends()):
         Security(check_scope, scopes=['urn:sample:get:v1'])
     ]
 )
-@cache_get(namespace='sample:v1')
+@cache_get(namespace=CACHE_KEY)
 # Request and response are here to cater the headers for caching
 async def get(id: UUID, request: Request, response: Response):
     return await sample_service.get(id)
@@ -119,7 +121,7 @@ async def get(id: UUID, request: Request, response: Response):
         Security(check_scope, scopes=['urn:sample:create:v1'])
     ]
 )
-@cache_put(namespace='sample:v1')
+@cache_put(namespace=CACHE_KEY)
 # Request is here to cater the headers for caching
 async def save(sample_in: SampleIn, request: Request):
     return await sample_service.save(sample_in)
@@ -133,7 +135,7 @@ async def save(sample_in: SampleIn, request: Request):
         Security(check_scope, scopes=['urn:sample:update:v1'])
     ]
 )
-@cache_put(namespace='sample:v1')
+@cache_put(namespace=CACHE_KEY)
 # Request is here to cater the headers for caching
 async def update(id: UUID, sample_in: SampleIn, request: Request):
     return await sample_service.update(id, sample_in)
@@ -146,6 +148,6 @@ async def update(id: UUID, sample_in: SampleIn, request: Request):
         Security(check_scope, scopes=['urn:sample:delete:v1'])
     ]
 )
-@cache_evict(namespace='sample:v1')
+@cache_evict(namespace=CACHE_KEY)
 async def file_delete(id: UUID):
     await sample_service.delete(id)
