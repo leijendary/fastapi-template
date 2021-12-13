@@ -72,7 +72,8 @@ async def save(sample_in: SampleIn) -> SampleOut:
 
 
 async def update(id: UUID, sample_in: SampleIn) -> SampleOut:
-    sample = await Sample.filter(id=id) \
+    sample = await Sample.select_for_update() \
+        .filter(id=id) \
         .prefetch_related('translations') \
         .first()
 
@@ -101,7 +102,7 @@ async def update(id: UUID, sample_in: SampleIn) -> SampleOut:
 
 
 async def delete(id: UUID) -> None:
-    sample = await Sample.filter(id=id).first()
+    sample = await Sample.select_for_update().filter(id=id).first()
 
     if not sample:
         raise ResourceNotFoundException(resource=RESOURCE_NAME, identifier=id)

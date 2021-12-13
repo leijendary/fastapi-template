@@ -9,7 +9,7 @@ T = TypeVar('T')
 
 class DataResponse(JSONResponse):
     def render(self, data: Any, meta={}) -> bytes:
-        if set({'items', 'total', 'page', 'size'}) <= set(data):
+        if data and set({'items', 'total', 'page', 'size'}) <= set(data):
             meta = page_meta(data, meta)
             data = data['items']
 
