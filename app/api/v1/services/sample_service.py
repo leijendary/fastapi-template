@@ -21,7 +21,7 @@ from app.models.sample_translation import SampleTranslation
 from fastapi.datastructures import UploadFile
 from fastapi_pagination.default import Page
 from tortoise.query_utils import Q
-from tortoise.transactions import in_transaction
+from tortoise.transactions import atomic
 
 FIELDS_FOR_SELECT = ['id', 'column_1', 'column_2', 'created_at', 'modified_at']
 EXCLUSIONS = {'field_1', 'field_2', 'translations'}
@@ -51,26 +51,27 @@ async def get(id: UUID) -> SampleOut:
     return SampleOut(**sample.dict())
 
 
+@atomic()
 async def save(sample_in: SampleIn) -> SampleOut:
-    async with in_transaction() as connection:
-        sample = await Sample.create(**mapping(sample_in), using_db=connection)
-        translations = mapping_translations(sample, sample_in.translations)
+    sample = await Sample.create(**mapping(sample_in))
+    translations = mapping_translations(sample, sample_in.translations)
 
-        # Create the translations
-        await SampleTranslation.bulk_create(translations, using_db=connection)
+    # Create the translations
+    await SampleTranslation.bulk_create(translations)
 
-        # Fetch the related models for returns
-        await sample.fetch_related('translations', using_db=connection)
+    # Fetch the related models for returns
+    await sample.fetch_related('translations')
 
-        # Save the model to elasticsearch
-        await sample_search.save(sample)
+    # Save the model to elasticsearch
+    await sample_search.save(sample)
 
-        # Send the data to kafka
-        await kafka_producer.send(TOPIC_SAMPLE_CREATE, sample.kafka_dict())
+    # Send the data to kafka
+    await kafka_producer.send(TOPIC_SAMPLE_CREATE, sample.kafka_dict())
 
     return SampleOut(**sample.dict())
 
 
+@atomic()
 async def update(id: UUID, sample_in: SampleIn) -> SampleOut:
     sample = await Sample.select_for_update() \
         .filter(id=id) \
@@ -80,43 +81,42 @@ async def update(id: UUID, sample_in: SampleIn) -> SampleOut:
     if not sample:
         raise ResourceNotFoundException(resource=RESOURCE_NAME, identifier=id)
 
-    async with in_transaction() as connection:
-        # Update the instance from the database
-        await sample.update_from_dict(mapping(sample_in)).save(connection)
+    # Update the instance from the database
+    await sample.update_from_dict(mapping(sample_in)).save()
 
-        translations = mapping_translations(sample, sample_in.translations)
+    translations = mapping_translations(sample, sample_in.translations)
 
-        # Sync the translations of the reference table
-        await sample.sync_translations(translations, connection)
+    # Sync the translations of the reference table
+    await sample.sync_translations(translations)
 
-        # Fetch the related models for returns
-        await sample.fetch_related('translations', using_db=connection)
+    # Fetch the related models for returns
+    await sample.fetch_related('translations')
 
-        # Update the model in elasticsearch
-        await sample_search.save(sample)
+    # Update the model in elasticsearch
+    await sample_search.save(sample)
 
-        # Send the data to kafka
-        await kafka_producer.send(TOPIC_SAMPLE_CREATE, sample.kafka_dict())
+    # Send the data to kafka
+    await kafka_producer.send(TOPIC_SAMPLE_CREATE, sample.kafka_dict())
 
     return SampleOut(**sample.dict())
 
 
+@atomic()
 async def delete(id: UUID) -> None:
     sample = await Sample.select_for_update().filter(id=id).first()
 
     if not sample:
         raise ResourceNotFoundException(resource=RESOURCE_NAME, identifier=id)
 
-    async with in_transaction() as connection:
-        sample.deleted_at = datetime.now()
+    sample.deleted_at = datetime.now()
 
-        await sample.save(using_db=connection)
+    await sample.save()
 
-        # Delete the document from elasticsearch
-        await sample_search.delete(id)
+    # Delete the document from elasticsearch
+    await sample_search.delete(id)
 
-        # Send the data to kafka
-        await kafka_producer.send(TOPIC_SAMPLE_DELETE, {'id': str(id)})
+    # Send the data to kafka
+    await kafka_producer.send(TOPIC_SAMPLE_DELETE, {'id': str(id)})
 
 
 def file_download(bucket: str, folder: str, name: str) -> FileStream:

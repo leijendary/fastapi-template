@@ -1,7 +1,6 @@
 from typing import List
 
 from app.core.models.translation import TranslationModel
-from tortoise.backends.base.client import TransactionContext
 from tortoise.fields.relational import ManyToManyRelation
 
 from .model import Model
@@ -22,11 +21,7 @@ class LocalizedModel(Model):
             for translation in self.translations
         ]
 
-    async def sync_translations(
-        self,
-        translations: List[TranslationModel],
-        connection: TransactionContext
-    ):
+    async def sync_translations(self, translations: List[TranslationModel]):
         creates = []
         deletes = []
 
@@ -40,7 +35,7 @@ class LocalizedModel(Model):
                 if n.language == c.language:
                     c.update_from_dict({**n.dict(), 'id': c.id})
 
-                    await c.save(using_db=connection)
+                    await c.save()
 
         for n in translations:
             if n.language not in [c.language for c in self.translations]:
@@ -51,10 +46,10 @@ class LocalizedModel(Model):
         model = self.translations.remote_model
 
         if creates:
-            await model.bulk_create(creates, using_db=connection)
+            await model.bulk_create(creates)
 
         if deletes:
-            await self.translations.remove(*deletes, using_db=connection)
+            await self.translations.remove(*deletes)
 
     def dict(self):
         return {
