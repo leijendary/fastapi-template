@@ -6,6 +6,7 @@ from fastapi import Form
 from pydantic import BaseModel
 from pydantic.fields import ModelField
 from tortoise.fields import DatetimeField
+from tortoise.fields.data import TextField
 from tortoise.models import Model as TortoiseModel
 
 
@@ -20,13 +21,33 @@ class Model(TortoiseModel):
         return self.dict()
 
 
-class TimestampMixin:
+class AuditableMixin(TortoiseModel):
+    created_by = TextField()
     created_at = DatetimeField(auto_now_add=True)
+    modified_by = TextField()
     modified_at = DatetimeField(auto_now=True)
 
+    class Meta:
+        abstract = True
 
-class DeletableMixin:
+
+class DeletableMixin(TortoiseModel):
+    deleted_by = TextField(null=True)
     deleted_at = DatetimeField(null=True)
+
+    class Meta:
+        abstract = True
+
+
+class Router:
+
+    def db_for_read(self, model: Type[TortoiseModel]):
+        # return 'readonly'
+        return 'default'
+
+    def db_for_write(self, model: Type[TortoiseModel]):
+        # return 'primary'
+        return 'default'
 
 
 def as_form(cls: Type[BaseModel]):

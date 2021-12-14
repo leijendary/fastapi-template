@@ -2,13 +2,15 @@ from app.configs.database_config import database_config
 from app.core.logs.logging import get_logger
 from tortoise import Tortoise
 
+import app.core.models.signal  # noqa isort: skip
+
 logger = get_logger(__name__)
 _config = database_config()
 
 MODULE = 'app'
 MODELS = [
     'app.models.sample',
-    'app.models.sample_translation'
+    'app.models.sample_translation',
 ]
 MODULES = {
     MODULE: MODELS
@@ -34,7 +36,8 @@ TORTOISE_ORM = {
             }
         }
     },
-    'apps': APPS
+    'apps': APPS,
+    'routers': ['app.core.models.model.Router']
 }
 
 

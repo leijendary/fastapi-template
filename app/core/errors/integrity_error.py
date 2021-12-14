@@ -15,7 +15,7 @@ async def integrity_handler(_, exc: IntegrityError) -> ErrorResponse:
 
     sources = ['body', 'model']
     code = 'error.data_integrity'
-    message = get_message(code, cause.detail)
+    message = get_message(code, cause.message)
     source = ErrorSource(sources=sources, code=code, message=message)
 
     return ErrorResponse([source], 500)

@@ -9,6 +9,8 @@ from fastapi.exceptions import RequestValidationError
 from jose.exceptions import ExpiredSignatureError
 from pydantic.error_wrappers import ValidationError
 from pydantic.json import ENCODERS_BY_TYPE
+from starlette.middleware import Middleware
+from starlette_context.middleware.raw_middleware import RawContextMiddleware
 from tortoise.exceptions import IntegrityError
 
 from app.api.v1.routers import sample_router as sample_router_v1
@@ -37,6 +39,7 @@ from app.core.exceptions.invalid_token_exception import InvalidTokenException
 from app.core.exceptions.resource_not_found_exception import \
     ResourceNotFoundException
 from app.core.exceptions.unauthorized_exception import UnauthorizedException
+from app.core.plugins.request_plugin import AuthorizationPlugin
 from app.core.routers import healthcheck_router
 from app.core.search import elasticsearch
 from app.core.utils.date_util import to_epoch
@@ -65,7 +68,9 @@ exception_handlers = {
 }
 
 # Middlewares
-middleware = []
+middleware = [
+    Middleware(RawContextMiddleware, plugins=[AuthorizationPlugin()])
+]
 
 # Routers
 routers = [

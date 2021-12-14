@@ -14,7 +14,9 @@ class SampleListOut(BaseModel):
         max_length=100
     )
     column_2: str = Field(..., title=get_message('document.sample_column_2'))
+    created_by: str = Field(..., title=get_message('document.created_by'))
     created_at: datetime = Field(..., title=get_message('document.created_at'))
+    modified_by: str = Field(..., title=get_message('document.modified_by'))
     modified_at: datetime = Field(
         ...,
         title=get_message('document.modified_at')

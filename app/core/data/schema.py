@@ -27,11 +27,13 @@ class TranslationSchema(Schema):
 
 
 class TimestampSchema(BaseModel):
+    created_by: str = Field(..., title=get_message('document.created_by'))
     created_at: datetime = Field(
         ...,
         title=get_message('document.created_at'),
         example=to_epoch(datetime.utcnow())
     )
+    modified_by: str = Field(..., title=get_message('document.modified_by'))
     modified_at: datetime = Field(
         ...,
         title=get_message('document.modified_at'),

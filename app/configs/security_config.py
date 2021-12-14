@@ -14,6 +14,7 @@ class SecurityConfig(BaseSettings):
     ssl_keyfile = 'ssl/key.pem'
     encryption_password: str
     encryption_salt: str
+    anonymous_user = 'Anonymous'
 
     class Config:
         env_prefix = 'security_'

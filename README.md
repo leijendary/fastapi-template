@@ -22,6 +22,7 @@
 - Python Multipart
 - PyCryptodome
 - PyTest
+- Starlette Context
 
 # FastAPI Microservice Template
 

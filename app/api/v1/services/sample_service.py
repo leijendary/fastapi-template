@@ -23,7 +23,15 @@ from fastapi_pagination.default import Page
 from tortoise.query_utils import Q
 from tortoise.transactions import atomic
 
-FIELDS_FOR_SELECT = ['id', 'column_1', 'column_2', 'created_at', 'modified_at']
+FIELDS_FOR_SELECT = [
+    'id',
+    'column_1',
+    'column_2',
+    'created_by',
+    'created_at',
+    'modified_by',
+    'modified_at'
+]
 EXCLUSIONS = {'field_1', 'field_2', 'translations'}
 RESOURCE_NAME = 'Sample'
 
