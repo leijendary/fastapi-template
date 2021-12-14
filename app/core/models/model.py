@@ -42,12 +42,12 @@ class DeletableMixin(TortoiseModel):
 class Router:
 
     def db_for_read(self, model: Type[TortoiseModel]):
-        # return 'readonly'
-        return 'default'
+        # return "readonly"
+        return "default"
 
     def db_for_write(self, model: Type[TortoiseModel]):
-        # return 'primary'
-        return 'default'
+        # return "primary"
+        return "default"
 
 
 def as_form(cls: Type[BaseModel]):
@@ -82,6 +82,6 @@ def as_form(cls: Type[BaseModel]):
     sig = sig.replace(parameters=new_parameters)
     as_form_func.__signature__ = sig
 
-    setattr(cls, 'as_form', as_form_func)
+    setattr(cls, "as_form", as_form_func)
 
     return cls

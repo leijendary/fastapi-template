@@ -15,8 +15,8 @@ class ElasticsearchConfig(BaseSettings):
     client_key: str = None
 
     class Config:
-        env_prefix = 'elasticsearch_'
-        env_file = '.env'
+        env_prefix = "elasticsearch_"
+        env_file = ".env"
 
 
 @lru_cache

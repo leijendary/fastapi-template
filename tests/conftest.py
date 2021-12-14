@@ -10,11 +10,11 @@ from tortoise.contrib.fastapi import register_tortoise
 from tortoise.contrib.test import finalizer, initializer
 
 
-@pytest.fixture(scope='session', autouse=True)
+@pytest.fixture(scope="session", autouse=True)
 def client(event_loop: AbstractEventLoop) -> Generator:
     register_tortoise(
         app,
-        db_url='sqlite://:memory:',
+        db_url="sqlite://:memory:",
         modules=MODULES,
         generate_schemas=True
     )
@@ -27,7 +27,7 @@ def client(event_loop: AbstractEventLoop) -> Generator:
     finalizer()
 
 
-@pytest.fixture(scope='session', autouse=True)
+@pytest.fixture(scope="session", autouse=True)
 def event_loop():
     loop = asyncio.get_event_loop()
 

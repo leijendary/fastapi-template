@@ -1,10 +1,10 @@
-version: '3.9'
+version: "3.9"
 services:
   fastapi-template:
     build: .
     container_name: fastapi-template
     ports:
-      - '443:443'
+      - "443:443"
     env_file: .docker.env
     networks:
       - postgres_network
@@ -14,7 +14,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.25'
+          cpus: "0.25"
           memory: 512M
     mem_limit: 536870912
     cpus: 0.25

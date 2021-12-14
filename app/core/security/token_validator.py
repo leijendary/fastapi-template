@@ -16,14 +16,14 @@ _config = security_config()
 
 async def check_token(token: str = Depends(oauth2_scheme)):
     if not token:
-        raise UnauthorizedException('No token provided')
+        raise UnauthorizedException("No token provided")
 
     await validate_key(token)
 
     claims = jwt.get_unverified_claims(token)
 
-    validate_expiry(claims['exp'])
-    validate_audience(claims['aud'])
+    validate_expiry(claims["exp"])
+    validate_audience(claims["aud"])
 
     return claims
 
@@ -32,34 +32,34 @@ async def get_key(kid: str) -> str:
     keys = await jwks_client.keys()
 
     for k in keys:
-        if k['kid'] == kid:
+        if k["kid"] == kid:
             key = jwk.construct(k)
 
             break
     else:
-        raise InvalidTokenException('Key not found in JWKs')
+        raise InvalidTokenException("Key not found in JWKs")
 
     return key
 
 
 async def validate_key(token: str):
     header = jwt.get_unverified_header(token)
-    kid = header.get('kid')
+    kid = header.get("kid")
     key = await get_key(kid)
-    message, signature = token.rsplit('.', 1)
-    decoded_signature = base64url_decode(signature.encode('utf-8'))
+    message, signature = token.rsplit(".", 1)
+    decoded_signature = base64url_decode(signature.encode("utf-8"))
 
-    if not key.verify(message.encode('utf-8'), decoded_signature):
-        raise InvalidTokenException('Invalid token signature')
+    if not key.verify(message.encode("utf-8"), decoded_signature):
+        raise InvalidTokenException("Invalid token signature")
 
 
 def validate_expiry(exp: int):
     now = timegm(datetime.utcnow().utctimetuple())
 
     if exp < now:
-        raise ExpiredSignatureError('Signature expired')
+        raise ExpiredSignatureError("Signature expired")
 
 
 def validate_audience(aud: str):
     if aud != _config.audience:
-        raise UnauthorizedException('Invalid audience')
+        raise UnauthorizedException("Invalid audience")

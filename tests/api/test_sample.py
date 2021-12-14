@@ -12,7 +12,7 @@ logger = get_logger(__name__)
 @pytest.mark.asyncio
 def test_sample_create(client: TestClient):
     generated = uuid4()
-    token = ''
+    token = ""
     json = {
         "field_1": f"Test {generated}",
         "field_2": 1,
@@ -32,7 +32,7 @@ def test_sample_create(client: TestClient):
         ]
     }
     headers = {
-        'Authorization': f"Bearer {token}"
+        "Authorization": f"Bearer {token}"
     }
     response = client.post(
         f"{_config.prefix}/api/v1/samples/",

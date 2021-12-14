@@ -1,7 +1,7 @@
 from asyncio import Lock
 from functools import wraps
 
-KEY = '_synchronized_lock'
+KEY = "_synchronized_lock"
 
 
 def synchronized(func):

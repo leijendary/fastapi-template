@@ -5,16 +5,16 @@ logger = get_logger(__name__)
 
 
 async def init():
-    logger.info('Initializing http client...')
+    logger.info("Initializing http client...")
 
     HttpxClientContext.init()
 
-    logger.info('Http client initialized!')
+    logger.info("Http client initialized!")
 
 
 async def close():
-    logger.info('Closing http client...')
+    logger.info("Closing http client...")
 
     await HttpxClientContext.close()
 
-    logger.info('Http client closed!')
+    logger.info("Http client closed!")

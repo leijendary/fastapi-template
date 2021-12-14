@@ -11,21 +11,21 @@ _config = kafka_config()
 
 
 def string_deserializer(value: bytes):
-    return value.decode('utf-8')
+    return value.decode("utf-8")
 
 
 def json_deserializer(value: bytes):
     if not value:
         return None
 
-    return json.loads(value.decode('utf-8'))
+    return json.loads(value.decode("utf-8"))
 
 
 async def consume(
     topic: str,
     callback: Awaitable,
     value_deserializer=json_deserializer,
-    auto_offset_reset='earliest'
+    auto_offset_reset="earliest"
 ):
     logger.info(f"Initializing kafka consumer for topic {topic}...")
 
@@ -46,7 +46,7 @@ async def consume(
         message: ConsumerRecord
 
         async for message in consumer:
-            log = 'Consuming {}:{}:{} key={} value={}'.format(
+            log = "Consuming {}:{}:{} key={} value={}".format(
                 message.topic,
                 message.partition,
                 message.offset,

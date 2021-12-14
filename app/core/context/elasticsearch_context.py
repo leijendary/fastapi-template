@@ -10,7 +10,7 @@ class ElasticsearchContext:
     @classmethod
     def init(cls, config: ElasticsearchConfig):
         cls.instance = AsyncElasticsearch(
-            hosts=config.hosts.split(','),
+            hosts=config.hosts.split(","),
             use_ssl=config.use_ssl,
             verify_certs=config.verify_certs,
             ca_certs=config.ca_certs,
@@ -28,7 +28,7 @@ class ElasticsearchContext:
 
         for index, body in indices.items():
             if await client.exists(index):
-                await client.put_mapping(body['mappings'], index)
+                await client.put_mapping(body["mappings"], index)
             else:
                 await client.create(index, body)
 
@@ -37,6 +37,6 @@ class ElasticsearchContext:
         try:
             info = await cls.instance.info()
 
-            return 'UP' if info else 'DOWN'
+            return "UP" if info else "DOWN"
         except:
-            return 'DOWN'
+            return "DOWN"

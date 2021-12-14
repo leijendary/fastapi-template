@@ -8,7 +8,7 @@ class RedisContext:
 
     @classmethod
     def init(cls, config: CacheConfig):
-        scheme = 'rediss' if config.use_ssl else 'redis'
+        scheme = "rediss" if config.use_ssl else "redis"
 
         cls.instance = from_url(
             f"{scheme}://{config.redis_host}:{config.redis_port}",
@@ -26,6 +26,6 @@ class RedisContext:
         try:
             pong = await cls.instance.ping()
 
-            return 'UP' if pong else 'DOWN'
+            return "UP" if pong else "DOWN"
         except:
-            return 'DOWN'
+            return "DOWN"

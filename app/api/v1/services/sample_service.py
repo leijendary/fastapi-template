@@ -24,23 +24,23 @@ from tortoise.query_utils import Q
 from tortoise.transactions import atomic
 
 FIELDS_FOR_SELECT = [
-    'id',
-    'column_1',
-    'column_2',
-    'created_by',
-    'created_at',
-    'modified_by',
-    'modified_at'
+    "id",
+    "column_1",
+    "column_2",
+    "created_by",
+    "created_at",
+    "modified_by",
+    "modified_at"
 ]
-EXCLUSIONS = {'field_1', 'field_2', 'translations'}
-RESOURCE_NAME = 'Sample'
+EXCLUSIONS = {"field_1", "field_2", "translations"}
+RESOURCE_NAME = "Sample"
 
 
 async def list(query, params: SortParams) -> Page[SampleListOut]:
     filter = Q(
         Q(column_1__icontains=query),
         Q(column_2__icontains=query),
-        join_type='OR'
+        join_type="OR"
     )
     query = Sample.filter(filter).only(*FIELDS_FOR_SELECT)
 
@@ -50,7 +50,7 @@ async def list(query, params: SortParams) -> Page[SampleListOut]:
 async def get(id: UUID) -> SampleOut:
     sample = await Sample.filter(id=id) \
         .only(*FIELDS_FOR_SELECT) \
-        .prefetch_related('translations') \
+        .prefetch_related("translations") \
         .first()
 
     if not sample:
@@ -68,7 +68,7 @@ async def save(sample_in: SampleIn) -> SampleOut:
     await SampleTranslation.bulk_create(translations)
 
     # Fetch the related models for returns
-    await sample.fetch_related('translations')
+    await sample.fetch_related("translations")
 
     # Save the model to elasticsearch
     await sample_search.save(sample)
@@ -83,7 +83,7 @@ async def save(sample_in: SampleIn) -> SampleOut:
 async def update(id: UUID, sample_in: SampleIn) -> SampleOut:
     sample = await Sample.select_for_update() \
         .filter(id=id) \
-        .prefetch_related('translations') \
+        .prefetch_related("translations") \
         .first()
 
     if not sample:
@@ -98,7 +98,7 @@ async def update(id: UUID, sample_in: SampleIn) -> SampleOut:
     await sample.sync_translations(translations)
 
     # Fetch the related models for returns
-    await sample.fetch_related('translations')
+    await sample.fetch_related("translations")
 
     # Update the model in elasticsearch
     await sample_search.save(sample)
@@ -124,7 +124,7 @@ async def delete(id: UUID) -> None:
     await sample_search.delete(id)
 
     # Send the data to kafka
-    await kafka_producer.send(TOPIC_SAMPLE_DELETE, {'id': str(id)})
+    await kafka_producer.send(TOPIC_SAMPLE_DELETE, {"id": str(id)})
 
 
 def file_download(bucket: str, folder: str, name: str) -> FileStream:
@@ -152,8 +152,8 @@ def file_delete(bucket: str, folder: str, name: str):
 def mapping(sample_in: SampleIn):
     return {
         **sample_in.dict(exclude=EXCLUSIONS),
-        'column_1': sample_in.field_1,
-        'column_2': sample_in.field_2,
+        "column_1": sample_in.field_1,
+        "column_2": sample_in.field_2,
     }
 
 

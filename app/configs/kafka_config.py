@@ -10,8 +10,8 @@ class KafkaConfig(BaseSettings):
     brokers: Optional[str]
 
     class Config:
-        env_prefix = 'kafka_'
-        env_file = '.env'
+        env_prefix = "kafka_"
+        env_file = ".env"
 
 
 @lru_cache

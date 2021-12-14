@@ -24,6 +24,6 @@ class KafkaProducerContext:
         try:
             version = await cls.instance.client.check_version()
 
-            return 'UP' if version else 'DOWN'
+            return "UP" if version else "DOWN"
         except:
-            return 'DOWN'
+            return "DOWN"

@@ -15,10 +15,10 @@ def load_translation():
 
     for file_name in [
         file for file in os.listdir(internationalization_path)
-        if file.endswith('.json')
+        if file.endswith(".json")
     ]:
         with open(internationalization_path + file_name) as json_file:
-            lang = file_name.split('.')[1]
+            lang = file_name.split(".")[1]
             translation[lang] = json.load(json_file)
 
     return translation

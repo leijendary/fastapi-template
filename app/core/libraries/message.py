@@ -14,10 +14,10 @@ def load_message():
 
     for file_name in [
         file for file in os.listdir(message_path)
-        if file.endswith('.json')
+        if file.endswith(".json")
     ]:
         with open(message_path + file_name) as json_file:
-            lang = file_name.split('.')[0]
+            lang = file_name.split(".")[0]
             message[lang] = json.load(json_file)
 
     return message
@@ -25,7 +25,7 @@ def load_message():
 
 def get_message(code: str, *params):
     message = load_message()
-    library, key = code.split('.')
+    library, key = code.split(".")
 
     if library not in message:
         return code

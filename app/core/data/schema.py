@@ -15,27 +15,27 @@ class Schema(BaseModel):
 class TranslationSchema(Schema):
     language: str = Field(
         ...,
-        title=get_message('document.translation_language'),
+        title=get_message("document.translation_language"),
         min_length=2,
         max_length=2
     )
     ordinal: int = Field(
         ...,
-        title=get_message('document.translation_ordinal'),
+        title=get_message("document.translation_ordinal"),
         gt=0
     )
 
 
 class TimestampSchema(BaseModel):
-    created_by: str = Field(..., title=get_message('document.created_by'))
+    created_by: str = Field(..., title=get_message("document.created_by"))
     created_at: datetime = Field(
         ...,
-        title=get_message('document.created_at'),
+        title=get_message("document.created_at"),
         example=to_epoch(datetime.utcnow())
     )
-    modified_by: str = Field(..., title=get_message('document.modified_by'))
+    modified_by: str = Field(..., title=get_message("document.modified_by"))
     modified_at: datetime = Field(
         ...,
-        title=get_message('document.modified_at'),
+        title=get_message("document.modified_at"),
         example=to_epoch(datetime.utcnow())
     )

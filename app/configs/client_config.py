@@ -8,8 +8,8 @@ class ClientConfig(BaseSettings):
     sample_url: Optional[str]
 
     class Config:
-        env_prefix = 'client_'
-        env_file = '.env'
+        env_prefix = "client_"
+        env_file = ".env"
 
 
 @lru_cache

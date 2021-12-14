@@ -33,7 +33,7 @@ class LocalizedModel(Model):
 
             for n in translations:
                 if n.language == c.language:
-                    c.update_from_dict({**n.dict(), 'id': c.id})
+                    c.update_from_dict({**n.dict(), "id": c.id})
 
                     await c.save()
 
@@ -54,11 +54,11 @@ class LocalizedModel(Model):
     def dict(self):
         return {
             **super().dict(),
-            **{'translations': self.translations_dict()}
+            **{"translations": self.translations_dict()}
         }
 
     def kafka_dict(self):
         return {
             **super().kafka_dict(),
-            **{'translations': self.translations_dict()}
+            **{"translations": self.translations_dict()}
         }

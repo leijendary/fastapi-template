@@ -3,13 +3,13 @@ from uuid import UUID
 
 
 def to_dict(obj):
-    if not hasattr(obj, '__dict__'):
+    if not hasattr(obj, "__dict__"):
         return obj
 
     result = {}
 
     for key, val in obj.__dict__.items():
-        if key.startswith('_'):
+        if key.startswith("_"):
             continue
 
         element = []

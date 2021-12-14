@@ -5,7 +5,7 @@ def localize(locale: str, translations: List):
     localized = None
 
     for translation in translations:
-        if 'language' in translation and translation['language'] == locale:
+        if "language" in translation and translation["language"] == locale:
             localized = translation
 
             break
@@ -16,4 +16,4 @@ def localize(locale: str, translations: List):
 
 
 def sorter(translation: Any):
-    return translation.get('ordinal', None)
+    return translation.get("ordinal", None)

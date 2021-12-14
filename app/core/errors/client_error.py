@@ -6,21 +6,21 @@ from botocore.exceptions import ClientError
 
 
 async def client_error_handler(_, exc: ClientError) -> ErrorResponse:
-    error = exc.response['Error']
-    key = error['Key']
-    sources = ['File']
-    code = 'error.generic'
-    reason = error['Message']
+    error = exc.response["Error"]
+    key = error["Key"]
+    sources = ["File"]
+    code = "error.generic"
+    reason = error["Message"]
 
-    if error['Code'] == 'NoSuchKey':
+    if error["Code"] == "NoSuchKey":
         name = get_name(key)
-        code = 'error.file_not_found'
+        code = "error.file_not_found"
         reason = name
 
         sources.append(name)
 
     message = get_message(code, reason)
     source = ErrorSource(sources=sources, code=code, message=message)
-    status_code = exc.response['ResponseMetadata']['HTTPStatusCode']
+    status_code = exc.response["ResponseMetadata"]["HTTPStatusCode"]
 
     return ErrorResponse([source], status_code)

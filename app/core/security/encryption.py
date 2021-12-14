@@ -9,15 +9,15 @@ ITERATIONS = 1024
 KEY_LENGTH = 32
 
 _config = security_config()
-_password = _config.encryption_password.encode('utf-8')
+_password = _config.encryption_password.encode("utf-8")
 _salt = bytes.fromhex(_config.encryption_salt)
-_key = pbkdf2_hmac('sha1', _password, _salt, ITERATIONS, KEY_LENGTH)
+_key = pbkdf2_hmac("sha1", _password, _salt, ITERATIONS, KEY_LENGTH)
 
 
 def encrypt(plaintext: str):
     nonce = get_random_bytes(block_size)
     cipher = AES.new(_key, MODE_GCM, nonce=nonce)
-    ciphertext, tag = cipher.encrypt_and_digest(plaintext.encode('utf-8'))
+    ciphertext, tag = cipher.encrypt_and_digest(plaintext.encode("utf-8"))
     encrypted = nonce + ciphertext + tag
 
     return encrypted.hex()
@@ -30,4 +30,4 @@ def decrypt(encrypted: str):
     encrypted, tag = encrypted[block_size:-block_size], encrypted[-block_size:]
     decrypted = cipher.decrypt_and_verify(encrypted, tag)
 
-    return decrypted.decode('utf-8')
+    return decrypted.decode("utf-8")

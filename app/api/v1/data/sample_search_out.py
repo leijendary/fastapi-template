@@ -8,6 +8,6 @@ class SampleSearchOut(SearchOut):
     id: UUID
     column_1: str
     column_2: str
-    name: str = ''
-    description: str = ''
+    name: str = ""
+    description: str = ""
     created_at: datetime

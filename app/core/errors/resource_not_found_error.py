@@ -11,8 +11,8 @@ async def resource_not_found_handler(
 ) -> ErrorResponse:
     resource = exc.resource
     identifier = exc.identifier
-    sources = ['model', resource, identifier]
-    code = 'error.resource_not_found'
+    sources = ["model", resource, identifier]
+    code = "error.resource_not_found"
     message = get_message(code, resource, identifier)
     source = ErrorSource(sources=sources, code=code, message=message)
 

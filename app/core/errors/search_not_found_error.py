@@ -5,10 +5,10 @@ from elasticsearch.exceptions import NotFoundError
 
 
 async def search_not_found_handler(_, exc: NotFoundError) -> ErrorResponse:
-    resource = exc.info['_index']
-    identifier = exc.info['_id']
-    sources = ['search', resource, identifier]
-    code = 'error.search_not_found'
+    resource = exc.info["_index"]
+    identifier = exc.info["_id"]
+    sources = ["search", resource, identifier]
+    code = "error.search_not_found"
     message = get_message(code, resource, identifier)
     source = ErrorSource(sources=sources, code=code, message=message)
 

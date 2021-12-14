@@ -11,7 +11,7 @@ async def to_page(query: QuerySet[Model], params: SortParams, type: Any):
     items = await query \
         .offset(raw_params.offset) \
         .limit(raw_params.limit) \
-        .order_by(*params.sort.split(',')) \
+        .order_by(*params.sort.split(",")) \
         .all()
     total = await query.count()
     records = [type(**item.dict()) for item in items]

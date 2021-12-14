@@ -13,8 +13,8 @@ async def integrity_handler(_, exc: IntegrityError) -> ErrorResponse:
     if isinstance(cause, UniqueViolationError):
         return await unique_violation_handler(_, cause)
 
-    sources = ['body', 'model']
-    code = 'error.data_integrity'
+    sources = ["body", "model"]
+    code = "error.data_integrity"
     message = get_message(code, cause.message)
     source = ErrorSource(sources=sources, code=code, message=message)
 
@@ -26,10 +26,10 @@ async def unique_violation_handler(
     exc: UniqueViolationError
 ) -> ErrorResponse:
     detail = exc.detail
-    field = re.search('Key \((.+?)\)=', detail).group(1)
-    value = re.search('=\((.+?)\)', detail).group(1)
-    sources = ['body', exc.table_name, field]
-    code = 'validation.already_exists'
+    field = re.search("Key \((.+?)\)=", detail).group(1)
+    value = re.search("=\((.+?)\)", detail).group(1)
+    sources = ["body", exc.table_name, field]
+    code = "validation.already_exists"
     message = get_message(code, field, value)
     source = ErrorSource(sources=sources, code=code, message=message)
 

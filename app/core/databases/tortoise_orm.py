@@ -7,64 +7,64 @@ import app.core.models.signal  # noqa isort: skip
 logger = get_logger(__name__)
 _config = database_config()
 
-MODULE = 'app'
+MODULE = "app"
 MODELS = [
-    'app.models.sample',
-    'app.models.sample_translation',
+    "app.models.sample",
+    "app.models.sample_translation",
 ]
 MODULES = {
     MODULE: MODELS
 }
 APPS = {
     MODULE: {
-        'models': [*MODELS, 'aerich.models'],
-        'default_connection': 'default',
+        "models": [*MODELS, "aerich.models"],
+        "default_connection": "default",
     }
 }
 TORTOISE_ORM = {
-    'connections': {
-        'default': {
-            'engine': 'tortoise.backends.asyncpg',
-            'credentials': {
-                'database': _config.name,
-                'host': _config.host,
-                'port': _config.port,
-                'user': _config.user,
-                'password': _config.password,
-                'minsize': _config.connection_min_size,
-                'maxsize': _config.connection_max_size
+    "connections": {
+        "default": {
+            "engine": "tortoise.backends.asyncpg",
+            "credentials": {
+                "database": _config.name,
+                "host": _config.host,
+                "port": _config.port,
+                "user": _config.user,
+                "password": _config.password,
+                "minsize": _config.connection_min_size,
+                "maxsize": _config.connection_max_size
             }
         }
     },
-    'apps': APPS,
-    'routers': ['app.core.models.model.Router']
+    "apps": APPS,
+    "routers": ["app.core.models.model.Router"]
 }
 
 
 async def init():
-    logger.info('Initializing connection to the database...')
+    logger.info("Initializing connection to the database...")
 
     Tortoise.init_models(MODELS, MODULE)
 
     await Tortoise.init(config=TORTOISE_ORM, modules=MODULES)
 
-    logger.info('Database connection is initialized!')
+    logger.info("Database connection is initialized!")
 
 
 async def close():
-    logger.info('Shutting down database connection...')
+    logger.info("Shutting down database connection...")
 
     await Tortoise.close_connections()
 
-    logger.info('Database connection shutdown completed!')
+    logger.info("Database connection shutdown completed!")
 
 
 async def health():
     try:
         result = await Tortoise \
-            .get_connection('default') \
+            .get_connection(next(iter(Tortoise._connections))) \
             .execute_query_dict("SELECT 'UP' as status")
 
-        return result[0]['status'] or 'DOWN'
+        return result[0]["status"] or "DOWN"
     except:
-        return 'DOWN'
+        return "DOWN"

@@ -5,13 +5,13 @@ from starlette.requests import Request
 
 
 async def not_found_handler(request: Request, _) -> ErrorResponse:
-    sources = ['path']
-    code = 'error.mapping_not_found'
+    sources = ["path"]
+    code = "error.mapping_not_found"
     path = request.url.path
     query = request.url.query
 
     if query:
-        path += '?' + query
+        path += "?" + query
 
     message = get_message(code, path)
     source = ErrorSource(sources=sources, code=code, message=message)

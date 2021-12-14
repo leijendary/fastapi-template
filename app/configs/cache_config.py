@@ -13,8 +13,8 @@ class CacheConfig(BaseSettings):
     ttl = 43200
 
     class Config:
-        env_prefix = 'cache_'
-        env_file = '.env'
+        env_prefix = "cache_"
+        env_file = ".env"
 
 
 @lru_cache

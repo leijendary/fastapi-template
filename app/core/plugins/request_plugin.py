@@ -6,15 +6,19 @@ from starlette_context.plugins.base import Plugin
 
 
 class AuthorizationPlugin(Plugin):
-    key = 'Authorization'
+    key = "Authorization"
 
     async def process_request(self, request: Union[Request, HTTPConnection]):
         authorization = await super().extract_value_from_header_by_key(request)
+
+        if not authorization:
+            return
+
         scheme, token = authorization.split()
 
-        if scheme.lower() != 'bearer':
+        if scheme.lower() != "bearer":
             return
 
         claims = jwt.get_unverified_claims(token)
 
-        return claims['sub']
+        return claims["sub"]

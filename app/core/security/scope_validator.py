@@ -14,8 +14,8 @@ async def check_scope(
 
 
 def validate_scope(scopes, claims):
-    if 'scope' not in claims:
-        raise AccessDeniedException('No scope provided')
+    if "scope" not in claims:
+        raise AccessDeniedException("No scope provided")
 
-    if not any(scope in claims['scope'].split(' ') for scope in scopes):
-        raise AccessDeniedException('Scope not in any of the scopes', scopes)
+    if not any(scope in claims["scope"].split(" ") for scope in scopes):
+        raise AccessDeniedException("Scope not in any of the scopes", scopes)

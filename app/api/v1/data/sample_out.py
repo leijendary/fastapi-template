@@ -11,12 +11,12 @@ class SampleOut(TimestampSchema):
     id: UUID
     column_1: str = Field(
         ...,
-        title=get_message('document.sample_column_1'),
+        title=get_message("document.sample_column_1"),
         max_length=100
     )
-    column_2: str = Field(..., title=get_message('document.sample_column_2'))
+    column_2: str = Field(..., title=get_message("document.sample_column_2"))
     translations: List[SampleTranslationOut] = Field(
         ...,
-        title=get_message('document.translation_list'),
+        title=get_message("document.translation_list"),
         unique_list=True
     )

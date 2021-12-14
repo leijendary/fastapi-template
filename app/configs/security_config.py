@@ -6,19 +6,19 @@ from pydantic import BaseSettings
 
 class SecurityConfig(BaseSettings):
     jwks_url: Optional[str]
-    jwks_cache_key = 'fastapi:jwks'
+    jwks_cache_key = "fastapi:jwks"
     audience: Optional[str]
-    token_url = ''
-    scopes = ''
-    ssl_certfile = 'ssl/certificate.pem'
-    ssl_keyfile = 'ssl/key.pem'
+    token_url = ""
+    scopes = ""
+    ssl_certfile = "ssl/certificate.pem"
+    ssl_keyfile = "ssl/key.pem"
     encryption_password: str
     encryption_salt: str
-    anonymous_user = 'Anonymous'
+    anonymous_user = "Anonymous"
 
     class Config:
-        env_prefix = 'security_'
-        env_file = '.env'
+        env_prefix = "security_"
+        env_file = ".env"
 
 
 @lru_cache

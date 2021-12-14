@@ -6,5 +6,5 @@ from pydantic.main import BaseModel
 
 class ErrorSource(BaseModel):
     sources: List[Any] = Field(...)
-    code: str = ''
-    message: str = ''
+    code: str = ""
+    message: str = ""

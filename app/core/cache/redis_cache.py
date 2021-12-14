@@ -18,32 +18,32 @@ _config = cache_config()
 
 
 async def init():
-    logger.info('Initializing redis cache...')
+    logger.info("Initializing redis cache...")
 
     RedisContext.init(_config)
 
-    logger.info('Redis cache initialized!')
+    logger.info("Redis cache initialized!")
 
 
 async def close():
-    logger.info('Closing redis cache...')
+    logger.info("Closing redis cache...")
 
     await RedisContext.close()
 
-    logger.info('Redis cache closed!')
+    logger.info("Redis cache closed!")
 
 
 def cache_get(
     namespace: str,
-    identifier='id',
+    identifier="id",
     key_builder=request_key_builder
 ):
     def wrapper(func):
 
         @wraps(func)
         async def inner(*args, **kwargs):
-            request = kwargs.get('request')
-            response = kwargs.get('response')
+            request = kwargs.get("request")
+            response = kwargs.get("response")
             key = get_key(
                 func=func,
                 namespace=namespace,
@@ -76,14 +76,14 @@ def cache_get(
 
 def cache_put(
     namespace: str,
-    identifier='id',
+    identifier="id",
     key_builder=result_key_builder
 ):
     def wrapper(func):
 
         @wraps(func)
         async def inner(*args, **kwargs):
-            request = kwargs.get('request')
+            request = kwargs.get("request")
             result = await func(*args, **kwargs)
 
             if is_no_store(request):
@@ -110,7 +110,7 @@ def cache_put(
 
 def cache_evict(
     namespace: str,
-    identifier='id',
+    identifier="id",
     key_builder=request_key_builder
 ):
     def wrapper(func):
@@ -157,26 +157,26 @@ def get_key(
 
 
 def with_headers(result, ttl, request: Request, response: Response):
-    dump = json.dumps(result, sort_keys=True).encode('utf-8')
+    dump = json.dumps(result, sort_keys=True).encode("utf-8")
     etag = md5(dump).hexdigest()
-    response.headers['Cache-Control'] = f"max-age={ttl}"
-    response.headers['ETag'] = etag
+    response.headers["Cache-Control"] = f"max-age={ttl}"
+    response.headers["ETag"] = etag
 
     if not request:
         return
 
-    if_none_match = request.headers.get('if-none-match')
+    if_none_match = request.headers.get("if-none-match")
 
     if if_none_match == etag:
         response.status_code = 304
 
 
 def is_no_store(request: Request):
-    return request and request.headers.get('Cache-Control') == 'no-store'
+    return request and request.headers.get("Cache-Control") == "no-store"
 
 
 async def set(key: str, value: Any):
-    if hasattr(value, 'json'):
+    if hasattr(value, "json"):
         value = value.json()
     else:
         value = json.dumps(value)

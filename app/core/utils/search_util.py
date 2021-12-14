@@ -6,7 +6,7 @@ from app.core.data.search_out import SearchOut
 from fastapi_pagination import Params, create_page
 
 MATCH_ALL = {
-    'match_all': {}
+    "match_all": {}
 }
 
 _config = app_config()
@@ -14,7 +14,7 @@ _config = app_config()
 
 def translation_page(query, params: SortParams, fields):
     body = {
-        'query': match_fuzziness(query, fields),
+        "query": match_fuzziness(query, fields),
         **sorting(params.sort),
         **paginate(params.page, params.size)
     }
@@ -23,21 +23,21 @@ def translation_page(query, params: SortParams, fields):
 
 
 def to_page(result: dict, params: Params, type: SearchOut, locale=None):
-    total = result['hits']['total']['value']
+    total = result["hits"]["total"]["value"]
     locale = locale if locale else _config.language_default
-    records = [map_type(hit, type, locale) for hit in result['hits']['hits']]
+    records = [map_type(hit, type, locale) for hit in result["hits"]["hits"]]
 
     return create_page(records, total, params)
 
 
 def map_type(hit: dict, type: SearchOut, locale=None):
-    return type(locale=locale, id=hit['_id'], **hit['_source'])
+    return type(locale=locale, id=hit["_id"], **hit["_source"])
 
 
 def match_fuzziness(
-    query='',
+    query="",
     fields: List[str] = [],
-    fuzziness='AUTO',
+    fuzziness="AUTO",
     default=MATCH_ALL
 ):
     if not query:
@@ -47,10 +47,10 @@ def match_fuzziness(
 
     for field in fields:
         match = {
-            'match': {
+            "match": {
                 field: {
-                    'query': query,
-                    'fuzziness': fuzziness
+                    "query": query,
+                    "fuzziness": fuzziness
                 }
             }
         }
@@ -58,33 +58,33 @@ def match_fuzziness(
         should.append(match)
 
     return {
-        'bool': {
-            'should': should
+        "bool": {
+            "should": should
         }
     }
 
 
 def paginate(page, size):
     return {
-        'from': (page - 1) * size,
-        'size': size
+        "from": (page - 1) * size,
+        "size": size
     }
 
 
 def sorting(sort: str):
-    sort = sort if sort else '-_score'
+    sort = sort if sort else "-_score"
     result = {}
 
-    for s in sort.split(','):
-        if s[0] not in ['+', '-']:
+    for s in sort.split(","):
+        if s[0] not in ["+", "-"]:
             # Default direction is asc
-            s = '+' + s
+            s = "+" + s
 
         field = s[1:]
-        direction = 'asc' if s[0] == '+' else 'desc'
+        direction = "asc" if s[0] == "+" else "desc"
 
         result[field] = direction
 
     return {
-        'sort': result
+        "sort": result
     }

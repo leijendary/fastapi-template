@@ -4,8 +4,8 @@ from app.core.libraries.message import get_message
 
 
 async def access_denied_handler(_, __) -> ErrorResponse:
-    sources = ['header', 'Authorization', 'scope']
-    code = 'access.denied'
+    sources = ["header", "Authorization", "scope"]
+    code = "access.denied"
     message = get_message(code)
     source = ErrorSource(sources=sources, code=code, message=message)
 

@@ -5,8 +5,8 @@ from app.core.libraries.message import get_message
 
 async def generic_handler(_, exc: Exception) -> ErrorResponse:
     reason = exc.args[0]
-    sources = ['Generic']
-    code = 'error.generic'
+    sources = ["Generic"]
+    code = "error.generic"
     message = get_message(code, reason)
     source = ErrorSource(sources=sources, code=code, message=message)
 

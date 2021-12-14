@@ -28,4 +28,4 @@ async def _fetch_keys():
 
     response = await HttpxClientContext.instance.get(jwks_url)
 
-    return response.json()['keys']
+    return response.json()["keys"]

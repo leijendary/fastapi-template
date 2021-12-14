@@ -10,7 +10,7 @@ _config = logging_config()
 Formatter.formatTime = (lambda self, record, datefmt=None: format_date(record))
 
 # Override uvicorn log format
-LOGGING_CONFIG['formatters']['default']['fmt'] = _config.format
+LOGGING_CONFIG["formatters"]["default"]["fmt"] = _config.format
 
 
 class LogFormatter(Formatter):

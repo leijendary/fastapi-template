@@ -5,8 +5,8 @@ from starlette.requests import Request
 
 
 async def method_not_allowed_handler(request: Request, _) -> ErrorResponse:
-    sources = ['method']
-    code = 'error.method_not_supported'
+    sources = ["method"]
+    code = "error.method_not_supported"
     method = request.method
 
     message = get_message(code, method)

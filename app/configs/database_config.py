@@ -14,8 +14,8 @@ class DatabaseConfig(BaseSettings):
     connection_max_size: int = 20
 
     class Config:
-        env_prefix = 'database_'
-        env_file = '.env'
+        env_prefix = "database_"
+        env_file = ".env"
 
 
 @lru_cache

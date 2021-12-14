@@ -9,26 +9,26 @@ logger = get_logger(__name__)
 
 
 async def init():
-    logger.info('Starting kafka producer...')
+    logger.info("Starting kafka producer...")
 
     await KafkaProducerContext.init(kafka_config())
 
-    logger.info('Kafka producer started!')
+    logger.info("Kafka producer started!")
 
 
 async def close():
-    logger.info('Stopping kafka producer...')
+    logger.info("Stopping kafka producer...")
 
     await KafkaProducerContext.close()
 
-    logger.info('Kafka producer stopped!')
+    logger.info("Kafka producer stopped!")
 
 
 def json_serializer(value: Any):
     if not value:
         return None
 
-    return json.dumps(value).encode('utf-8')
+    return json.dumps(value).encode("utf-8")
 
 
 async def send(topic: str, value: Dict = None, key: str = None):

@@ -123,20 +123,20 @@ app = create_app()
 
 def run_prestart():
     # Run prestart shell script
-    subprocess.call(['sh', './prestart.sh'])
+    subprocess.call(["sh", "./prestart.sh"])
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     security = security_config()
     log = logging_config()
-    reload = _config.environment == 'local'
+    reload = _config.environment == "local"
 
     # Run prestart
     run_prestart()
 
     uvicorn.run(
-        'main:app',
-        host='0.0.0.0',
+        "main:app",
+        host="0.0.0.0",
         port=_config.port,
         reload=reload,
         access_log=log.access,
