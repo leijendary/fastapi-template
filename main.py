@@ -6,12 +6,9 @@ from botocore.exceptions import ClientError
 from elasticsearch.exceptions import NotFoundError as SearchNotFoundError
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.middleware.gzip import GZipMiddleware
 from jose.exceptions import ExpiredSignatureError
 from pydantic.error_wrappers import ValidationError
 from pydantic.json import ENCODERS_BY_TYPE
-from starlette.middleware import Middleware
 from tortoise.exceptions import IntegrityError
 
 from app.api.v1.routers import sample_router as sample_router_v1
@@ -68,16 +65,7 @@ exception_handlers = {
 }
 
 # Middlewares
-middleware = [
-    Middleware(
-        CORSMiddleware,
-        allow_origins=['*'],
-        allow_methods=['*'],
-        allow_headers=['*'],
-        allow_credentials=True,
-    ),
-    Middleware(GZipMiddleware)
-]
+middleware = []
 
 # Routers
 routers = [
@@ -108,8 +96,8 @@ on_shutdown = [
 def create_app() -> FastAPI:
     # App instance
     app = FastAPI(
-        title='FastAPI Template',
-        version='0.0.1',
+        title=_config.name,
+        version=_config.version,
         default_response_class=DataResponse,
         exception_handlers=exception_handlers,
         middleware=middleware,

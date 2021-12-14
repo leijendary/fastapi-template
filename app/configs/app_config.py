@@ -4,6 +4,8 @@ from pydantic import BaseSettings
 
 
 class AppConfig(BaseSettings):
+    name = 'FastAPI Template'
+    version = '0.0.1'
     prefix = '/sample'
     port = 443
     workers = 1
