@@ -1,8 +1,7 @@
 from app.configs.database_config import database_config
 from app.core.logs.logging import get_logger
+from app.core.models import signal
 from tortoise import Tortoise
-
-import app.core.models.signal  # noqa isort: skip
 
 logger = get_logger(__name__)
 _config = database_config()
@@ -47,6 +46,8 @@ async def init():
     Tortoise.init_models(MODELS, MODULE)
 
     await Tortoise.init(config=TORTOISE_ORM, modules=MODULES)
+
+    signal.init()
 
     logger.info("Database connection is initialized!")
 
