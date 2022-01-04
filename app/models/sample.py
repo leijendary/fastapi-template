@@ -1,4 +1,3 @@
-
 from app.core.models.localized_model import LocalizedModel
 from app.core.models.manager import DeletableManager
 from app.core.models.model import AuditableMixin, DeletableMixin
