@@ -8,6 +8,7 @@ from app.api.v1.data.sample_out import SampleOut
 from app.api.v1.data.sample_search_out import SampleSearchOut
 from app.api.v1.search import sample_search
 from app.api.v1.services import sample_service
+from app.api.v1.services.sample_service import CACHE_KEY
 from app.clients import google_client
 from app.core.cache.redis_cache import cache_evict, cache_get, cache_put
 from app.core.data.params import SortParams
@@ -18,8 +19,6 @@ from fastapi.param_functions import Depends, Header, Security
 from fastapi_pagination.default import Page
 from starlette.requests import Request
 from starlette.responses import HTMLResponse, Response, StreamingResponse
-
-CACHE_KEY = "sample:v1"
 
 router = APIRouter(
     prefix="/api/v1/samples",
@@ -91,9 +90,7 @@ async def client():
     path="/",
     response_model=Page[SampleListOut],
     status_code=200,
-    dependencies=[
-        Security(check_scope, scopes=["urn:sample:list:v1"])
-    ]
+    dependencies=[Security(check_scope, scopes=["urn:sample:list:v1"])]
 )
 async def list(query, params: SortParams = Depends()):
     return await sample_service.list(query, params)
@@ -103,9 +100,7 @@ async def list(query, params: SortParams = Depends()):
     path="/{id}/",
     response_model=SampleOut,
     status_code=200,
-    dependencies=[
-        Security(check_scope, scopes=["urn:sample:get:v1"])
-    ]
+    dependencies=[Security(check_scope, scopes=["urn:sample:get:v1"])]
 )
 @cache_get(namespace=CACHE_KEY)
 # Request and response are here to cater the headers for caching
@@ -117,9 +112,7 @@ async def get(id: UUID, request: Request, response: Response):
     path="/",
     response_model=SampleOut,
     status_code=201,
-    dependencies=[
-        Security(check_scope, scopes=["urn:sample:create:v1"])
-    ]
+    dependencies=[Security(check_scope, scopes=["urn:sample:create:v1"])]
 )
 @cache_put(namespace=CACHE_KEY)
 # Request is here to cater the headers for caching
@@ -131,9 +124,7 @@ async def save(sample_in: SampleIn, request: Request):
     path="/{id}/",
     response_model=SampleOut,
     status_code=200,
-    dependencies=[
-        Security(check_scope, scopes=["urn:sample:update:v1"])
-    ]
+    dependencies=[Security(check_scope, scopes=["urn:sample:update:v1"])]
 )
 @cache_put(namespace=CACHE_KEY)
 # Request is here to cater the headers for caching
@@ -144,9 +135,7 @@ async def update(id: UUID, sample_in: SampleIn, request: Request):
 @router.delete(
     path="/{id}/",
     status_code=204,
-    dependencies=[
-        Security(check_scope, scopes=["urn:sample:delete:v1"])
-    ]
+    dependencies=[Security(check_scope, scopes=["urn:sample:delete:v1"])]
 )
 @cache_evict(namespace=CACHE_KEY)
 async def file_delete(id: UUID):

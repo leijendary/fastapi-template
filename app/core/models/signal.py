@@ -1,14 +1,13 @@
 from typing import List, Optional, Type
 
 from app.core.context.request_context import current_user
-from app.core.models.model import AuditableMixin, DeletableMixin
+from app.core.models.model import AuditableMixin
 from tortoise.backends.base.client import BaseDBAsyncClient
 from tortoise.signals import pre_save
 
 
 def init():
     auditables()
-    deletables()
 
 
 def auditables():
@@ -27,18 +26,3 @@ def auditables():
             else:
                 instance.created_by = user
                 instance.modified_by = user
-
-
-def deletables():
-    for subclass in DeletableMixin.__subclasses__():
-        @pre_save(subclass)
-        async def deletable_pre_save(
-            sender: Type[subclass],
-            instance: subclass,
-            using_db: Optional[BaseDBAsyncClient],
-            update_fields: List[str]
-        ):
-            if instance.deleted_at:
-                user = current_user()
-
-                instance.deleted_by = user

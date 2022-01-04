@@ -1,10 +1,13 @@
+from datetime import datetime
 from inspect import Parameter, signature
-from typing import Type
+from typing import Iterable, Optional, Type
 
+from app.core.context.request_context import current_user
 from app.core.utils.dict_util import to_dict
 from fastapi import Form
 from pydantic import BaseModel
 from pydantic.fields import ModelField
+from tortoise.backends.base.client import BaseDBAsyncClient
 from tortoise.fields import DatetimeField
 from tortoise.fields.data import TextField
 from tortoise.models import Model as TortoiseModel
@@ -37,6 +40,18 @@ class DeletableMixin(TortoiseModel):
 
     class Meta:
         abstract = True
+
+    async def soft_delete(
+        self,
+        using_db: Optional[BaseDBAsyncClient] = None,
+        update_fields: Optional[Iterable[str]] = None,
+        force_create: bool = False,
+        force_update: bool = False,
+    ):
+        self.deleted_at = datetime.now()
+        self.deleted_by = current_user()
+
+        await self.save(using_db, update_fields, force_create, force_update)
 
 
 class Router:

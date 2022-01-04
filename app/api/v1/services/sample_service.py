@@ -1,4 +1,3 @@
-from datetime import datetime
 from typing import List
 from uuid import UUID
 
@@ -33,6 +32,7 @@ FIELDS_FOR_SELECT = [
     "modified_at"
 ]
 EXCLUSIONS = {"field_1", "field_2", "translations"}
+CACHE_KEY = "sample:v1"
 RESOURCE_NAME = "Sample"
 
 
@@ -116,9 +116,7 @@ async def delete(id: UUID) -> None:
     if not sample:
         raise ResourceNotFoundException(resource=RESOURCE_NAME, identifier=id)
 
-    sample.deleted_at = datetime.now()
-
-    await sample.save()
+    await sample.soft_delete()
 
     # Delete the document from elasticsearch
     await sample_search.delete(id)
