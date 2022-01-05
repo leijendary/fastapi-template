@@ -8,10 +8,13 @@ T = TypeVar("T")
 
 
 class DataResponse(JSONResponse):
-    def render(self, data: Any, meta={}) -> bytes:
+    def render(self, data: Any, meta={"type": "object"}) -> bytes:
         if data and set({"items", "total", "page", "size"}) <= set(data):
             meta = page_meta(data, meta)
             data = data["items"]
+
+        if (isinstance(data, list)):
+            meta["type"] = "array"
 
         content = {
             "data": data,
