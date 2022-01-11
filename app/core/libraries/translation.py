@@ -3,6 +3,7 @@ import os
 from functools import lru_cache
 
 from app.configs.app_config import app_config
+from app.core.context.request_context import current_language
 
 _config = app_config()
 internationalization_path = _config.internationalization_path
@@ -24,7 +25,7 @@ def load_translation():
     return translation
 
 
-def translate(code: str, language=language_default):
+def translate(code: str, language=current_language()):
     translation = load_translation()
 
     if language not in translation:

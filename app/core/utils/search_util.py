@@ -1,6 +1,6 @@
 from typing import List
 
-from app.configs.app_config import app_config
+from app.core.context.request_context import current_language
 from app.core.data.params import SortParams
 from app.core.data.search_out import SearchOut
 from fastapi_pagination import Params, create_page
@@ -8,8 +8,6 @@ from fastapi_pagination import Params, create_page
 MATCH_ALL = {
     "match_all": {}
 }
-
-_config = app_config()
 
 
 def translation_page(query, params: SortParams, fields):
@@ -22,15 +20,16 @@ def translation_page(query, params: SortParams, fields):
     return body
 
 
-def to_page(result: dict, params: Params, type: SearchOut, locale=None):
+def to_page(result: dict, params: Params, type: SearchOut):
     total = result["hits"]["total"]["value"]
-    locale = locale if locale else _config.language_default
-    records = [map_type(hit, type, locale) for hit in result["hits"]["hits"]]
+    records = [map_type(hit, type) for hit in result["hits"]["hits"]]
 
     return create_page(records, total, params)
 
 
-def map_type(hit: dict, type: SearchOut, locale=None):
+def map_type(hit: dict, type: SearchOut):
+    locale = current_language()
+
     return type(locale=locale, id=hit["_id"], **hit["_source"])
 
 

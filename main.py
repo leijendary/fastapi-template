@@ -39,7 +39,7 @@ from app.core.exceptions.invalid_token_exception import InvalidTokenException
 from app.core.exceptions.resource_not_found_exception import \
     ResourceNotFoundException
 from app.core.exceptions.unauthorized_exception import UnauthorizedException
-from app.core.plugins.request_plugin import AuthorizationPlugin
+from app.core.plugins.request_plugin import AuthorizationPlugin, LanguagePlugin
 from app.core.routers import healthcheck_router
 from app.core.search import elasticsearch
 from app.core.utils.date_util import to_epoch
@@ -69,7 +69,13 @@ exception_handlers = {
 
 # Middlewares
 middleware = [
-    Middleware(RawContextMiddleware, plugins=[AuthorizationPlugin()])
+    Middleware(
+        RawContextMiddleware,
+        plugins=[
+            AuthorizationPlugin(),
+            LanguagePlugin()
+        ]
+    )
 ]
 
 # Routers

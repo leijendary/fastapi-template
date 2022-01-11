@@ -22,3 +22,7 @@ class AuthorizationPlugin(Plugin):
         claims = jwt.get_unverified_claims(token)
 
         return claims["sub"]
+
+
+class LanguagePlugin(Plugin):
+    key = "Accept-Language"

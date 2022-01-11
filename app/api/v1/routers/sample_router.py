@@ -15,7 +15,7 @@ from app.core.data.params import SortParams
 from app.core.security import encryption
 from app.core.security.scope_validator import check_scope
 from fastapi import APIRouter
-from fastapi.param_functions import Depends, Header, Security
+from fastapi.param_functions import Depends, Security
 from fastapi_pagination.default import Page
 from starlette.requests import Request
 from starlette.responses import HTMLResponse, Response, StreamingResponse
@@ -31,12 +31,8 @@ router = APIRouter(
     response_model=Page[SampleSearchOut],
     status_code=200
 )
-async def search_list(
-    query,
-    params: SortParams = Depends(),
-    accept_language=Header(None)
-):
-    return await sample_search.list(query, params, accept_language)
+async def search_list(query, params: SortParams = Depends()):
+    return await sample_search.list(query, params)
 
 
 @router.get(
@@ -44,8 +40,8 @@ async def search_list(
     response_model=SampleSearchOut,
     status_code=200
 )
-async def search_get(id: UUID, accept_language=Header(None)):
-    return await sample_search.get(id, accept_language)
+async def search_get(id: UUID):
+    return await sample_search.get(id)
 
 
 @router.get(path="/files/{bucket}/{folder}/{name}/", status_code=200)

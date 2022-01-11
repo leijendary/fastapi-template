@@ -8,7 +8,7 @@ from app.models.sample import Sample
 RESOURCE_NAME = "Sample Document"
 
 
-async def list(query, params: SortParams, locale):
+async def list(query, params: SortParams):
     fields = ["translations.name", "translations.description"]
     body = translation_page(query, params, fields)
     result = await ElasticsearchContext.instance.search(
@@ -16,13 +16,13 @@ async def list(query, params: SortParams, locale):
         body=body
     )
 
-    return to_page(result, params, SampleSearchOut, locale)
+    return to_page(result, params, SampleSearchOut)
 
 
-async def get(id, locale):
+async def get(id):
     result = await ElasticsearchContext.instance.get(index=INDEX_SAMPLE, id=id)
 
-    return map_type(result, SampleSearchOut, locale)
+    return map_type(result, SampleSearchOut)
 
 
 async def save(sample: Sample):
