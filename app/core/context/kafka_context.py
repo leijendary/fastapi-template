@@ -1,5 +1,5 @@
 from aiokafka.producer.producer import AIOKafkaProducer
-from app.configs.kafka_config import KafkaConfig
+from app.core.configs.kafka_config import KafkaConfig
 
 
 class KafkaProducerContext:

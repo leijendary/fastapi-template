@@ -1,5 +1,5 @@
-from app.configs.app_config import app_config
-from app.configs.security_config import security_config
+from app.core.configs.app_config import app_config
+from app.core.configs.security_config import security_config
 
 _config = app_config()
 _security = security_config()

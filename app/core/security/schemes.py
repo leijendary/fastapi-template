@@ -1,4 +1,4 @@
-from app.configs.security_config import security_config
+from app.core.configs.security_config import security_config
 from fastapi.security import OAuth2PasswordBearer
 
 _config = security_config()

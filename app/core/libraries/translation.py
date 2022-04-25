@@ -2,7 +2,7 @@ import json
 import os
 from functools import lru_cache
 
-from app.configs.app_config import app_config
+from app.core.configs.app_config import app_config
 from app.core.context.request_context import current_language
 
 _config = app_config()

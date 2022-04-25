@@ -1,10 +1,12 @@
-from app.configs.database_config import database_config
+from app.core.configs.database_config import (primary_database_config,
+                                              readonly_database_config)
 from app.core.logs.logging import get_logger
 from app.core.models import signal
 from tortoise import Tortoise
 
 logger = get_logger(__name__)
-_config = database_config()
+_primary_config = primary_database_config()
+_readonly_config = readonly_database_config()
 
 MODULE = "app"
 MODELS = [
@@ -17,21 +19,33 @@ MODULES = {
 APPS = {
     MODULE: {
         "models": [*MODELS, "aerich.models"],
-        "default_connection": "default",
+        "default_connection": "primary",
     }
 }
 TORTOISE_ORM = {
     "connections": {
-        "default": {
+        "primary": {
             "engine": "tortoise.backends.asyncpg",
             "credentials": {
-                "database": _config.name,
-                "host": _config.host,
-                "port": _config.port,
-                "user": _config.user,
-                "password": _config.password,
-                "minsize": _config.connection_min_size,
-                "maxsize": _config.connection_max_size
+                "database": _primary_config.name,
+                "host": _primary_config.host,
+                "port": _primary_config.port,
+                "user": _primary_config.user,
+                "password": _primary_config.password,
+                "minsize": _primary_config.connection_min_size,
+                "maxsize": _primary_config.connection_max_size
+            }
+        },
+        "readonly": {
+            "engine": "tortoise.backends.asyncpg",
+            "credentials": {
+                "database": _readonly_config.name,
+                "host": _readonly_config.host,
+                "port": _readonly_config.port,
+                "user": _readonly_config.user,
+                "password": _readonly_config.password,
+                "minsize": _readonly_config.connection_min_size,
+                "maxsize": _readonly_config.connection_max_size
             }
         }
     },

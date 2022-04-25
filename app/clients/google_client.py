@@ -1,4 +1,4 @@
-from app.configs.client_config import client_config
+from app.core.configs.client_config import client_config
 from app.core.context.httpx_context import HttpxClientContext
 from app.core.logs.logging import get_logger
 

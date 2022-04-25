@@ -1,7 +1,7 @@
 from typing import Any
 
-from app.configs.app_config import app_config
-from app.configs.security_config import security_config
+from app.core.configs.app_config import app_config
+from app.core.configs.security_config import security_config
 from app.core.plugins.request_plugin import AuthorizationPlugin, LanguagePlugin
 from starlette_context import context
 from starlette_context.errors import ContextDoesNotExistError

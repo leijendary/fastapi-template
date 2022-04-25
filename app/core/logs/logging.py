@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 from logging import Formatter, StreamHandler, getLogger
 
-from app.configs.logging_config import logging_config
+from app.core.configs.logging_config import logging_config
 from uvicorn.config import LOGGING_CONFIG
 
 _config = logging_config()

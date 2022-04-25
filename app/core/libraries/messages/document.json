@@ -6,6 +6,7 @@
   "translation_description": "Translated description field based on the language",
   "sample_field_1": "A sample field that is a string and is required",
   "sample_field_2": "A sample field that is an integer and should be greater than 0",
+  "sample_amount": "A sample field that is a double and should be greater than 0.01 and less than 99999999.99",
   "sample_column_1": "A sample field that is a string and is required",
   "sample_column_2": "A sample field that is an integer and should be greater than 0",
   "status": "HTTP status code of the response",

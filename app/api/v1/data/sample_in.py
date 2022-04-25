@@ -18,6 +18,12 @@ class SampleIn(Schema):
         title=get_message("document.sample_field_2"),
         gt=0
     )
+    amount: float = Field(
+        ...,
+        title=get_message("document.sample_amount"),
+        gt=0.01,
+        le=9999999999.99
+    )
     translations: List[SampleTranslationIn] = Field(
         ...,
         title=get_message("document.translation_list"),

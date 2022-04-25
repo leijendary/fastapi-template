@@ -1,6 +1,6 @@
 from hashlib import pbkdf2_hmac
 
-from app.configs.security_config import security_config
+from app.core.configs.security_config import security_config
 from Crypto.Cipher import AES
 from Crypto.Cipher.AES import MODE_GCM, block_size
 from Crypto.Random import get_random_bytes

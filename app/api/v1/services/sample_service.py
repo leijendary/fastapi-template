@@ -6,12 +6,12 @@ from app.api.v1.data.sample_list_out import SampleListOut
 from app.api.v1.data.sample_out import SampleOut
 from app.api.v1.data.sample_translation_in import SampleTranslationIn
 from app.api.v1.search import sample_search
-from app.configs.constants import TOPIC_SAMPLE_CREATE, TOPIC_SAMPLE_DELETE
+from app.core.configs.constants import TOPIC_SAMPLE_CREATE, TOPIC_SAMPLE_DELETE
 from app.core.data.file_stream import FileStream
 from app.core.data.params import SortParams
-from app.core.events import kafka_producer
 from app.core.exceptions.resource_not_found_exception import \
     ResourceNotFoundException
+from app.core.messaging import kafka_producer
 from app.core.storages import s3_storage
 from app.core.utils.file_util import get_name
 from app.core.utils.model_util import to_page
@@ -20,12 +20,13 @@ from app.models.sample_translation import SampleTranslation
 from fastapi.datastructures import UploadFile
 from fastapi_pagination.default import Page
 from tortoise.query_utils import Q
-from tortoise.transactions import atomic
+from tortoise.transactions import in_transaction
 
 FIELDS_FOR_SELECT = [
     "id",
     "column_1",
     "column_2",
+    "amount",
     "created_by",
     "created_at",
     "modified_by",
@@ -59,16 +60,16 @@ async def get(id: UUID) -> SampleOut:
     return SampleOut(**sample.dict())
 
 
-@atomic()
 async def save(sample_in: SampleIn) -> SampleOut:
-    sample = await Sample.create(**mapping(sample_in))
-    translations = mapping_translations(sample, sample_in.translations)
+    async with in_transaction("primary") as connection:
+        sample = await Sample.create(**mapping(sample_in), using_db=connection)
+        translations = mapping_translations(sample, sample_in.translations)
 
-    # Create the translations
-    await SampleTranslation.bulk_create(translations)
+        # Create the translations
+        await SampleTranslation.bulk_create(translations, using_db=connection)
 
-    # Fetch the related models for returns
-    await sample.fetch_related("translations")
+        # Fetch the related models for returns
+        await sample.fetch_related("translations", using_db=connection)
 
     # Save the model to elasticsearch
     await sample_search.save(sample)
@@ -79,7 +80,6 @@ async def save(sample_in: SampleIn) -> SampleOut:
     return SampleOut(**sample.dict())
 
 
-@atomic()
 async def update(id: UUID, sample_in: SampleIn) -> SampleOut:
     sample = await Sample.select_for_update() \
         .filter(id=id) \
@@ -89,16 +89,19 @@ async def update(id: UUID, sample_in: SampleIn) -> SampleOut:
     if not sample:
         raise ResourceNotFoundException(resource=RESOURCE_NAME, identifier=id)
 
-    # Update the instance from the database
-    await sample.update_from_dict(mapping(sample_in)).save()
+    async with in_transaction("primary") as connection:
+        # Update the instance from the database
+        await sample \
+            .update_from_dict(mapping(sample_in)) \
+            .save(using_db=connection)
 
-    translations = mapping_translations(sample, sample_in.translations)
+        translations = mapping_translations(sample, sample_in.translations)
 
-    # Sync the translations of the reference table
-    await sample.sync_translations(translations)
+        # Sync the translations of the reference table
+        await sample.sync_translations(translations)
 
-    # Fetch the related models for returns
-    await sample.fetch_related("translations")
+        # Fetch the related models for returns
+        await sample.fetch_related("translations", using_db=connection)
 
     # Update the model in elasticsearch
     await sample_search.save(sample)
@@ -109,7 +112,6 @@ async def update(id: UUID, sample_in: SampleIn) -> SampleOut:
     return SampleOut(**sample.dict())
 
 
-@atomic()
 async def delete(id: UUID) -> None:
     sample = await Sample.select_for_update().filter(id=id).first()
 

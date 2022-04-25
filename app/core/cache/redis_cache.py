@@ -3,7 +3,7 @@ from functools import wraps
 from hashlib import md5
 from typing import Any, Callable, List, Optional
 
-from app.configs.cache_config import cache_config
+from app.core.configs.cache_config import cache_config
 from app.core.context.redis_context import RedisContext
 from app.core.data.data_response import DataResponse
 from app.core.logs.logging import get_logger

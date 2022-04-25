@@ -1,7 +1,7 @@
 from uuid import uuid4
 
 import pytest
-from app.configs.app_config import app_config
+from app.core.configs.app_config import app_config
 from app.core.logs.logging import get_logger
 from fastapi.testclient import TestClient
 

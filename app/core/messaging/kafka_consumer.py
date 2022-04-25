@@ -3,7 +3,7 @@ from typing import Awaitable
 
 from aiokafka import AIOKafkaConsumer
 from aiokafka.structs import ConsumerRecord
-from app.configs.kafka_config import kafka_config
+from app.core.configs.kafka_config import kafka_config
 from app.core.logs.logging import get_logger
 
 logger = get_logger(__name__)

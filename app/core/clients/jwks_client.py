@@ -1,4 +1,4 @@
-from app.configs.security_config import security_config
+from app.core.configs.security_config import security_config
 from app.core.cache import redis_cache
 from app.core.cache.redis_cache import cache_get
 from app.core.context.httpx_context import HttpxClientContext

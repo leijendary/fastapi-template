@@ -1,6 +1,6 @@
 from aioredis.client import Redis
 from aioredis.utils import from_url
-from app.configs.cache_config import CacheConfig
+from app.core.configs.cache_config import CacheConfig
 
 
 class RedisContext:

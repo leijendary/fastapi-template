@@ -1,5 +1,5 @@
 from app.api.v1.data.sample_search_out import SampleSearchOut
-from app.configs.constants import INDEX_SAMPLE
+from app.core.configs.constants import INDEX_SAMPLE
 from app.core.context.elasticsearch_context import ElasticsearchContext
 from app.core.data.params import SortParams
 from app.core.utils.search_util import map_type, to_page, translation_page

@@ -1,7 +1,7 @@
 import json
 from typing import Any, Dict
 
-from app.configs.kafka_config import kafka_config
+from app.core.configs.kafka_config import kafka_config
 from app.core.context.kafka_context import KafkaProducerContext
 from app.core.logs.logging import get_logger
 

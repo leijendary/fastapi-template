@@ -13,11 +13,24 @@ class DatabaseConfig(BaseSettings):
     connection_min_size: int = 10
     connection_max_size: int = 20
 
+
+class PrimaryDatabaseConfig(DatabaseConfig):
     class Config:
-        env_prefix = "database_"
+        env_prefix = "database_primary_"
+        env_file = ".env"
+
+
+class ReadonlyDatabaseConfig(DatabaseConfig):
+    class Config:
+        env_prefix = "database_readonly_"
         env_file = ".env"
 
 
 @lru_cache
-def database_config():
-    return DatabaseConfig()
+def primary_database_config():
+    return PrimaryDatabaseConfig()
+
+
+@lru_cache
+def readonly_database_config():
+    return ReadonlyDatabaseConfig()

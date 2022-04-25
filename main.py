@@ -13,12 +13,12 @@ from starlette.middleware import Middleware
 from starlette_context.middleware.raw_middleware import RawContextMiddleware
 from tortoise.exceptions import IntegrityError
 
-from app.api.v1.routers import sample_router as sample_router_v1
-from app.configs.app_config import app_config
-from app.configs.logging_config import logging_config
-from app.configs.security_config import security_config
+from app.api import route
 from app.core.cache import redis_cache
 from app.core.clients import httpx_client
+from app.core.configs.app_config import app_config
+from app.core.configs.logging_config import logging_config
+from app.core.configs.security_config import security_config
 from app.core.data.data_response import DataResponse
 from app.core.databases import tortoise_orm
 from app.core.errors.access_denied_error import access_denied_handler
@@ -33,17 +33,16 @@ from app.core.errors.resource_not_found_error import resource_not_found_handler
 from app.core.errors.search_not_found_error import search_not_found_handler
 from app.core.errors.unauthorized_error import unauthorized_handler
 from app.core.errors.validation_error import validation_handler
-from app.core.events import kafka_producer
 from app.core.exceptions.access_denied_exception import AccessDeniedException
 from app.core.exceptions.invalid_token_exception import InvalidTokenException
 from app.core.exceptions.resource_not_found_exception import \
     ResourceNotFoundException
 from app.core.exceptions.unauthorized_exception import UnauthorizedException
+from app.core.messaging import kafka_producer
 from app.core.plugins.request_plugin import AuthorizationPlugin, LanguagePlugin
-from app.core.routers import healthcheck_router
 from app.core.search import elasticsearch
 from app.core.utils.date_util import to_epoch
-from app.events import consumers
+from app.messaging import consumers
 
 # Override datetime encoder for the json response
 ENCODERS_BY_TYPE[datetime] = to_epoch
@@ -78,12 +77,6 @@ middleware = [
     )
 ]
 
-# Routers
-routers = [
-    healthcheck_router.router,
-    sample_router_v1.router
-]
-
 # Startup event
 on_startup = [
     tortoise_orm.init,
@@ -116,9 +109,7 @@ def create_app() -> FastAPI:
         on_shutdown=on_shutdown
     )
 
-    # Include all routers
-    for router in routers:
-        app.include_router(router, prefix=_config.prefix)
+    route.include_routers(app)
 
     return app
 

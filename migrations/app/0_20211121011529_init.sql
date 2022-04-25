@@ -3,6 +3,7 @@ CREATE TABLE IF NOT EXISTS "sample" (
     "id" UUID NOT NULL  PRIMARY KEY,
     "column_1" VARCHAR(150) NOT NULL,
     "column_2" VARCHAR(1000),
+    "amount" numeric(12,2),
     "created_at" TIMESTAMPTZ NOT NULL  DEFAULT CURRENT_TIMESTAMP,
     "modified_at" TIMESTAMPTZ NOT NULL  DEFAULT CURRENT_TIMESTAMP,
     "deleted_at" TIMESTAMPTZ
@@ -21,10 +22,10 @@ CREATE TABLE IF NOT EXISTS "aerich" (
     "app" VARCHAR(20) NOT NULL,
     "content" JSONB NOT NULL
 );
-CREATE UNIQUE INDEX IF NOT EXISTS sample_column_1_uidx
+CREATE UNIQUE INDEX IF NOT EXISTS sample_column_1_uindex
     ON sample (column_1)
     WHERE deleted_at IS NULL;
-CREATE UNIQUE INDEX IF NOT EXISTS sample_translation_reference_id_language_uidx
+CREATE UNIQUE INDEX IF NOT EXISTS sample_translation_reference_id_language_uindex
     ON sample_translation (reference_id, language);
 CREATE INDEX IF NOT EXISTS sample_id_deleted_at_idx
     ON sample(id, deleted_at);

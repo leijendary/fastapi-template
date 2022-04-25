@@ -1,8 +1,8 @@
 import json
 import logging
 
-from app.configs.constants import INDEX_SAMPLE
-from app.configs.elasticsearch_config import elasticsearch_config
+from app.core.configs.constants import INDEX_SAMPLE
+from app.core.configs.elasticsearch_config import elasticsearch_config
 from app.core.context.elasticsearch_context import ElasticsearchContext
 from app.core.logs.logging import get_logger
 

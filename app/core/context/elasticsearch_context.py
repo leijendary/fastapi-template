@@ -1,6 +1,6 @@
 from typing import Dict
 
-from app.configs.elasticsearch_config import ElasticsearchConfig
+from app.core.configs.elasticsearch_config import ElasticsearchConfig
 from elasticsearch import AsyncElasticsearch
 
 

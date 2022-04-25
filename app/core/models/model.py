@@ -55,14 +55,12 @@ class DeletableMixin(TortoiseModel):
 
 
 class Router:
+    def db_for_write(self, model: Type[TortoiseModel]):
+        return "primary"
 
     def db_for_read(self, model: Type[TortoiseModel]):
-        # return "readonly"
-        return "default"
+        return "readonly"
 
-    def db_for_write(self, model: Type[TortoiseModel]):
-        # return "primary"
-        return "default"
 
 
 def as_form(cls: Type[BaseModel]):

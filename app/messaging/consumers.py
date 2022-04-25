@@ -1,9 +1,10 @@
 from asyncio import create_task
 
-from app.configs.constants import (TOPIC_SAMPLE_CREATE, TOPIC_SAMPLE_DELETE,
-                                   TOPIC_SAMPLE_UPDATE)
-from app.core.events.kafka_consumer import consume
-from app.events import sample_consumer
+from app.core.configs.constants import (TOPIC_SAMPLE_CREATE,
+                                        TOPIC_SAMPLE_DELETE,
+                                        TOPIC_SAMPLE_UPDATE)
+from app.core.messaging.kafka_consumer import consume
+from app.messaging import sample_consumer
 
 topic = {
     TOPIC_SAMPLE_CREATE: sample_consumer.create,

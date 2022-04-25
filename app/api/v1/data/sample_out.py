@@ -15,6 +15,7 @@ class SampleOut(TimestampSchema):
         max_length=100
     )
     column_2: str = Field(..., title=get_message("document.sample_column_2"))
+    amount: float = Field(..., title=get_message("document.sample_amount"))
     translations: List[SampleTranslationOut] = Field(
         ...,
         title=get_message("document.translation_list"),
