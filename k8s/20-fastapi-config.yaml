@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fastapi-config
+  namespace: template
+data:
+  DATABASE_PRIMARY_NAME: fastapi_microservice
+  DATABASE_PRIMARY_HOST: localhost
+  DATABASE_PRIMARY_PORT: "30432"
+  DATABASE_PRIMARY_USER: postgres
+  DATABASE_READONLY_NAME: fastapi_microservice
+  DATABASE_READONLY_HOST: localhost
+  DATABASE_READONLY_PORT: "30432"
+  DATABASE_READONLY_USER: postgres
+  KAFKA_CLIENT_ID: local.test.fastapi
+  KAFKA_GROUP_ID: local.test
+  KAFKA_BROKERS: localhost:30092
+  ELASTICSEARCH_HOSTS: localhost:30200
+  SECURITY_JWKS_URL: https://leijendary.us.auth0.com/.well-known/jwks.json
+  SECURITY_AUDIENCE: http://localhost:8080
+  CACHE_REDIS_HOST: localhost
+  CACHE_REDIS_PORT: "30379"
+  CLIENT_SAMPLE_URL: https://www.google.com/

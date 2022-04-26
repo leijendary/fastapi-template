@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fastapi
+  namespace: template
+  labels:
+    app: fastapi
+spec:
+  selector:
+    matchLabels:
+      app: fastapi
+  template:
+    metadata:
+      labels:
+        app: fastapi
+    spec:
+      containers:
+        - name: fastapi
+          image: fastapi-template:latest
+          ports:
+            - containerPort: 443
+          envFrom:
+            - configMapRef:
+                name: fastapi-config
+            - secretRef:
+                name: fastapi-secret
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 443
+            initialDelaySeconds: 120
+            timeoutSeconds: 5
+            periodSeconds: 15
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 443
+            initialDelaySeconds: 150
+            timeoutSeconds: 5
+            periodSeconds: 15
+            failureThreshold: 3
+            successThreshold: 1
+          resources:
+            requests:
+              memory: 512M
+              cpu: 0.25
+            limits:
+              memory: 512M
+              cpu: 0.25
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fastapi-service
+  namespace: template
+spec:
+  selector:
+    app: fastapi
+  type: NodePort
+  ports:
+    - name: http
+      protocol: TCP
+      port: 443
+      targetPort: 443
+      nodePort: 30443
