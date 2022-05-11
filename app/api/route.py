@@ -13,6 +13,4 @@ routers = [
 
 
 def include_routers(app: FastAPI):
-    # Include all routers
-    for router in routers:
-        app.include_router(router, prefix=_config.prefix)
+    [app.include_router(router, prefix=_config.prefix) for router in routers]

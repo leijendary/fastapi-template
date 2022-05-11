@@ -6,7 +6,7 @@ from app.api.v1.data.sample_list_out import SampleListOut
 from app.api.v1.data.sample_out import SampleOut
 from app.api.v1.data.sample_translation_in import SampleTranslationIn
 from app.api.v1.search import sample_search
-from app.core.configs.constants import TOPIC_SAMPLE_CREATE, TOPIC_SAMPLE_DELETE
+from app.constants import TOPIC_SAMPLE_CREATE, TOPIC_SAMPLE_DELETE
 from app.core.data.file_stream import FileStream
 from app.core.data.params import SortParams
 from app.core.exceptions.resource_not_found_exception import \
@@ -33,7 +33,6 @@ FIELDS_FOR_SELECT = [
     "modified_at"
 ]
 EXCLUSIONS = {"field_1", "field_2", "translations"}
-CACHE_KEY = "sample:v1"
 RESOURCE_NAME = "Sample"
 
 

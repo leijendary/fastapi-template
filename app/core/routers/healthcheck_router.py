@@ -1,7 +1,7 @@
-from app.core.context.elasticsearch_context import ElasticsearchContext
-from app.core.context.kafka_context import KafkaProducerContext
-from app.core.context.redis_context import RedisContext
-from app.core.databases import tortoise_orm
+from app.core.cache import redis_cache
+from app.core.databases import main_sql
+from app.core.messaging import kafka_producer
+from app.core.search import elasticsearch
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 
@@ -15,10 +15,10 @@ router = APIRouter(
 async def healthcheck():
     body = {
         "status": "UP",
-        "database": await tortoise_orm.health(),
-        "elasticsearch": await ElasticsearchContext.health(),
-        "kafka": await KafkaProducerContext.health(),
-        "redis": await RedisContext.health()
+        "database": await main_sql.health(),
+        "elasticsearch": await elasticsearch.health(),
+        "kafka": await kafka_producer.health(),
+        "redis": await redis_cache.health()
     }
     status_code = 200 if "DOWN" not in body.values() else 503
 

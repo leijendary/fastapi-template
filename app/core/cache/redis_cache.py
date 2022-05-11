@@ -3,8 +3,9 @@ from functools import wraps
 from hashlib import md5
 from typing import Any, Callable, List, Optional
 
+from aioredis import Redis
+from aioredis.utils import from_url
 from app.core.configs.cache_config import cache_config
-from app.core.context.redis_context import RedisContext
 from app.core.data.data_response import DataResponse
 from app.core.logs.logging import get_logger
 from starlette.requests import Request
@@ -13,14 +14,34 @@ from starlette.responses import Response
 from .redis_key_builder import (default_key_builder, request_key_builder,
                                 result_key_builder)
 
-logger = get_logger(__name__)
 _config = cache_config()
+logger = get_logger(__name__)
+
+
+class Cache:
+    instance: Redis
+
+    @classmethod
+    async def init(self):
+        scheme = "rediss" if _config.use_ssl else "redis"
+
+        self.instance = from_url(
+            f"{scheme}://{_config.redis_host}:{_config.redis_port}",
+            username=_config.username,
+            password=_config.password,
+            decode_responses=True
+        )
+        await self.instance.ping()
+
+
+def redis() -> Redis:
+    return Cache.instance
 
 
 async def init():
     logger.info("Initializing redis cache...")
 
-    RedisContext.init(_config)
+    await Cache.init()
 
     logger.info("Redis cache initialized!")
 
@@ -28,9 +49,18 @@ async def init():
 async def close():
     logger.info("Closing redis cache...")
 
-    await RedisContext.close()
+    await redis().close()
 
     logger.info("Redis cache closed!")
+
+
+async def health():
+    try:
+        pong = await redis().ping()
+
+        return "UP" if pong else "DOWN"
+    except:
+        return "DOWN"
 
 
 def cache_get(
@@ -181,21 +211,21 @@ async def set(key: str, value: Any):
     else:
         value = json.dumps(value)
 
-    await RedisContext.instance.set(key, value, _config.ttl)
+    await redis().set(key, value, _config.ttl)
 
 
 async def get(key: str):
-    value = await RedisContext.instance.get(key)
+    value = await redis().get(key)
 
     return json.loads(value) if value else None
 
 
 async def delete(keys: List[str]):
-    await RedisContext.instance.delete(keys)
+    await redis().delete(keys)
 
 
 async def get_with_ttl(key: str):
-    async with RedisContext.instance.pipeline(transaction=True) as pipe:
+    async with redis().pipeline() as pipe:
         value, ttl = await (pipe.get(key).ttl(key).execute())
         value = json.loads(value) if value else None
 

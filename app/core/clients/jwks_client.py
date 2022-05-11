@@ -1,7 +1,7 @@
+
+from app.core.cache.redis_cache import cache_get, redis
+from app.core.clients.httpx_client import client
 from app.core.configs.security_config import security_config
-from app.core.cache import redis_cache
-from app.core.cache.redis_cache import cache_get
-from app.core.context.httpx_context import HttpxClientContext
 from app.core.logs.logging import get_logger
 from app.core.utils.thread_util import synchronized
 
@@ -17,7 +17,7 @@ async def keys():
 
 @synchronized
 async def _fetch_keys():
-    cached = await redis_cache.get(_cache_key)
+    cached = await redis().get(_cache_key)
 
     if cached:
         return cached
@@ -26,6 +26,6 @@ async def _fetch_keys():
 
     logger.info(f"Getting jwks from {jwks_url}")
 
-    response = await HttpxClientContext.instance.get(jwks_url)
+    response = await client().get(jwks_url)
 
     return response.json()["keys"]

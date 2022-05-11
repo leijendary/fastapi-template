@@ -8,7 +8,6 @@ from app.api.v1.data.sample_out import SampleOut
 from app.api.v1.data.sample_search_out import SampleSearchOut
 from app.api.v1.search import sample_search
 from app.api.v1.services import sample_service
-from app.api.v1.services.sample_service import CACHE_KEY
 from app.clients import google_client
 from app.core.cache.redis_cache import cache_evict, cache_get, cache_put
 from app.core.data.params import SortParams
@@ -19,6 +18,8 @@ from fastapi.param_functions import Depends, Security
 from fastapi_pagination.default import Page
 from starlette.requests import Request
 from starlette.responses import HTMLResponse, Response, StreamingResponse
+
+CACHE_KEY = "sample:v1"
 
 router = APIRouter(
     prefix="/api/v1/samples",
