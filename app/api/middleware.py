@@ -1,6 +1,7 @@
 from app.core.plugins.request_plugin import AuthorizationPlugin, LanguagePlugin
 from fastapi import FastAPI
 from starlette_context.middleware.raw_middleware import RawContextMiddleware
+from starlette_prometheus import PrometheusMiddleware
 
 middlewares = {
     RawContextMiddleware: {
@@ -8,7 +9,8 @@ middlewares = {
             AuthorizationPlugin(),
             LanguagePlugin()
         ]
-    }
+    },
+    PrometheusMiddleware: {}
 }
 
 
