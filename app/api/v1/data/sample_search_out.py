@@ -8,6 +8,7 @@ class SampleSearchOut(SearchOut):
     id: UUID
     column_1: str
     column_2: str
+    amount: float = None
     name: str = ""
     description: str = ""
     created_at: datetime

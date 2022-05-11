@@ -53,6 +53,7 @@ def mapping(sample: Sample):
     return {
         "column_1": sample.column_1,
         "column_2": sample.column_2,
+        "amount": sample.amount,
         "created_at": sample.created_at,
         "translations": [
             {
