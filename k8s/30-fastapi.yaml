@@ -59,7 +59,7 @@ spec:
     app: fastapi
   type: NodePort
   ports:
-    - name: http
+    - name: https
       protocol: TCP
       port: 443
       targetPort: 443
