@@ -42,4 +42,4 @@ functions = {
 
 
 def add_handlers(app: FastAPI):
-    [app.add_exception_handler(key, value)for key, value in functions.items()]
+    [app.add_exception_handler(key, value) for key, value in functions.items()]

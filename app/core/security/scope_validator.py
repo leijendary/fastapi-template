@@ -7,12 +7,11 @@ from fastapi import Depends
 from fastapi.security import SecurityScopes
 
 _config = security_config()
-_sources: List[str]
-
-if _config.use_scope_header:
-    _sources = ["header", "x-scope"]
-else:
-    _sources = ["header", "Authorization", "scope"]
+_sources = (
+    ["header", "x-scope"]
+    if _config.use_scope_header
+    else ["header", "Authorization", "scope"]
+)
 
 
 async def check_scope(

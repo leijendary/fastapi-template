@@ -1,6 +1,8 @@
 from typing import List
 
-from app.core.configs.database_config import (primary_database_config,
+from aerich import Command
+from app.core.configs.database_config import (DatabaseConfig,
+                                              primary_database_config,
                                               readonly_database_config)
 from app.core.constants import CONNECTION_PRIMARY, CONNECTION_READONLY
 from app.core.logs.logging import get_logger
@@ -18,6 +20,9 @@ async def init(models: List[str]):
 
     modules = {_module: models}
     config = create_configuration(models)
+    command = Command(tortoise_config=config, app=_module)
+    await command.init()
+    await command.upgrade()
 
     Tortoise.init_models(models, _module)
 
@@ -58,33 +63,26 @@ def create_configuration(models: List[str]):
     }
     configuration = {
         "connections": {
-            CONNECTION_PRIMARY: {
-                "engine": "tortoise.backends.asyncpg",
-                "credentials": {
-                    "database": _primary_config.name,
-                    "host": _primary_config.host,
-                    "port": _primary_config.port,
-                    "user": _primary_config.user,
-                    "password": _primary_config.password,
-                    "minsize": _primary_config.connection_min_size,
-                    "maxsize": _primary_config.connection_max_size
-                }
-            },
-            CONNECTION_READONLY: {
-                "engine": "tortoise.backends.asyncpg",
-                "credentials": {
-                    "database": _readonly_config.name,
-                    "host": _readonly_config.host,
-                    "port": _readonly_config.port,
-                    "user": _readonly_config.user,
-                    "password": _readonly_config.password,
-                    "minsize": _readonly_config.connection_min_size,
-                    "maxsize": _readonly_config.connection_max_size
-                }
-            }
+            CONNECTION_PRIMARY: _connection(_primary_config),
+            CONNECTION_READONLY: _connection(_readonly_config)
         },
         "apps": apps,
         "routers": ["app.core.models.model.Router"]
     }
 
     return configuration
+
+
+def _connection(config: DatabaseConfig):
+    return {
+        "engine": "tortoise.backends.asyncpg",
+        "credentials": {
+            "database": config.name,
+            "host": config.host,
+            "port": config.port,
+            "user": config.user,
+            "password": config.password,
+            "minsize": config.connection_min_size,
+            "maxsize": config.connection_max_size
+        }
+    }

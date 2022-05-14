@@ -1,33 +1,50 @@
+from email.mime import base
+
+from aiozipkin import CLIENT
+from app.core.configs.client_config import client_config
 from app.core.logs.logging import get_logger
-from httpx import AsyncClient
+from httpx import (AsyncClient, AsyncHTTPTransport, Auth, Headers, QueryParams,
+                   Request, Response)
+from starlette_zipkin import trace
 
 logger = get_logger(__name__)
-client: AsyncClient = None
+_config = client_config()
+_retries = _config.retries
 
 
-class Client:
-    instance: AsyncClient
+class TracingTransport(AsyncHTTPTransport):
+    async def handle_async_request(self, request: Request) -> Response:
+        url = request.url
+        scheme = url.scheme
+        method = request.method
+        host = f"{url.host}:{url.port}" if url.port else url.host
+        path = url.path
+        name = f"{scheme} {method} {host}{path}"
 
-    @classmethod
-    def init(self):
-        self.instance = AsyncClient(http2=True)
+        async with trace(name, CLIENT) as child_span:
+            headers = child_span.make_headers()
 
+            request.headers.update(headers)
 
-def client() -> AsyncClient:
-    return Client.instance
-
-
-def init():
-    logger.info("Initializing http client...")
-
-    Client.init()
-
-    logger.info("Http client initialized!")
+        return await super().handle_async_request(request)
 
 
-async def close():
-    logger.info("Closing http client...")
+_transport = TracingTransport(http2=True, retries=_retries)
 
-    await client().aclose()
 
-    logger.info("Http client closed!")
+def async_client(
+    base_url: str = None,
+    auth: Auth = None,
+    params: QueryParams = None,
+    headers: Headers = None
+) -> AsyncClient:
+    return AsyncClient(
+        base_url=base_url,
+        auth=auth,
+        params=params,
+        headers=headers,
+        http2=True,
+        verify=False,
+        trust_env=False,
+        transport=_transport
+    )

@@ -10,9 +10,10 @@ class AccessDeniedException(Exception):
         self,
         reason: str,
         scopes: List[str] = [],
-        sources: List[str] = []
+        sources: List[str] = [],
+        *args
     ) -> None:
-        super().__init__(reason, scopes, sources)
+        super().__init__(*args)
 
         self.reason = reason
         self.scopes = scopes

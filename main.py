@@ -1,4 +1,3 @@
-import subprocess
 from datetime import datetime
 
 import uvicorn
@@ -24,7 +23,7 @@ def create_app() -> FastAPI:
     app = FastAPI(
         title=_config.name,
         version=_config.version,
-        default_response_class=DataResponse
+        default_response_class=DataResponse,
     )
 
     startup.add_handlers(app)
@@ -40,18 +39,10 @@ def create_app() -> FastAPI:
 app = create_app()
 
 
-def run_prestart():
-    # Run prestart shell script
-    subprocess.call(["sh", "./prestart.sh"])
-
-
 if __name__ == "__main__":
     security = security_config()
     log = logging_config()
     reload = _config.environment == "local"
-
-    # Run prestart
-    run_prestart()
 
     uvicorn.run(
         "main:app",

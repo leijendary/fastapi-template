@@ -6,6 +6,7 @@ from pydantic import BaseSettings
 
 class ClientConfig(BaseSettings):
     sample_url: Optional[str]
+    retries = 3
 
     class Config:
         env_prefix = "client_"
