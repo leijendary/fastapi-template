@@ -13,5 +13,5 @@ class ClientConfig(BaseSettings):
 
 
 @lru_cache
-def client_config():
+def client_config() -> ClientConfig:
     return ClientConfig()

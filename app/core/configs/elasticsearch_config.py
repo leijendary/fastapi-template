@@ -20,5 +20,5 @@ class ElasticsearchConfig(BaseSettings):
 
 
 @lru_cache
-def elasticsearch_config():
+def elasticsearch_config() -> ElasticsearchConfig:
     return ElasticsearchConfig()

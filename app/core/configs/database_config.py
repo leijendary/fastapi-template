@@ -27,10 +27,10 @@ class ReadonlyDatabaseConfig(DatabaseConfig):
 
 
 @lru_cache
-def primary_database_config():
+def primary_database_config() -> PrimaryDatabaseConfig:
     return PrimaryDatabaseConfig()
 
 
 @lru_cache
-def readonly_database_config():
+def readonly_database_config() -> ReadonlyDatabaseConfig:
     return ReadonlyDatabaseConfig()

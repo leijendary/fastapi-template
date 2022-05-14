@@ -18,5 +18,5 @@ class CacheConfig(BaseSettings):
 
 
 @lru_cache
-def cache_config():
+def cache_config() -> CacheConfig:
     return CacheConfig()

@@ -16,5 +16,5 @@ class LoggingConfig(BaseSettings):
 
 
 @lru_cache
-def logging_config():
+def logging_config() -> LoggingConfig:
     return LoggingConfig()

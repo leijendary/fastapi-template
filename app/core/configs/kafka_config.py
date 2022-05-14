@@ -15,5 +15,5 @@ class KafkaConfig(BaseSettings):
 
 
 @lru_cache
-def kafka_config():
+def kafka_config() -> KafkaConfig:
     return KafkaConfig()

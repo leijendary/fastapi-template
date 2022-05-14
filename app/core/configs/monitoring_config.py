@@ -17,5 +17,5 @@ class MonitoringConfig(BaseSettings):
 
 
 @lru_cache
-def monitoring_config():
+def monitoring_config() -> MonitoringConfig:
     return MonitoringConfig()
