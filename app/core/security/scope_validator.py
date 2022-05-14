@@ -30,7 +30,9 @@ def validate_scope(scopes, claims):
     if not scope:
         raise AccessDeniedException("No scope provided", sources=_sources)
 
-    if not any(s in scope.split(" ") for s in scopes):
+    split = scope.split(" ")
+
+    if not any(s in split for s in scopes):
         raise AccessDeniedException(
             "Scope not in any of the scopes",
             scopes,
