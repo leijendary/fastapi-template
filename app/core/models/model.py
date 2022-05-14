@@ -2,6 +2,7 @@ from datetime import datetime
 from inspect import Parameter, signature
 from typing import Iterable, Optional, Type
 
+from app.core.constants import CONNECTION_PRIMARY, CONNECTION_READONLY
 from app.core.context.request_context import current_user
 from app.core.utils.dict_util import to_dict
 from fastapi import Form
@@ -56,11 +57,10 @@ class DeletableMixin(TortoiseModel):
 
 class Router:
     def db_for_write(self, model: Type[TortoiseModel]):
-        return "primary"
+        return CONNECTION_PRIMARY
 
     def db_for_read(self, model: Type[TortoiseModel]):
-        return "readonly"
-
+        return CONNECTION_READONLY
 
 
 def as_form(cls: Type[BaseModel]):

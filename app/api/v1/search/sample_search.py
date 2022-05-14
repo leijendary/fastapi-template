@@ -1,11 +1,11 @@
 from app.api.v1.data.sample_search_out import SampleSearchOut
-from app.constants import INDEX_SAMPLE
+from app.constants import INDEX_SAMPLE, RESOURCE_SAMPLE_DOCUMENT
 from app.core.data.params import SortParams
+from app.core.exceptions.resource_not_found_exception import \
+    ResourceNotFoundException
 from app.core.search.elasticsearch import elasticsearch
 from app.core.utils.search_util import map_type, to_page, translation_page
 from app.models.sample import Sample
-
-RESOURCE_NAME = "Sample Document"
 
 
 async def list(query, params: SortParams):
@@ -18,6 +18,9 @@ async def list(query, params: SortParams):
 
 async def get(id):
     result = await elasticsearch().get(index=INDEX_SAMPLE, id=id)
+
+    if not result:
+        raise ResourceNotFoundException(RESOURCE_SAMPLE_DOCUMENT, id)
 
     return map_type(result, SampleSearchOut)
 

@@ -1,20 +1,28 @@
 from calendar import timegm
 from datetime import datetime
 
-from app.core.configs.security_config import security_config
 from app.core.clients import jwks_client
+from app.core.configs.security_config import security_config
 from app.core.exceptions.invalid_token_exception import InvalidTokenException
 from app.core.exceptions.unauthorized_exception import UnauthorizedException
 from app.core.security.schemes import oauth2_scheme
+from fastapi import Header
 from fastapi.param_functions import Depends
 from jose import jwk, jwt
 from jose.exceptions import ExpiredSignatureError
 from jose.utils import base64url_decode
 
 _config = security_config()
+_use_scope_header = _config.use_scope_header
 
 
-async def check_token(token: str = Depends(oauth2_scheme)):
+async def token_claims(
+    token: str = Depends(oauth2_scheme),
+    x_scope: str = Header(default=None)
+):
+    if _use_scope_header:
+        return {"scope": x_scope}
+
     if not token:
         raise UnauthorizedException("No token provided")
 

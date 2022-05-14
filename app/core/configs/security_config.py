@@ -5,6 +5,10 @@ from pydantic import BaseSettings
 
 
 class SecurityConfig(BaseSettings):
+    # Whether to use the X-Scope header
+    use_scope_header = True
+    # Whether to use the X-User-ID header
+    use_user_header = True
     jwks_url: Optional[str]
     jwks_cache_key = "fastapi:jwks"
     audience: Optional[str]
@@ -22,5 +26,5 @@ class SecurityConfig(BaseSettings):
 
 
 @lru_cache
-def security_config():
+def security_config() -> SecurityConfig:
     return SecurityConfig()

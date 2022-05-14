@@ -6,9 +6,11 @@ from app.api.v1.data.sample_list_out import SampleListOut
 from app.api.v1.data.sample_out import SampleOut
 from app.api.v1.data.sample_translation_in import SampleTranslationIn
 from app.api.v1.search import sample_search
-from app.constants import TOPIC_SAMPLE_CREATE, TOPIC_SAMPLE_DELETE
+from app.constants import (RESOURCE_SAMPLE, TOPIC_SAMPLE_CREATE,
+                           TOPIC_SAMPLE_DELETE)
 from app.core.data.file_stream import FileStream
 from app.core.data.params import SortParams
+from app.core.constants import CONNECTION_PRIMARY
 from app.core.exceptions.resource_not_found_exception import \
     ResourceNotFoundException
 from app.core.messaging import kafka_producer
@@ -22,7 +24,7 @@ from fastapi_pagination.default import Page
 from tortoise.query_utils import Q
 from tortoise.transactions import in_transaction
 
-FIELDS_FOR_SELECT = [
+_fields_for_select = [
     "id",
     "column_1",
     "column_2",
@@ -32,8 +34,7 @@ FIELDS_FOR_SELECT = [
     "modified_by",
     "modified_at"
 ]
-EXCLUSIONS = {"field_1", "field_2", "translations"}
-RESOURCE_NAME = "Sample"
+_exclusions = {"field_1", "field_2", "translations"}
 
 
 async def list(query, params: SortParams) -> Page[SampleListOut]:
@@ -42,25 +43,27 @@ async def list(query, params: SortParams) -> Page[SampleListOut]:
         Q(column_2__icontains=query),
         join_type="OR"
     )
-    query = Sample.filter(filter).only(*FIELDS_FOR_SELECT)
+    query = Sample.filter(filter).only(*_fields_for_select)
 
     return await to_page(query, params, SampleListOut)
 
 
 async def get(id: UUID) -> SampleOut:
-    sample = await Sample.filter(id=id) \
-        .only(*FIELDS_FOR_SELECT) \
-        .prefetch_related("translations") \
+    sample = await (
+        Sample.filter(id=id)
+        .only(*_fields_for_select)
+        .prefetch_related("translations")
         .first()
+    )
 
     if not sample:
-        raise ResourceNotFoundException(resource=RESOURCE_NAME, identifier=id)
+        raise ResourceNotFoundException(RESOURCE_SAMPLE, id)
 
     return SampleOut(**sample.dict())
 
 
 async def save(sample_in: SampleIn) -> SampleOut:
-    async with in_transaction("primary") as connection:
+    async with in_transaction(CONNECTION_PRIMARY) as connection:
         sample = await Sample.create(**mapping(sample_in), using_db=connection)
         translations = mapping_translations(sample, sample_in.translations)
 
@@ -80,19 +83,24 @@ async def save(sample_in: SampleIn) -> SampleOut:
 
 
 async def update(id: UUID, sample_in: SampleIn) -> SampleOut:
-    sample = await Sample.select_for_update() \
-        .filter(id=id) \
-        .prefetch_related("translations") \
+    sample = await (
+        Sample
+        .select_for_update()
+        .filter(id=id)
+        .prefetch_related("translations")
         .first()
+    )
 
     if not sample:
-        raise ResourceNotFoundException(resource=RESOURCE_NAME, identifier=id)
+        raise ResourceNotFoundException(RESOURCE_SAMPLE, id)
 
-    async with in_transaction("primary") as connection:
+    async with in_transaction(CONNECTION_PRIMARY) as connection:
         # Update the instance from the database
-        await sample \
-            .update_from_dict(mapping(sample_in)) \
+        await (
+            sample
+            .update_from_dict(mapping(sample_in))
             .save(using_db=connection)
+        )
 
         translations = mapping_translations(sample, sample_in.translations)
 
@@ -115,7 +123,7 @@ async def delete(id: UUID) -> None:
     sample = await Sample.select_for_update().filter(id=id).first()
 
     if not sample:
-        raise ResourceNotFoundException(resource=RESOURCE_NAME, identifier=id)
+        raise ResourceNotFoundException(RESOURCE_SAMPLE, id)
 
     await sample.soft_delete()
 
@@ -150,7 +158,7 @@ def file_delete(bucket: str, folder: str, name: str):
 
 def mapping(sample_in: SampleIn):
     return {
-        **sample_in.dict(exclude=EXCLUSIONS),
+        **sample_in.dict(exclude=_exclusions),
         "column_1": sample_in.field_1,
         "column_2": sample_in.field_2,
     }

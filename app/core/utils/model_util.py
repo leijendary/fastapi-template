@@ -8,11 +8,13 @@ from tortoise.queryset import QuerySet
 
 async def to_page(query: QuerySet[Model], params: SortParams, type: Any):
     raw_params = params.to_raw_params()
-    items = await query \
-        .offset(raw_params.offset) \
-        .limit(raw_params.limit) \
-        .order_by(*params.sort.split(",")) \
+    items = await (
+        query
+        .offset(raw_params.offset)
+        .limit(raw_params.limit)
+        .order_by(*params.sort.split(","))
         .all()
+    )
     total = await query.count()
     records = [type(**item.dict()) for item in items]
 

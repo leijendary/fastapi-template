@@ -24,5 +24,9 @@ class AuthorizationPlugin(Plugin):
         return claims["sub"]
 
 
+class UserPlugin(Plugin):
+    key = "X-User-ID"
+
+
 class LanguagePlugin(Plugin):
     key = "Accept-Language"

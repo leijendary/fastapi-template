@@ -3,7 +3,7 @@ from fastapi.security import OAuth2PasswordBearer
 
 _config = security_config()
 
-scopes = {
+_scopes = {
     scope: ""
     for scope in _config.scopes.split(",")
 }
@@ -11,6 +11,6 @@ scopes = {
 oauth2_scheme = OAuth2PasswordBearer(
     _config.token_url,
     "Bearer",
-    scopes,
+    _scopes,
     auto_error=False
 )

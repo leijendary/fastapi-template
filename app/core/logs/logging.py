@@ -36,6 +36,8 @@ def get_logger(name: str):
 
 
 def format_date(record):
-    return datetime \
-        .fromtimestamp(record.created, timezone.utc) \
+    return (
+        datetime
+        .fromtimestamp(record.created, timezone.utc)
         .strftime(_config.date_format)
+    )
