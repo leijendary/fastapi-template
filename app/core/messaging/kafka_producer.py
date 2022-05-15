@@ -2,7 +2,7 @@ import json
 from typing import Any, Dict
 
 from aiokafka.producer.producer import AIOKafkaProducer
-from app.core.configs.kafka_config import KafkaConfig, kafka_config
+from app.core.configs.kafka_config import kafka_config
 from app.core.logs.logging import get_logger
 
 _config = kafka_config()

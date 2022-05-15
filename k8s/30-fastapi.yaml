@@ -26,14 +26,16 @@ spec:
                 name: fastapi-secret
           readinessProbe:
             httpGet:
-              path: /actuator/health
+              scheme: HTTPS
+              path: /healthcheck
               port: 443
             initialDelaySeconds: 120
             timeoutSeconds: 5
             periodSeconds: 15
           livenessProbe:
             httpGet:
-              path: /actuator/health
+              scheme: HTTPS
+              path: /healthcheck
               port: 443
             initialDelaySeconds: 150
             timeoutSeconds: 5

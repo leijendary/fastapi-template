@@ -8,9 +8,9 @@ from app.api.v1.data.sample_translation_in import SampleTranslationIn
 from app.api.v1.search import sample_search
 from app.constants import (RESOURCE_SAMPLE, TOPIC_SAMPLE_CREATE,
                            TOPIC_SAMPLE_DELETE)
+from app.core.constants import CONNECTION_PRIMARY
 from app.core.data.file_stream import FileStream
 from app.core.data.params import SortParams
-from app.core.constants import CONNECTION_PRIMARY
 from app.core.exceptions.resource_not_found_exception import \
     ResourceNotFoundException
 from app.core.messaging import kafka_producer

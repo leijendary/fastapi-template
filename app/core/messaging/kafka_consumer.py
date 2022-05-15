@@ -55,10 +55,15 @@ async def consume(
             )
             logger.info(log)
 
-            await callback(message)
+            await run_callback(message, callback)
     finally:
         logger.info(f"Stopping Kafka consumer for topic {topic}...")
 
         await consumer.stop()
 
         logger.info(f"Kafka consumer for topic {topic} stopped!")
+
+
+async def run_callback(message: ConsumerRecord, callback: Awaitable):
+    # WIP: Send to DLQ
+    await callback(message)
