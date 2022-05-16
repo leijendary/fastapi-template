@@ -22,16 +22,16 @@ class Cache:
     instance: Redis
 
     @classmethod
-    async def init(self):
+    async def init(cls):
         scheme = "rediss" if _config.use_ssl else "redis"
 
-        self.instance = from_url(
+        cls.instance = from_url(
             f"{scheme}://{_config.redis_host}:{_config.redis_port}",
             username=_config.username,
             password=_config.password,
             decode_responses=True
         )
-        await self.instance.ping()
+        await cls.instance.ping()
 
 
 def redis() -> Redis:

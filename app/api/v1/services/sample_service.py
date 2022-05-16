@@ -18,7 +18,7 @@ from app.core.data.file_stream import FileStream
 from app.core.data.params import SortParams
 from app.core.exceptions.resource_not_found_exception import \
     ResourceNotFoundException
-from app.core.messaging import kafka_producer
+from app.core.messaging.kafka_producer import producer
 from app.core.storages import s3_storage
 from app.core.utils.file_util import get_name
 from app.core.utils.model_util import to_page
@@ -78,7 +78,7 @@ async def save(sample_in: SampleIn) -> SampleOut:
     await sample_search.save(sample)
 
     # Send the data to kafka
-    await kafka_producer.send(TOPIC_SAMPLE_CREATE, sample.kafka_dict())
+    await producer().send(TOPIC_SAMPLE_CREATE, sample.kafka_dict())
 
     return SampleOut(**sample.dict())
 
@@ -115,7 +115,7 @@ async def update(id: UUID, sample_in: SampleIn) -> SampleOut:
     await sample_search.save(sample)
 
     # Send the data to kafka
-    await kafka_producer.send(TOPIC_SAMPLE_CREATE, sample.kafka_dict())
+    await producer().send(TOPIC_SAMPLE_CREATE, sample.kafka_dict())
 
     return SampleOut(**sample.dict())
 
@@ -132,7 +132,7 @@ async def delete(id: UUID) -> None:
     await sample_search.delete(id)
 
     # Send the data to kafka
-    await kafka_producer.send(TOPIC_SAMPLE_DELETE, {"id": str(id)})
+    await producer().send(TOPIC_SAMPLE_DELETE, {"id": str(id)})
 
 
 def file_download(bucket: str, folder: str, name: str) -> FileStream:

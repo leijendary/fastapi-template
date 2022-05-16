@@ -16,13 +16,20 @@
 - Elasticsearch
 - FastAPI Pagination
 - JOSE
-- Httpx
+- HTTPX
 - AIO Redis
 - Boto3 (AWS SDK)
 - Python Multipart
 - PyCryptodome
 - PyTest
 - Starlette Context
+- Starlette Prometheus
+- OpenTelemetry
+  - Exporter - Jaeger
+  - Propagator - B3
+  - Instrumentation - asyncpg
+  - Instrumentation - FastAPI
+  - Instrumentation - HTTPX
 
 # FastAPI Microservice Template
 

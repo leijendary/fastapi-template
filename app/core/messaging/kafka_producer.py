@@ -1,10 +1,11 @@
 import json
-from typing import Any, Dict
+from typing import Any, Dict, Type
 
 from aiokafka.producer.producer import AIOKafkaProducer
 
 from app.core.configs.kafka_config import kafka_config
 from app.core.logs.logging_setup import get_logger
+from app.core.monitoring.tracing import single_span
 
 _config = kafka_config()
 logger = get_logger(__name__)
@@ -14,17 +15,27 @@ class KafkaProducer:
     instance: AIOKafkaProducer
 
     @classmethod
-    async def init(self):
-        self.instance = AIOKafkaProducer(
+    async def init(cls):
+        cls.instance = AIOKafkaProducer(
             client_id=_config.client_id,
             bootstrap_servers=_config.brokers,
-            enable_idempotence=True
+            enable_idempotence=True,
+            value_serializer=json_serializer
         )
-        await self.instance.start()
+        await cls.instance.start()
+
+    @classmethod
+    async def send(cls, topic: str, value: Dict, key: str = None):
+        span = single_span()
+        headers = [("b3", span.encode("utf-8"))]
+
+        await cls.instance.send(topic, value, key, headers=headers)
+
+        logger.info(f"Sent to topic {topic} key={key} value={value}")
 
 
-def producer() -> AIOKafkaProducer:
-    return KafkaProducer.instance
+def producer() -> Type[KafkaProducer]:
+    return KafkaProducer
 
 
 async def init():
@@ -38,14 +49,14 @@ async def init():
 async def close():
     logger.info("Stopping kafka producer...")
 
-    await producer().stop()
+    await KafkaProducer.instance.stop()
 
     logger.info("Kafka producer stopped!")
 
 
 async def health():
     try:
-        version = await producer().client.check_version()
+        version = await KafkaProducer.instance.client.check_version()
 
         return "UP" if version else "DOWN"
     except:
@@ -57,11 +68,3 @@ def json_serializer(value: Any):
         return None
 
     return json.dumps(value).encode("utf-8")
-
-
-async def send(topic: str, value: Dict = None, key: str = None):
-    json_value = json_serializer(value)
-
-    await producer().send_and_wait(topic, json_value, key)
-
-    logger.info(f"Sent to topic {topic} key={key} value={value}")

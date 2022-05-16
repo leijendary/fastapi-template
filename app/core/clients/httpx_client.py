@@ -1,27 +1,10 @@
-from aiozipkin import CLIENT
-from httpx import (AsyncClient, AsyncHTTPTransport, Auth, Headers, QueryParams,
-                   Request, Response)
-from starlette_zipkin import trace
+from httpx import AsyncClient, Auth, Headers, QueryParams, AsyncHTTPTransport
+from opentelemetry.instrumentation.httpx import HTTPXClientInstrumentor, \
+    AsyncOpenTelemetryTransport
 
+HTTPXClientInstrumentor().instrument()
 
-class TracingTransport(AsyncHTTPTransport):
-    async def handle_async_request(self, request: Request) -> Response:
-        url = request.url
-        scheme = url.scheme
-        method = request.method
-        host = f"{url.host}:{url.port}" if url.port else url.host
-        path = url.path
-        name = f"{scheme} {method} {host}{path}"
-
-        async with trace(name, CLIENT) as child_span:
-            headers = child_span.make_headers()
-
-            request.headers.update(headers)
-
-        return await super().handle_async_request(request)
-
-
-_transport = TracingTransport(http2=True)
+_transport = AsyncOpenTelemetryTransport(AsyncHTTPTransport())
 
 
 def async_client(

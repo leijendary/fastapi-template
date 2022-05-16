@@ -1,13 +1,18 @@
 import json
-from typing import Callable
+from typing import Callable, Optional, Sequence, Tuple
 
 from aiokafka import AIOKafkaConsumer
 from aiokafka.structs import ConsumerRecord
+from opentelemetry.context.context import Context
+from opentelemetry.trace import get_tracer
+from opentelemetry.trace.propagation.tracecontext import \
+    TraceContextTextMapPropagator
 
 from app.core.configs.kafka_config import kafka_config
 from app.core.logs.logging_setup import get_logger
 
 logger = get_logger(__name__)
+tracer = get_tracer(__name__)
 _config = kafka_config()
 
 
@@ -44,9 +49,24 @@ async def consume(
     logger.info(f"Kafka consumer for topic {topic} initialized!")
 
     try:
-        message: ConsumerRecord
+        await _consume(consumer, callback)
+    finally:
+        logger.info(f"Stopping Kafka consumer for topic {topic}...")
 
-        async for message in consumer:
+        await consumer.stop()
+
+        logger.info(f"Kafka consumer for topic {topic} stopped!")
+
+
+async def _consume(consumer: AIOKafkaConsumer, callback: Callable):
+    message: ConsumerRecord
+
+    async for message in consumer:
+        headers = message.headers
+        context: Optional[Context] = _get_context(headers)
+        name = f"{message.topic}:{message.partition}:{message.offset}"
+
+        with tracer.start_as_current_span(name, context):
             log = "Consuming {}:{}:{} key={} value={}".format(
                 message.topic,
                 message.partition,
@@ -56,15 +76,17 @@ async def consume(
             )
             logger.info(log)
 
-            await run_callback(message, callback)
-    finally:
-        logger.info(f"Stopping Kafka consumer for topic {topic}...")
-
-        await consumer.stop()
-
-        logger.info(f"Kafka consumer for topic {topic} stopped!")
+            await _run_with_dlq(message, callback)
 
 
-async def run_callback(message: ConsumerRecord, callback: Callable):
+def _get_context(headers: Sequence[Tuple[str, bytes]]) -> Optional[Context]:
+    for header in headers:
+        if header[0] == 'b3':
+            carrier = {"traceparent": header[1].decode("utf-8")}
+
+            return TraceContextTextMapPropagator().extract(carrier=carrier)
+
+
+async def _run_with_dlq(message: ConsumerRecord, callback: Callable):
     # WIP: Send to DLQ
     await callback(message)

@@ -2,6 +2,7 @@ from datetime import datetime
 
 import uvicorn
 from fastapi import FastAPI
+from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from pydantic.json import ENCODERS_BY_TYPE
 
 from app import exception, shutdown, startup
@@ -31,6 +32,11 @@ def create_app() -> FastAPI:
     exception.add_handlers(app)
     middleware.add_middlewares(app)
     route.include_routers(app)
+
+    FastAPIInstrumentor.instrument_app(
+        app,
+        excluded_urls="healthcheck,metrics"
+    )
 
     return app
 

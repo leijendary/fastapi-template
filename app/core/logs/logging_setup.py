@@ -1,16 +1,19 @@
 from datetime import datetime, timezone
 from logging import LogRecord, Formatter
-from logging import StreamHandler, getLogger
+from logging import StreamHandler, getLogger, setLogRecordFactory, \
+    getLogRecordFactory
 
 from uvicorn.config import LOGGING_CONFIG
 
 from app.core.configs.logging_config import logging_config
+from app.core.monitoring.tracing import trace_id, span_id
 
 _config = logging_config()
 _level = _config.level
 _format = _config.format
 _date_format = _config.date_format
 _formatter = Formatter(fmt=_config.format, datefmt=_config.date_format)
+_old_factory = getLogRecordFactory()
 
 # Override uvicorn log format
 LOGGING_CONFIG["formatters"]["default"]["fmt"] = _config.format
@@ -28,6 +31,14 @@ def get_logger(name: str):
     return logger
 
 
+def _log_record_factory(*args, **kwargs) -> LogRecord:
+    record = _old_factory(*args, **kwargs)
+    record.trace_id = trace_id() or ""
+    record.span_id = span_id() or ""
+
+    return record
+
+
 def _format_date(_, record: LogRecord, __):
     return (
         datetime
@@ -35,6 +46,8 @@ def _format_date(_, record: LogRecord, __):
             .strftime(_config.date_format)
     )
 
+
+setLogRecordFactory(_log_record_factory)
 
 # Override time formatter
 Formatter.formatTime = _format_date

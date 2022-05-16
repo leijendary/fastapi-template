@@ -5,10 +5,19 @@ from fastapi.encoders import jsonable_encoder
 from starlette.responses import JSONResponse
 
 from .error_source import ErrorSource
+from ..monitoring.tracing import trace_id
 
 
 class ErrorResponse(JSONResponse):
-    def render(self, errors: List[ErrorSource], meta={}) -> bytes:
+    def render(self, errors: List[ErrorSource], meta=None) -> bytes:
+        if meta is None:
+            meta = {}
+
+        t_id = trace_id()
+
+        if t_id:
+            meta["trace_id"] = t_id
+
         content = {
             "errors": errors,
             "meta": {

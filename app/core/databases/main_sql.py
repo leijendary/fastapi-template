@@ -1,6 +1,7 @@
 from typing import List
 
 from aerich import Command
+from opentelemetry.instrumentation.asyncpg import AsyncPGInstrumentor
 from tortoise import Tortoise
 
 from app.core.configs.database_config import (DatabaseConfig,
@@ -14,6 +15,8 @@ logger = get_logger(__name__)
 _primary_config = primary_database_config()
 _readonly_config = readonly_database_config()
 _module = "app"
+
+AsyncPGInstrumentor().instrument()
 
 
 async def init(models: List[str]):

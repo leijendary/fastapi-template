@@ -17,8 +17,8 @@ class Elasticsearch:
     instance: AsyncElasticsearch
 
     @classmethod
-    def init(self):
-        self.instance = AsyncElasticsearch(
+    def init(cls):
+        cls.instance = AsyncElasticsearch(
             hosts=_config.hosts.split(","),
             use_ssl=_config.use_ssl,
             verify_certs=_config.verify_certs,

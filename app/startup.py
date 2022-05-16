@@ -2,12 +2,14 @@ from fastapi import FastAPI
 
 from app.core.cache import redis_cache
 from app.core.messaging import kafka_producer
+from app.core.monitoring import tracing
 from app.core.search import elasticsearch
 from app.documents import sample_document
 from app.messaging import sample_consumer
 from app.models import model
 
 functions = [
+    tracing.init,
     model.init,
     elasticsearch.init,
     kafka_producer.init,
