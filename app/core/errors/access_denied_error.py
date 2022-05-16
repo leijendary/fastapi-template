@@ -5,8 +5,8 @@ from app.core.libraries.message import get_message
 
 
 async def access_denied_handler(
-    _,
-    exc: AccessDeniedException
+        _,
+        exc: AccessDeniedException
 ) -> ErrorResponse:
     code = "access.denied"
     message = get_message(code)

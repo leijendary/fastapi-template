@@ -1,8 +1,9 @@
+from botocore.exceptions import ClientError
+
 from app.core.data.error_response import ErrorResponse
 from app.core.data.error_source import ErrorSource
 from app.core.libraries.message import get_message
 from app.core.utils.file_util import get_name
-from botocore.exceptions import ClientError
 
 
 async def client_error_handler(_, exc: ClientError) -> ErrorResponse:

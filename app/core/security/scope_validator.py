@@ -1,10 +1,9 @@
-from typing import List
+from fastapi import Depends
+from fastapi.security import SecurityScopes
 
 from app.core.configs.security_config import security_config
 from app.core.exceptions.access_denied_exception import AccessDeniedException
 from app.core.security.token_validator import token_claims
-from fastapi import Depends
-from fastapi.security import SecurityScopes
 
 _config = security_config()
 _sources = (
@@ -15,8 +14,8 @@ _sources = (
 
 
 async def check_scope(
-    security_scopes: SecurityScopes,
-    claims=Depends(token_claims)
+        security_scopes: SecurityScopes,
+        claims=Depends(token_claims)
 ):
     scopes = security_scopes.scopes
 

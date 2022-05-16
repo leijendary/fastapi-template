@@ -38,7 +38,6 @@ def create_app() -> FastAPI:
 # Create an instance of the app
 app = create_app()
 
-
 if __name__ == "__main__":
     security = security_config()
     log = logging_config()

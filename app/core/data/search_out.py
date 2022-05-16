@@ -1,7 +1,8 @@
 from typing import Any
 
-from app.core.utils.locale_util import localize
 from pydantic.main import BaseModel
+
+from app.core.utils.locale_util import localize
 
 
 class SearchOut(BaseModel):

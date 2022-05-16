@@ -7,11 +7,11 @@ class AccessDeniedException(Exception):
     sources: List[str]
 
     def __init__(
-        self,
-        reason: str,
-        scopes: List[str] = [],
-        sources: List[str] = [],
-        *args
+            self,
+            reason: str,
+            scopes: List[str] = [],
+            sources: List[str] = [],
+            *args
     ) -> None:
         super().__init__(*args)
 

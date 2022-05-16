@@ -1,7 +1,8 @@
+from starlette.requests import Request
+
 from app.core.data.error_response import ErrorResponse
 from app.core.data.error_source import ErrorSource
 from app.core.libraries.message import get_message
-from starlette.requests import Request
 
 
 async def not_found_handler(request: Request, _) -> ErrorResponse:

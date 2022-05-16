@@ -6,7 +6,7 @@ from pydantic import BaseSettings
 
 class LoggingConfig(BaseSettings):
     level = INFO
-    format = "%(asctime)s [%(process)d] [%(levelname)s] %(message)s"
+    format = "%(asctime)s [%(name)s:%(lineno)d] [%(levelname)s] %(message)s"
     date_format = "[%Y-%m-%d %H:%M:%S %z]"
     access = False
 

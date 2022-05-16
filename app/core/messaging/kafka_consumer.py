@@ -1,10 +1,11 @@
 import json
-from typing import Awaitable
+from typing import Callable
 
 from aiokafka import AIOKafkaConsumer
 from aiokafka.structs import ConsumerRecord
+
 from app.core.configs.kafka_config import kafka_config
-from app.core.logs.logging import get_logger
+from app.core.logs.logging_setup import get_logger
 
 logger = get_logger(__name__)
 _config = kafka_config()
@@ -22,10 +23,10 @@ def json_deserializer(value: bytes):
 
 
 async def consume(
-    topic: str,
-    callback: Awaitable,
-    value_deserializer=json_deserializer,
-    auto_offset_reset="earliest"
+        topic: str,
+        callback: Callable,
+        value_deserializer=json_deserializer,
+        auto_offset_reset="earliest"
 ):
     logger.info(f"Initializing kafka consumer for topic {topic}...")
 
@@ -64,6 +65,6 @@ async def consume(
         logger.info(f"Kafka consumer for topic {topic} stopped!")
 
 
-async def run_callback(message: ConsumerRecord, callback: Awaitable):
+async def run_callback(message: ConsumerRecord, callback: Callable):
     # WIP: Send to DLQ
     await callback(message)

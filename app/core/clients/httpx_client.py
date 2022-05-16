@@ -25,10 +25,10 @@ _transport = TracingTransport(http2=True)
 
 
 def async_client(
-    base_url: str = None,
-    auth: Auth = None,
-    params: QueryParams = None,
-    headers: Headers = None
+        base_url: str = None,
+        auth: Auth = None,
+        params: QueryParams = None,
+        headers: Headers = None
 ) -> AsyncClient:
     return AsyncClient(
         base_url=base_url,

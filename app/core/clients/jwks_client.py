@@ -1,7 +1,7 @@
 from app.core.cache.redis_cache import cache_get, redis
 from app.core.clients.httpx_client import async_client
 from app.core.configs.security_config import security_config
-from app.core.logs.logging import get_logger
+from app.core.logs.logging_setup import get_logger
 from app.core.utils.thread_util import synchronized
 
 logger = get_logger(__name__)

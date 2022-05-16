@@ -2,8 +2,7 @@ import logging
 from typing import Dict
 
 from app.core.configs.elasticsearch_config import elasticsearch_config
-from app.core.logs.logging import get_logger
-
+from app.core.logs.logging_setup import get_logger
 from elasticsearch import AsyncElasticsearch
 
 _config = elasticsearch_config()

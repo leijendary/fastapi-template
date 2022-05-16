@@ -1,9 +1,10 @@
 from typing import List
 
+from pydantic.fields import Field
+
 from app.api.v1.data.sample_translation_in import SampleTranslationIn
 from app.core.data.schema import Schema
 from app.core.libraries.message import get_message
-from pydantic.fields import Field
 
 
 class SampleIn(Schema):

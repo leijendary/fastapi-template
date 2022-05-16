@@ -1,8 +1,9 @@
 from typing import Dict
 
+from pydantic import ValidationError
+
 from app.core.data.error_response import ErrorResponse
 from app.core.data.error_source import ErrorSource
-from pydantic import ValidationError
 
 
 async def validation_handler(_, exc: ValidationError) -> ErrorResponse:

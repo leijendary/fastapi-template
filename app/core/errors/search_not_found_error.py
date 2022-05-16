@@ -1,7 +1,8 @@
+from elasticsearch.exceptions import NotFoundError
+
 from app.core.data.error_response import ErrorResponse
 from app.core.data.error_source import ErrorSource
 from app.core.libraries.message import get_message
-from elasticsearch.exceptions import NotFoundError
 
 
 async def search_not_found_handler(_, exc: NotFoundError) -> ErrorResponse:

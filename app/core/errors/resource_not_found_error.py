@@ -6,8 +6,8 @@ from app.core.libraries.message import get_message
 
 
 async def resource_not_found_handler(
-    _,
-    exc: ResourceNotFoundException
+        _,
+        exc: ResourceNotFoundException
 ) -> ErrorResponse:
     resource = exc.resource
     identifier = exc.identifier

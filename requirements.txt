@@ -1,6 +1,9 @@
 fastapi==0.70.0
 uvicorn[standard]==0.15.0
 gunicorn==20.1.0
+pydantic==1.9.0
+starlette==0.16.0
+asyncpg==0.25.0
 tortoise-orm[asyncpg]==0.17.8
 python-dotenv==0.19.1
 aerich==0.5.8
@@ -10,9 +13,15 @@ fastapi-pagination[tortoise]==0.9.1
 python-jose==3.3.0
 httpx[http2]==0.20.0
 aioredis==2.0.0
+botocore==1.23.54
 boto3[crt]==1.20.10
 python-multipart==0.0.5
 pycryptodome==3.11.0
+opentracing==2.4.0
 starlette-context==0.3.3
 starlette-prometheus==0.9.0
+starlette-opentracing==0.1.0
+jaeger-client==4.8.0
+opentracing-instrumentation==3.3.1
+aiozipkin==1.1.1
 starlette-zipkin==0.2.3

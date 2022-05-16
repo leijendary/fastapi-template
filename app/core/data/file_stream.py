@@ -9,10 +9,10 @@ class FileStream:
     media_type: str
 
     def __init__(
-        self,
-        body: StreamingBody,
-        headers: Dict[str, str],
-        media_type: str
+            self,
+            body: StreamingBody,
+            headers: Dict[str, str],
+            media_type: str
     ):
         self.body = body
         self.headers = headers

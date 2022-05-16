@@ -1,10 +1,11 @@
 from typing import List
 from uuid import UUID
 
+from pydantic.fields import Field
+
 from app.api.v1.data.sample_translation_out import SampleTranslationOut
 from app.core.data.schema import TimestampSchema
 from app.core.libraries.message import get_message
-from pydantic.fields import Field
 
 
 class SampleOut(TimestampSchema):

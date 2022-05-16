@@ -1,6 +1,7 @@
-from app.core.models.translation import TranslationModel
 from tortoise.fields import CharField
 from tortoise.fields.relational import ForeignKeyField
+
+from app.core.models.translation import TranslationModel
 
 
 class SampleTranslation(TranslationModel):

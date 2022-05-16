@@ -1,6 +1,11 @@
 from typing import List
 from uuid import UUID
 
+from fastapi.datastructures import UploadFile
+from fastapi_pagination.default import Page
+from tortoise.query_utils import Q
+from tortoise.transactions import in_transaction
+
 from app.api.v1.data.sample_in import SampleIn
 from app.api.v1.data.sample_list_out import SampleListOut
 from app.api.v1.data.sample_out import SampleOut
@@ -19,10 +24,6 @@ from app.core.utils.file_util import get_name
 from app.core.utils.model_util import to_page
 from app.models.sample import Sample
 from app.models.sample_translation import SampleTranslation
-from fastapi.datastructures import UploadFile
-from fastapi_pagination.default import Page
-from tortoise.query_utils import Q
-from tortoise.transactions import in_transaction
 
 _fields_for_select = [
     "id",
@@ -51,9 +52,9 @@ async def list(query, params: SortParams) -> Page[SampleListOut]:
 async def get(id: UUID) -> SampleOut:
     sample = await (
         Sample.filter(id=id)
-        .only(*_fields_for_select)
-        .prefetch_related("translations")
-        .first()
+            .only(*_fields_for_select)
+            .prefetch_related("translations")
+            .first()
     )
 
     if not sample:
@@ -85,10 +86,10 @@ async def save(sample_in: SampleIn) -> SampleOut:
 async def update(id: UUID, sample_in: SampleIn) -> SampleOut:
     sample = await (
         Sample
-        .select_for_update()
-        .filter(id=id)
-        .prefetch_related("translations")
-        .first()
+            .select_for_update()
+            .filter(id=id)
+            .prefetch_related("translations")
+            .first()
     )
 
     if not sample:
@@ -98,8 +99,8 @@ async def update(id: UUID, sample_in: SampleIn) -> SampleOut:
         # Update the instance from the database
         await (
             sample
-            .update_from_dict(mapping(sample_in))
-            .save(using_db=connection)
+                .update_from_dict(mapping(sample_in))
+                .save(using_db=connection)
         )
 
         translations = mapping_translations(sample, sample_in.translations)
@@ -165,8 +166,8 @@ def mapping(sample_in: SampleIn):
 
 
 def mapping_translations(
-    sample: Sample,
-    translations: List[SampleTranslationIn]
+        sample: Sample,
+        translations: List[SampleTranslationIn]
 ):
     return [
         SampleTranslation(**translation.dict(), reference=sample)

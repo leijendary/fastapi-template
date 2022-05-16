@@ -2,8 +2,9 @@ import json
 from typing import Any, Dict
 
 from aiokafka.producer.producer import AIOKafkaProducer
+
 from app.core.configs.kafka_config import kafka_config
-from app.core.logs.logging import get_logger
+from app.core.logs.logging_setup import get_logger
 
 _config = kafka_config()
 logger = get_logger(__name__)

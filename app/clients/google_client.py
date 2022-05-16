@@ -1,8 +1,6 @@
-from email.mime import base
-
 from app.core.clients.httpx_client import async_client
 from app.core.configs.client_config import client_config
-from app.core.logs.logging import get_logger
+from app.core.logs.logging_setup import get_logger
 
 logger = get_logger(__name__)
 _config = client_config()

@@ -1,13 +1,14 @@
 from typing import List
 
 from aerich import Command
+from tortoise import Tortoise
+
 from app.core.configs.database_config import (DatabaseConfig,
                                               primary_database_config,
                                               readonly_database_config)
 from app.core.constants import CONNECTION_PRIMARY, CONNECTION_READONLY
-from app.core.logs.logging import get_logger
+from app.core.logs.logging_setup import get_logger
 from app.core.models import signal
-from tortoise import Tortoise
 
 logger = get_logger(__name__)
 _primary_config = primary_database_config()
@@ -45,8 +46,8 @@ async def health():
     try:
         result = await (
             Tortoise
-            .get_connection(next(iter(Tortoise._connections)))
-            .execute_query_dict("SELECT 'UP' as status")
+                .get_connection(next(iter(Tortoise._connections)))
+                .execute_query_dict("SELECT 'UP' as status")
         )
 
         return result[0]["status"] or "DOWN"

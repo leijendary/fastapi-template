@@ -5,14 +5,14 @@ from typing import Any, Callable, List, Optional
 
 from aioredis import Redis
 from aioredis.utils import from_url
-from app.core.configs.cache_config import cache_config
-from app.core.data.data_response import DataResponse
-from app.core.logs.logging import get_logger
 from starlette.requests import Request
 from starlette.responses import Response
 
+from app.core.configs.cache_config import cache_config
+from app.core.data.data_response import DataResponse
 from .redis_key_builder import (default_key_builder, request_key_builder,
                                 result_key_builder)
+from ..logs.logging_setup import get_logger
 
 _config = cache_config()
 logger = get_logger(__name__)
@@ -64,9 +64,9 @@ async def health():
 
 
 def cache_get(
-    namespace: str,
-    identifier="id",
-    key_builder=request_key_builder
+        namespace: str,
+        identifier="id",
+        key_builder=request_key_builder
 ):
     def wrapper(func):
 
@@ -105,12 +105,11 @@ def cache_get(
 
 
 def cache_put(
-    namespace: str,
-    identifier="id",
-    key_builder=result_key_builder
+        namespace: str,
+        identifier="id",
+        key_builder=result_key_builder
 ):
     def wrapper(func):
-
         @wraps(func)
         async def inner(*args, **kwargs):
             request = kwargs.get("request")
@@ -139,12 +138,11 @@ def cache_put(
 
 
 def cache_evict(
-    namespace: str,
-    identifier="id",
-    key_builder=request_key_builder
+        namespace: str,
+        identifier="id",
+        key_builder=request_key_builder
 ):
     def wrapper(func):
-
         @wraps(func)
         async def inner(*args, **kwargs):
             key = get_key(
@@ -166,13 +164,13 @@ def cache_evict(
 
 
 def get_key(
-    func,
-    namespace: str,
-    identifier: Optional[str],
-    key_builder: Optional[Callable],
-    result: Optional[DataResponse] = None,
-    args: Optional[tuple] = None,
-    kwargs: Optional[dict] = None
+        func,
+        namespace: str,
+        identifier: Optional[str],
+        key_builder: Optional[Callable],
+        result: Optional[DataResponse] = None,
+        args: Optional[tuple] = None,
+        kwargs: Optional[dict] = None
 ):
     key_builder = key_builder or default_key_builder
 

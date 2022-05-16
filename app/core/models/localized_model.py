@@ -1,10 +1,10 @@
 from typing import List, Optional
 
-from app.core.models.translation import TranslationModel
 from tortoise.backends.base.client import BaseDBAsyncClient
 from tortoise.fields.relational import ManyToManyRelation
 
-from .model import Model
+from app.core.models.model import Model
+from app.core.models.translation import TranslationModel
 
 
 class LocalizedModel(Model):
@@ -23,9 +23,9 @@ class LocalizedModel(Model):
         ]
 
     async def sync_translations(
-        self,
-        translations: List[TranslationModel],
-        using_db: Optional[BaseDBAsyncClient] = None
+            self,
+            translations: List[TranslationModel],
+            using_db: Optional[BaseDBAsyncClient] = None
     ):
         creates = []
         deletes = []

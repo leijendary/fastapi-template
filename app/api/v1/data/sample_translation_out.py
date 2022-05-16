@@ -1,8 +1,9 @@
 from typing import Optional
 
+from pydantic.fields import Field
+
 from app.core.data.schema import TranslationSchema
 from app.core.libraries.message import get_message
-from pydantic.fields import Field
 
 
 class SampleTranslationOut(TranslationSchema):

@@ -1,9 +1,10 @@
 from typing import List
 
+from fastapi_pagination import Params, create_page
+
 from app.core.context.request_context import current_language
 from app.core.data.params import SortParams
 from app.core.data.search_out import SearchOut
-from fastapi_pagination import Params, create_page
 
 MATCH_ALL = {
     "match_all": {}
@@ -34,10 +35,10 @@ def map_type(hit: dict, type: SearchOut):
 
 
 def match_fuzziness(
-    query="",
-    fields: List[str] = [],
-    fuzziness="AUTO",
-    default=MATCH_ALL
+        query="",
+        fields: List[str] = [],
+        fuzziness="AUTO",
+        default=MATCH_ALL
 ):
     if not query:
         return default

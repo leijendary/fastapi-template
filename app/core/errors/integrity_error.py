@@ -1,10 +1,11 @@
 import re
 
+from asyncpg.exceptions import UniqueViolationError
+from tortoise.exceptions import IntegrityError
+
 from app.core.data.error_response import ErrorResponse
 from app.core.data.error_source import ErrorSource
 from app.core.libraries.message import get_message
-from asyncpg.exceptions import UniqueViolationError
-from tortoise.exceptions import IntegrityError
 
 
 async def integrity_handler(_, exc: IntegrityError) -> ErrorResponse:
@@ -22,8 +23,8 @@ async def integrity_handler(_, exc: IntegrityError) -> ErrorResponse:
 
 
 async def unique_violation_handler(
-    _,
-    exc: UniqueViolationError
+        _,
+        exc: UniqueViolationError
 ) -> ErrorResponse:
     detail = exc.detail
     field = re.search("Key \((.+?)\)=", detail).group(1)

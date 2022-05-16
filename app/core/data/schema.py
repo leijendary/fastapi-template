@@ -1,13 +1,13 @@
 from datetime import datetime
 
-from app.core.libraries.message import get_message
-from app.core.utils.date_util import to_epoch
 from pydantic.fields import Field
 from pydantic.main import BaseModel
 
+from app.core.libraries.message import get_message
+from app.core.utils.date_util import to_epoch
+
 
 class Schema(BaseModel):
-
     class Config:
         anystr_strip_whitespace = True
 

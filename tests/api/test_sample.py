@@ -1,9 +1,10 @@
 from uuid import uuid4
 
 import pytest
-from app.core.configs.app_config import app_config
-from app.core.logs.logging import get_logger
+from app.core.logs.logging_setup import get_logger
 from fastapi.testclient import TestClient
+
+from app.core.configs.app_config import app_config
 
 _config = app_config()
 logger = get_logger(__name__)

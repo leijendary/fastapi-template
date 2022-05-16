@@ -5,10 +5,10 @@ repos:
       - id: autoflake
         args:
           [
-            -i,
-            -r,
-            --expand-star-imports,
-            --remove-all-unused-imports,
-            --remove-unused-variables,
-            .,
+              -i,
+              -r,
+              --expand-star-imports,
+              --remove-all-unused-imports,
+              --remove-unused-variables,
+              .,
           ]

@@ -1,9 +1,10 @@
+from fastapi import APIRouter
+from fastapi.responses import JSONResponse
+
 from app.core.cache import redis_cache
 from app.core.databases import main_sql
 from app.core.messaging import kafka_producer
 from app.core.search import elasticsearch
-from fastapi import APIRouter
-from fastapi.responses import JSONResponse
 
 router = APIRouter(
     prefix="/healthcheck",

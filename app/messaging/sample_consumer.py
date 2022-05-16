@@ -1,6 +1,7 @@
 from asyncio import create_task
 
 from aiokafka.structs import ConsumerRecord
+
 from app.constants import (TOPIC_SAMPLE_CREATE, TOPIC_SAMPLE_DELETE,
                            TOPIC_SAMPLE_UPDATE)
 from app.core.messaging.kafka_consumer import consume
