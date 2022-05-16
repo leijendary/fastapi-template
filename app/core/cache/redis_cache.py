@@ -3,19 +3,22 @@ from functools import wraps
 from hashlib import md5
 from typing import Any, Callable, List, Optional
 
-from aioredis import Redis
-from aioredis.utils import from_url
+from opentelemetry.instrumentation.redis import RedisInstrumentor
+from redis.asyncio import Redis
 from starlette.requests import Request
 from starlette.responses import Response
 
+from app.core.cache.redis_key_builder import (default_key_builder,
+                                              request_key_builder,
+                                              result_key_builder)
 from app.core.configs.cache_config import cache_config
 from app.core.data.data_response import DataResponse
-from .redis_key_builder import (default_key_builder, request_key_builder,
-                                result_key_builder)
-from ..logs.logging_setup import get_logger
+from app.core.logs.logging_setup import get_logger
 
 _config = cache_config()
 logger = get_logger(__name__)
+
+RedisInstrumentor().instrument()
 
 
 class Cache:
@@ -23,12 +26,12 @@ class Cache:
 
     @classmethod
     async def init(cls):
-        scheme = "rediss" if _config.use_ssl else "redis"
-
-        cls.instance = from_url(
-            f"{scheme}://{_config.redis_host}:{_config.redis_port}",
+        cls.instance = Redis(
+            host=_config.redis_host,
+            port=_config.redis_port,
             username=_config.username,
             password=_config.password,
+            ssl=_config.use_ssl,
             decode_responses=True
         )
         await cls.instance.ping()

@@ -17,7 +17,7 @@
 - FastAPI Pagination
 - JOSE
 - HTTPX
-- AIO Redis
+- Redis
 - Boto3 (AWS SDK)
 - Python Multipart
 - PyCryptodome
@@ -25,11 +25,11 @@
 - Starlette Context
 - Starlette Prometheus
 - OpenTelemetry
-  - Exporter - Jaeger
-  - Propagator - B3
-  - Instrumentation - asyncpg
-  - Instrumentation - FastAPI
-  - Instrumentation - HTTPX
+    - Exporter - Jaeger
+    - Propagator - B3
+    - Instrumentation - asyncpg
+    - Instrumentation - FastAPI
+    - Instrumentation - HTTPX
 
 # FastAPI Microservice Template
 
