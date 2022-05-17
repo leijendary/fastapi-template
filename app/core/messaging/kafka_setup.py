@@ -1,7 +1,9 @@
 import json
+from typing import Any, Dict, Type
 from typing import Callable, Optional, Sequence, Tuple
 
 from aiokafka import AIOKafkaConsumer
+from aiokafka.producer.producer import AIOKafkaProducer
 from aiokafka.structs import ConsumerRecord
 from opentelemetry.context.context import Context
 from opentelemetry.trace import get_tracer
@@ -10,13 +12,84 @@ from opentelemetry.trace.propagation.tracecontext import \
 
 from app.core.configs.kafka_config import kafka_config
 from app.core.logs.logging_setup import get_logger
+from app.core.monitoring.tracing import single_span
 
+_config = kafka_config()
 logger = get_logger(__name__)
 tracer = get_tracer(__name__)
-_config = kafka_config()
+
+
+class KafkaProducer:
+    instance: AIOKafkaProducer
+
+    @classmethod
+    async def init(cls):
+        cls.instance = AIOKafkaProducer(
+            client_id=_config.client_id,
+            bootstrap_servers=_config.brokers,
+            enable_idempotence=True,
+            key_serializer=byte_serializer,
+            value_serializer=json_serializer
+        )
+        await cls.instance.start()
+
+    @classmethod
+    async def send(cls, topic: str, value: Dict, key: str = None):
+        span = single_span()
+        headers = [("b3", span.encode("utf-8"))]
+
+        await cls.instance.send(topic, value, key, headers=headers)
+
+        logger.info(f"Sent to topic {topic} key={key} value={value}")
+
+
+def producer() -> Type[KafkaProducer]:
+    return KafkaProducer
+
+
+async def init():
+    logger.info("Starting kafka producer...")
+
+    await KafkaProducer.init()
+
+    logger.info("Kafka producer started!")
+
+
+async def close():
+    logger.info("Stopping kafka producer...")
+
+    await KafkaProducer.instance.stop()
+
+    logger.info("Kafka producer stopped!")
+
+
+async def health():
+    try:
+        version = await KafkaProducer.instance.client.check_version()
+
+        return "UP" if version else "DOWN"
+    except:
+        return "DOWN"
+
+
+def byte_serializer(value: str):
+    if not value:
+        return None
+
+    return value.encode("utf-8")
+
+
+def json_serializer(value: Any):
+    if not value:
+        return None
+
+    return json.dumps(value).encode("utf-8")
 
 
 def string_deserializer(value: bytes):
+    if not value:
+        return None
+
     return value.decode("utf-8")
 
 
@@ -40,6 +113,7 @@ async def consume(
         client_id=_config.client_id,
         group_id=_config.group_id,
         bootstrap_servers=_config.brokers,
+        key_deserializer=string_deserializer,
         value_deserializer=value_deserializer,
         auto_offset_reset=auto_offset_reset
     )

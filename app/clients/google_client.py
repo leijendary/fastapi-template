@@ -1,4 +1,4 @@
-from app.core.clients.httpx_client import async_client
+from app.core.clients.httpx_setup import async_client
 from app.core.configs.client_config import client_config
 from app.core.logs.logging_setup import get_logger
 

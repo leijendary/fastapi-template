@@ -1,10 +1,10 @@
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 
-from app.core.cache import redis_cache
-from app.core.databases import main_sql
-from app.core.messaging import kafka_producer
-from app.core.search import elasticsearch
+from app.core.cache import redis_setup
+from app.core.databases import postgres_setup
+from app.core.messaging import kafka_setup
+from app.core.search import elasticsearch_setup
 
 router = APIRouter(
     prefix="/healthcheck",
@@ -16,10 +16,10 @@ router = APIRouter(
 async def healthcheck():
     body = {
         "status": "UP",
-        "database": await main_sql.health(),
-        "elasticsearch": await elasticsearch.health(),
-        "kafka": await kafka_producer.health(),
-        "redis": await redis_cache.health()
+        "database": await postgres_setup.health(),
+        "elasticsearch": await elasticsearch_setup.health(),
+        "kafka": await kafka_setup.health(),
+        "redis": await redis_setup.health()
     }
     status_code = 200 if "DOWN" not in body.values() else 503
 

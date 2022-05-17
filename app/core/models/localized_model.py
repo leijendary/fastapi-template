@@ -17,40 +17,19 @@ class LocalizedModel(Model):
         if not self.translations.related_objects:
             return []
 
-        return [
-            translation.dict()
-            for translation in self.translations
-        ]
+        return [translation.dict() for translation in self.translations]
 
     async def sync_translations(
             self,
             translations: List[TranslationModel],
             using_db: Optional[BaseDBAsyncClient] = None
     ):
-        creates = []
-        deletes = []
-
-        for c in self.translations:
-            if c.language not in [n.language for n in translations]:
-                deletes.append(c)
-
-                continue
-
-            for n in translations:
-                if n.language == c.language:
-                    c.update_from_dict({**n.dict(), "id": c.id})
-
-                    await c.save(using_db=using_db)
-
-        for n in translations:
-            if n.language not in [c.language for c in self.translations]:
-                creates.append(n)
-
-                continue
-
-        model = self.translations.remote_model
+        deletes = await self._sync_current(translations, using_db)
+        creates = await self._sync_new(translations)
 
         if creates:
+            model = self.translations.remote_model
+
             await model.bulk_create(creates, using_db=using_db)
 
         if deletes:
@@ -67,3 +46,40 @@ class LocalizedModel(Model):
             **super().kafka_dict(),
             **{"translations": self.translations_dict()}
         }
+
+    async def _sync_current(
+            self,
+            translations: List[TranslationModel],
+            using_db: Optional[BaseDBAsyncClient] = None
+    ) -> List[TranslationModel]:
+        deletes: List[TranslationModel] = []
+
+        for current in self.translations:
+            if current.language not in [n.language for n in translations]:
+                deletes.append(current)
+
+                continue
+
+            for new in translations:
+                if new.language == current.language:
+                    await (
+                        current
+                            .update_from_dict({**new.dict(), "id": current.id})
+                            .save(using_db=using_db)
+                    )
+
+        return deletes
+
+    async def _sync_new(
+            self,
+            translations: List[TranslationModel]
+    ) -> List[TranslationModel]:
+        creates: List[TranslationModel] = []
+
+        for new in translations:
+            if new.language not in [c.language for c in self.translations]:
+                creates.append(new)
+
+                continue
+
+        return creates

@@ -15,7 +15,7 @@ from app.api.v1.data.sample_search_out import SampleSearchOut
 from app.api.v1.search import sample_search
 from app.api.v1.services import sample_service
 from app.clients import google_client
-from app.core.cache.redis_cache import cache_evict, cache_get, cache_put
+from app.core.cache.redis_setup import cache_evict, cache_get, cache_put
 from app.core.data.params import SortParams
 from app.core.security import encryption
 from app.core.security.scope_validator import check_scope

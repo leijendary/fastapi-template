@@ -7,7 +7,7 @@ from fastapi.testclient import TestClient
 from tortoise.contrib.fastapi import register_tortoise
 from tortoise.contrib.test import finalizer, initializer
 
-from app.core.databases.main_sql import _module, _modules
+from app.core.databases.postgres_setup import _module, _modules
 from main import app
 
 

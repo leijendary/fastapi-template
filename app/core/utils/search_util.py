@@ -1,4 +1,4 @@
-from typing import List
+from typing import Type
 
 from fastapi_pagination import Params, create_page
 
@@ -21,25 +21,26 @@ def translation_page(query, params: SortParams, fields):
     return body
 
 
-def to_page(result: dict, params: Params, type: SearchOut):
+def to_page(result: dict, params: Params, to_type: Type[SearchOut]):
     total = result["hits"]["total"]["value"]
-    records = [map_type(hit, type) for hit in result["hits"]["hits"]]
+    records = [map_type(hit, to_type) for hit in result["hits"]["hits"]]
 
     return create_page(records, total, params)
 
 
-def map_type(hit: dict, type: SearchOut):
+def map_type(hit: dict, to_type: Type[SearchOut]):
     locale = current_language()
 
-    return type(locale=locale, id=hit["_id"], **hit["_source"])
+    return to_type(locale=locale, id=hit["_id"], **hit["_source"])
 
 
-def match_fuzziness(
-        query="",
-        fields: List[str] = [],
-        fuzziness="AUTO",
-        default=MATCH_ALL
-):
+def match_fuzziness(query="", fields=None, fuzziness="AUTO", default=None):
+    if fields is None:
+        fields = []
+
+    if default is None:
+        default = MATCH_ALL
+
     if not query:
         return default
 

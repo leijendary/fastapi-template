@@ -3,7 +3,7 @@ from app.constants import INDEX_SAMPLE, RESOURCE_SAMPLE_DOCUMENT
 from app.core.data.params import SortParams
 from app.core.exceptions.resource_not_found_exception import \
     ResourceNotFoundException
-from app.core.search.elasticsearch import elasticsearch
+from app.core.search.elasticsearch_setup import elasticsearch
 from app.core.utils.search_util import map_type, to_page, translation_page
 from app.models.sample import Sample
 
@@ -42,8 +42,8 @@ async def update(sample: Sample):
     # Update the object in elasticsearch
     await elasticsearch().update(
         index=INDEX_SAMPLE,
-        document=document,
-        id=sample.id
+        id=sample.id,
+        body=document
     )
 
 

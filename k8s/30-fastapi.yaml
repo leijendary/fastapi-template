@@ -29,7 +29,7 @@ spec:
               scheme: HTTPS
               path: /healthcheck
               port: 443
-            initialDelaySeconds: 120
+            initialDelaySeconds: 30
             timeoutSeconds: 5
             periodSeconds: 15
           livenessProbe:
@@ -37,7 +37,7 @@ spec:
               scheme: HTTPS
               path: /healthcheck
               port: 443
-            initialDelaySeconds: 150
+            initialDelaySeconds: 60
             timeoutSeconds: 5
             periodSeconds: 15
             failureThreshold: 3

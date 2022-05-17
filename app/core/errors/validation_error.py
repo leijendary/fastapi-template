@@ -13,7 +13,7 @@ async def validation_handler(_, exc: ValidationError) -> ErrorResponse:
 
 
 def mapper(error: Dict[str, object]):
-    sources = list(error["loc"])
+    sources = [error["loc"]]
     code = error["type"]
     message = error["msg"]
 

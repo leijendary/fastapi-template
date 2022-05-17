@@ -1,9 +1,10 @@
 import logging
 from typing import Dict
 
+from elasticsearch import AsyncElasticsearch
+
 from app.core.configs.elasticsearch_config import elasticsearch_config
 from app.core.logs.logging_setup import get_logger
-from elasticsearch import AsyncElasticsearch
 
 _config = elasticsearch_config()
 logger = get_logger(__name__)
@@ -43,16 +44,16 @@ def init():
 async def create_index(index: str, body: Dict):
     client = elasticsearch().indices
 
-    if await client.exists(index):
+    if await client.exists(index=index):
         logger.info(f"Updating index for {index}...")
 
-        await client.put_mapping(body["mappings"], index)
+        await client.put_mapping(body=body["mappings"], index=index)
 
         logger.info(f"Updated index for {index}!")
     else:
         logger.info(f"Creating index for {index}...")
 
-        await client.create(index, body)
+        await client.create(index=index, body=body)
 
         logger.info(f"Created index for {index}!")
 

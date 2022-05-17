@@ -4,7 +4,7 @@ from aiokafka.structs import ConsumerRecord
 
 from app.constants import (TOPIC_SAMPLE_CREATE, TOPIC_SAMPLE_DELETE,
                            TOPIC_SAMPLE_UPDATE)
-from app.core.messaging.kafka_consumer import consume
+from app.core.messaging.kafka_setup import consume
 
 
 async def create(message: ConsumerRecord):

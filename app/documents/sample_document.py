@@ -1,7 +1,7 @@
 import json
 
 from app.constants import INDEX_SAMPLE
-from app.core.search import elasticsearch
+from app.core.search import elasticsearch_setup
 
 sample = {
     "settings": json.load(
@@ -48,4 +48,4 @@ sample = {
 
 
 async def init():
-    await elasticsearch.create_index(INDEX_SAMPLE, sample)
+    await elasticsearch_setup.create_index(INDEX_SAMPLE, sample)

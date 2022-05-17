@@ -23,7 +23,7 @@ async def init(models: List[str]):
     logger.info("Initializing connection to the database...")
 
     modules = {_module: models}
-    config = create_configuration(models)
+    config = _create_configuration(models)
     command = Command(tortoise_config=config, app=_module)
     await command.init()
     await command.upgrade()
@@ -49,7 +49,7 @@ async def health():
     try:
         result = await (
             Tortoise
-                .get_connection(next(iter(Tortoise._connections)))
+                .get_connection(CONNECTION_PRIMARY)
                 .execute_query_dict("SELECT 'UP' as status")
         )
 
@@ -58,7 +58,7 @@ async def health():
         return "DOWN"
 
 
-def create_configuration(models: List[str]):
+def _create_configuration(models: List[str]):
     apps = {
         _module: {
             "models": [*models, "aerich.models"],

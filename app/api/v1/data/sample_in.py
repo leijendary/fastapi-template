@@ -28,6 +28,5 @@ class SampleIn(Schema):
     translations: List[SampleTranslationIn] = Field(
         ...,
         title=get_message("document.translation_list"),
-        min_items=1,
-        unique_list=True
+        min_items=1
     )

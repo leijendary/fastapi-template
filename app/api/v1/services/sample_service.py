@@ -18,14 +18,14 @@ from app.core.data.file_stream import FileStream
 from app.core.data.params import SortParams
 from app.core.exceptions.resource_not_found_exception import \
     ResourceNotFoundException
-from app.core.messaging.kafka_producer import producer
+from app.core.messaging.kafka_setup import producer
 from app.core.storages import s3_storage
 from app.core.utils.file_util import get_name
 from app.core.utils.model_util import to_page
 from app.models.sample import Sample
 from app.models.sample_translation import SampleTranslation
 
-_fields_for_select = [
+_FIELDS_FOR_SELECT = [
     "id",
     "column_1",
     "column_2",
@@ -35,24 +35,25 @@ _fields_for_select = [
     "modified_by",
     "modified_at"
 ]
-_exclusions = {"field_1", "field_2", "translations"}
+_EXCLUSIONS = {"field_1", "field_2", "translations"}
 
 
 async def list(query, params: SortParams) -> Page[SampleListOut]:
-    filter = Q(
+    q = Q(
         Q(column_1__icontains=query),
         Q(column_2__icontains=query),
         join_type="OR"
     )
-    query = Sample.filter(filter).only(*_fields_for_select)
+    queryset = Sample.filter(q).only(*_FIELDS_FOR_SELECT)
 
-    return await to_page(query, params, SampleListOut)
+    return await to_page(queryset, params, SampleListOut)
 
 
 async def get(id: UUID) -> SampleOut:
     sample = await (
-        Sample.filter(id=id)
-            .only(*_fields_for_select)
+        Sample
+            .filter(id=id)
+            .only(*_FIELDS_FOR_SELECT)
             .prefetch_related("translations")
             .first()
     )
@@ -106,7 +107,7 @@ async def update(id: UUID, sample_in: SampleIn) -> SampleOut:
         translations = mapping_translations(sample, sample_in.translations)
 
         # Sync the translations of the reference table
-        await sample.sync_translations(translations)
+        await sample.sync_translations(translations, using_db=connection)
 
         # Fetch the related models for returns
         await sample.fetch_related("translations", using_db=connection)
@@ -159,7 +160,7 @@ def file_delete(bucket: str, folder: str, name: str):
 
 def mapping(sample_in: SampleIn):
     return {
-        **sample_in.dict(exclude=_exclusions),
+        **sample_in.dict(exclude=_EXCLUSIONS),
         "column_1": sample_in.field_1,
         "column_2": sample_in.field_2,
     }

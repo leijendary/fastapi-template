@@ -1,4 +1,4 @@
-from app.core.databases import main_sql
+from app.core.databases import postgres_setup
 from app.models import sample, sample_translation
 
 _models = [
@@ -8,4 +8,4 @@ _models = [
 
 
 async def init():
-    await main_sql.init(_models)
+    await postgres_setup.init(_models)
