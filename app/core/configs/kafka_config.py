@@ -8,6 +8,7 @@ class KafkaConfig(BaseSettings):
     client_id: Optional[str]
     group_id: Optional[str]
     brokers: Optional[str]
+    dlq_suffix = ".error"
 
     class Config:
         env_prefix = "kafka_"

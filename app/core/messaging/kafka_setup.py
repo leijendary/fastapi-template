@@ -141,14 +141,16 @@ async def _consume(consumer: AIOKafkaConsumer, callback: Callable):
         name = f"{message.topic}:{message.partition}:{message.offset}"
 
         with tracer.start_as_current_span(name, context):
-            log = "Consuming {}:{}:{} key={} value={}".format(
-                message.topic,
-                message.partition,
-                message.offset,
-                message.key,
-                message.value
+            topic = message.topic
+            partition = message.partition
+            offset = message.offset
+            key = message.key
+            value = message.value
+
+            logger.info(
+                f"Consuming {topic}:{partition}:{offset} key={key} "
+                f"value={value}"
             )
-            logger.info(log)
 
             await _run_with_dlq(message, callback)
 
@@ -162,5 +164,16 @@ def _get_context(headers: Sequence[Tuple[str, bytes]]) -> Optional[Context]:
 
 
 async def _run_with_dlq(message: ConsumerRecord, callback: Callable):
-    # WIP: Send to DLQ
-    await callback(message)
+    try:
+        await callback(message)
+    except Exception:
+        topic = message.topic
+        value = message.value
+        key = message.key
+        dlq_topic = f"{topic}.error"
+
+        logger.exception(
+            f"Error in consumer for topic {topic}, sending to DLQ {dlq_topic}"
+        )
+
+        await producer().send(dlq_topic, value, key)
