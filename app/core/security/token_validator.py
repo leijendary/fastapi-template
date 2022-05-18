@@ -9,6 +9,7 @@ from jose.utils import base64url_decode
 
 from app.core.clients import jwks_client
 from app.core.configs.security_config import security_config
+from app.core.constants import UTF_8
 from app.core.exceptions.invalid_token_exception import InvalidTokenException
 from app.core.exceptions.unauthorized_exception import UnauthorizedException
 from app.core.security.schemes import oauth2_scheme
@@ -37,18 +38,14 @@ async def token_claims(
     return claims
 
 
-async def get_key(kid: str) -> str:
+async def get_key(kid: str):
     keys = await jwks_client.keys()
 
     for k in keys:
         if k["kid"] == kid:
-            key = jwk.construct(k)
-
-            break
+            return jwk.construct(k)
     else:
         raise InvalidTokenException("Key not found in JWKs")
-
-    return key
 
 
 async def validate_key(token: str):
@@ -56,9 +53,9 @@ async def validate_key(token: str):
     kid = header.get("kid")
     key = await get_key(kid)
     message, signature = token.rsplit(".", 1)
-    decoded_signature = base64url_decode(signature.encode("utf-8"))
+    decoded_signature = base64url_decode(signature.encode(UTF_8))
 
-    if not key.verify(message.encode("utf-8"), decoded_signature):
+    if not key.verify(message.encode(UTF_8), decoded_signature):
         raise InvalidTokenException("Invalid token signature")
 
 

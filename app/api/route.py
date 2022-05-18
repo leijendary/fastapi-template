@@ -17,4 +17,4 @@ routers = [
 def include_routers(app: FastAPI):
     [app.include_router(router, prefix=_config.prefix) for router in routers]
 
-    app.add_route('/metrics/', metrics)
+    app.add_route('/metrics/', metrics, include_in_schema=False)

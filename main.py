@@ -21,24 +21,24 @@ _config = app_config()
 
 def create_app() -> FastAPI:
     # App instance
-    app = FastAPI(
+    application = FastAPI(
         title=_config.name,
         version=_config.version,
         default_response_class=DataResponse,
     )
 
-    startup.add_handlers(app)
-    shutdown.add_handlers(app)
-    exception.add_handlers(app)
-    middleware.add_middlewares(app)
-    route.include_routers(app)
+    startup.add_handlers(application)
+    shutdown.add_handlers(application)
+    exception.add_handlers(application)
+    middleware.add_middlewares(application)
+    route.include_routers(application)
 
     FastAPIInstrumentor.instrument_app(
-        app,
+        application,
         excluded_urls="healthcheck,metrics"
     )
 
-    return app
+    return application
 
 
 # Create an instance of the app

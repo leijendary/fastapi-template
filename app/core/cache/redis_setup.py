@@ -12,6 +12,7 @@ from app.core.cache.redis_key_builder import (default_key_builder,
                                               request_key_builder,
                                               result_key_builder)
 from app.core.configs.cache_config import cache_config
+from app.core.constants import UTF_8
 from app.core.data.data_response import DataResponse
 from app.core.logs.logging_setup import get_logger
 
@@ -188,7 +189,7 @@ def get_key(
 
 
 def with_headers(result, ttl, request: Request, response: Response):
-    dump = json.dumps(result, sort_keys=True).encode("utf-8")
+    dump = json.dumps(result, sort_keys=True).encode(UTF_8)
     etag = md5(dump).hexdigest()
     response.headers["Cache-Control"] = f"max-age={ttl}"
     response.headers["ETag"] = etag

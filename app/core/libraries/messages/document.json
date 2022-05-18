@@ -14,5 +14,9 @@
   "created_by": "The username that created the record",
   "created_at": "Timestamp the record was first created",
   "modified_by": "The username that last updated the record",
-  "modified_at": "Timestamp the record was last modified"
+  "modified_at": "Timestamp the record was last modified",
+  "seek_content": "List of objects in a seekable response",
+  "seek_next_token": "Token identifier for the next page",
+  "seek_size": "Current page size",
+  "seek_limit": "Limit on each page"
 }

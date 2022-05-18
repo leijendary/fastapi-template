@@ -16,7 +16,8 @@ from app.api.v1.search import sample_search
 from app.api.v1.services import sample_service
 from app.clients import google_client
 from app.core.cache.redis_setup import cache_evict, cache_get, cache_put
-from app.core.data.params import SortParams
+from app.core.data.params import SortParams, SeekParams
+from app.core.data.seek import Seek
 from app.core.security import encryption
 from app.core.security.scope_validator import check_scope
 
@@ -86,12 +87,12 @@ async def client():
 
 @router.get(
     path="/",
-    response_model=Page[SampleListOut],
+    response_model=Seek[SampleListOut],
     status_code=200,
     dependencies=[Security(check_scope, scopes=["urn:sample:list:v1"])]
 )
-async def list(query, params: SortParams = Depends()):
-    return await sample_service.list(query, params)
+async def seek(query="", params: SeekParams = Depends()):
+    return await sample_service.seek(query, params)
 
 
 @router.get(

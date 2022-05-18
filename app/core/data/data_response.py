@@ -18,6 +18,10 @@ class DataResponse(JSONResponse):
             meta = page_meta(data, meta)
             data = data["items"]
 
+        if data and {"content", "size", "limit", "next_token"} <= set(data):
+            meta = seek_meta(data, meta)
+            data = data["content"]
+
         if isinstance(data, list):
             meta["type"] = "array"
 
@@ -48,4 +52,16 @@ def page_meta(data: T, meta=None):
         "total": data["total"],
         "page": data["page"],
         "size": data["size"]
+    }
+
+
+def seek_meta(data: T, meta=None):
+    if meta is None:
+        meta = {}
+
+    return {
+        **meta,
+        "size": data["size"],
+        "limit": data["limit"],
+        "next_token": data["next_token"],
     }

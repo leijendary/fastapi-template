@@ -20,5 +20,4 @@ class SampleOut(TimestampSchema):
     translations: List[SampleTranslationOut] = Field(
         ...,
         title=get_message("document.translation_list"),
-        unique_list=True
     )

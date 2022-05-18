@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Dict
 
 from aerich import Command
 from opentelemetry.instrumentation.asyncpg import AsyncPGInstrumentor
@@ -19,11 +19,10 @@ _module = "app"
 AsyncPGInstrumentor().instrument()
 
 
-async def init(models: List[str]):
+async def init(models: List[str], config: Dict):
     logger.info("Initializing connection to the database...")
 
     modules = {_module: models}
-    config = _create_configuration(models)
     command = Command(tortoise_config=config, app=_module)
     await command.init()
     await command.upgrade()
@@ -58,7 +57,7 @@ async def health():
         return "DOWN"
 
 
-def _create_configuration(models: List[str]):
+def create_configuration(models: List[str]):
     apps = {
         _module: {
             "models": [*models, "aerich.models"],

@@ -11,6 +11,7 @@ from opentelemetry.trace.propagation.tracecontext import \
     TraceContextTextMapPropagator
 
 from app.core.configs.kafka_config import kafka_config
+from app.core.constants import UTF_8
 from app.core.logs.logging_setup import get_logger
 from app.core.monitoring.tracing import single_span
 
@@ -39,7 +40,7 @@ class KafkaProducer:
     @classmethod
     async def send(cls, topic: str, value: Dict, key: str = None):
         span = single_span()
-        headers = [("b3", span.encode("utf-8"))]
+        headers = [("b3", span.encode(UTF_8))]
 
         await cls.instance.send(topic, value, key, headers=headers)
 
@@ -79,28 +80,28 @@ def byte_serializer(value: str):
     if not value:
         return None
 
-    return value.encode("utf-8")
+    return value.encode(UTF_8)
 
 
 def json_serializer(value: Any):
     if not value:
         return None
 
-    return json.dumps(value).encode("utf-8")
+    return json.dumps(value).encode(UTF_8)
 
 
 def string_deserializer(value: bytes):
     if not value:
         return None
 
-    return value.decode("utf-8")
+    return value.decode(UTF_8)
 
 
 def json_deserializer(value: bytes):
     if not value:
         return None
 
-    return json.loads(value.decode("utf-8"))
+    return json.loads(value.decode(UTF_8))
 
 
 async def consume(
@@ -162,7 +163,7 @@ def _get_context(headers: Sequence[Tuple[str, bytes]]) -> Optional[Context]:
     for header in headers:
         if header[0] == _HEADER_B3:
             carrier = {
-                _CARRIER_TRACEPARENT: header[1].decode("utf-8")
+                _CARRIER_TRACEPARENT: header[1].decode(UTF_8)
             }
 
             return TraceContextTextMapPropagator().extract(carrier=carrier)

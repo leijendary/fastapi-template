@@ -2,7 +2,6 @@ from typing import List
 from uuid import UUID
 
 from fastapi.datastructures import UploadFile
-from fastapi_pagination.default import Page
 from tortoise.query_utils import Q
 from tortoise.transactions import in_transaction
 
@@ -15,18 +14,20 @@ from app.constants import (RESOURCE_SAMPLE, TOPIC_SAMPLE_CREATE,
                            TOPIC_SAMPLE_DELETE)
 from app.core.constants import CONNECTION_PRIMARY
 from app.core.data.file_stream import FileStream
-from app.core.data.params import SortParams
+from app.core.data.params import SeekParams
+from app.core.data.seek import Seek
 from app.core.exceptions.resource_not_found_exception import \
     ResourceNotFoundException
 from app.core.messaging.kafka_setup import producer
+from app.core.models.model import to_seek
 from app.core.storages import s3_storage
 from app.core.utils.file_util import get_name
-from app.core.utils.model_util import to_page
 from app.models.sample import Sample
 from app.models.sample_translation import SampleTranslation
 
 _FIELDS_FOR_SELECT = [
     "id",
+    "row_id",
     "column_1",
     "column_2",
     "amount",
@@ -36,17 +37,25 @@ _FIELDS_FOR_SELECT = [
     "modified_at"
 ]
 _EXCLUSIONS = {"field_1", "field_2", "translations"}
+_TRANSLATIONS = "translations"
 
 
-async def list(query, params: SortParams) -> Page[SampleListOut]:
+async def seek(query, params: SeekParams) -> Seek[SampleListOut]:
     q = Q(
         Q(column_1__icontains=query),
         Q(column_2__icontains=query),
-        join_type="OR"
+        Q(translations__name__icontains=query),
+        Q(translations__description__icontains=query),
+        join_type=Q.OR
     )
-    queryset = Sample.filter(q).only(*_FIELDS_FOR_SELECT)
+    queryset = (
+        Sample
+            .filter(q)
+            .only(*_FIELDS_FOR_SELECT)
+            .distinct()
+    )
 
-    return await to_page(queryset, params, SampleListOut)
+    return await to_seek(queryset, params, SampleListOut)
 
 
 async def get(id: UUID) -> SampleOut:
@@ -54,7 +63,7 @@ async def get(id: UUID) -> SampleOut:
         Sample
             .filter(id=id)
             .only(*_FIELDS_FOR_SELECT)
-            .prefetch_related("translations")
+            .prefetch_related(_TRANSLATIONS)
             .first()
     )
 
@@ -73,7 +82,7 @@ async def save(sample_in: SampleIn) -> SampleOut:
         await SampleTranslation.bulk_create(translations, using_db=connection)
 
         # Fetch the related models for returns
-        await sample.fetch_related("translations", using_db=connection)
+        await sample.fetch_related(_TRANSLATIONS, using_db=connection)
 
     # Save the model to elasticsearch
     await sample_search.save(sample)
@@ -89,7 +98,7 @@ async def update(id: UUID, sample_in: SampleIn) -> SampleOut:
         Sample
             .select_for_update()
             .filter(id=id)
-            .prefetch_related("translations")
+            .prefetch_related(_TRANSLATIONS)
             .first()
     )
 
@@ -110,7 +119,7 @@ async def update(id: UUID, sample_in: SampleIn) -> SampleOut:
         await sample.sync_translations(translations, using_db=connection)
 
         # Fetch the related models for returns
-        await sample.fetch_related("translations", using_db=connection)
+        await sample.fetch_related(_TRANSLATIONS, using_db=connection)
 
     # Update the model in elasticsearch
     await sample_search.save(sample)

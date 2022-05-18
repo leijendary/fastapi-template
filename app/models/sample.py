@@ -3,11 +3,11 @@ from tortoise.fields.relational import ManyToManyRelation
 
 from app.core.models.localized_model import LocalizedModel
 from app.core.models.manager import DeletableManager
-from app.core.models.model import AuditableMixin, DeletableMixin
+from app.core.models.model import AuditableMixin, DeletableMixin, SeekableMixin
 from app.models.sample_translation import SampleTranslation
 
 
-class Sample(LocalizedModel, AuditableMixin, DeletableMixin):
+class Sample(LocalizedModel, SeekableMixin, AuditableMixin, DeletableMixin):
     id = UUIDField(pk=True)
     column_1 = CharField(max_length=150)
     column_2 = CharField(null=True, max_length=1000)
