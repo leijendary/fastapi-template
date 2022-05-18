@@ -18,6 +18,9 @@ _config = kafka_config()
 logger = get_logger(__name__)
 tracer = get_tracer(__name__)
 
+_HEADER_B3 = "b3"
+_CARRIER_TRACEPARENT = "traceparent"
+
 
 class KafkaProducer:
     instance: AIOKafkaProducer
@@ -157,8 +160,10 @@ async def _consume(consumer: AIOKafkaConsumer, callback: Callable):
 
 def _get_context(headers: Sequence[Tuple[str, bytes]]) -> Optional[Context]:
     for header in headers:
-        if header[0] == 'b3':
-            carrier = {"traceparent": header[1].decode("utf-8")}
+        if header[0] == _HEADER_B3:
+            carrier = {
+                _CARRIER_TRACEPARENT: header[1].decode("utf-8")
+            }
 
             return TraceContextTextMapPropagator().extract(carrier=carrier)
 
@@ -176,4 +181,4 @@ async def _run_with_dlq(message: ConsumerRecord, callback: Callable):
             f"Error in consumer for topic {topic}, sending to DLQ {dlq_topic}"
         )
 
-        await producer().send(dlq_topic, value, key)
+        await KafkaProducer.send(dlq_topic, value, key)

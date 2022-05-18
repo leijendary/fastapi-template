@@ -1,11 +1,12 @@
-from io import BytesIO
+from typing import IO
 
 import boto3
+from mypy_boto3_s3.client import S3Client
 
 from app.core.data.file_stream import FileStream
 from app.core.utils.file_util import get_name
 
-s3 = boto3.client("s3")
+s3: S3Client = boto3.client("s3")
 
 
 def download_file(bucket, key, filename):
@@ -28,7 +29,7 @@ def stream_response(bucket, key, download=False) -> FileStream:
     return FileStream(obj["Body"], headers, content_type)
 
 
-def upload_file(file: BytesIO, content_type, bucket, key):
+def upload_file(file: IO, content_type, bucket, key):
     extra_args = {
         "ContentType": content_type
     }
