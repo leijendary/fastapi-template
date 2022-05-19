@@ -67,7 +67,7 @@
                 <stringProp name="Argument.value">{&#xd;
   &quot;field_1&quot;: &quot;Test ${uuid}&quot;,&#xd;
   &quot;field_2&quot;: 1,&#xd;
-  &quot;amount:&quot;: 999999999.99,&#xd;
+  &quot;amount&quot;: 999999999.99,&#xd;
   &quot;translations&quot;: [&#xd;
     {&#xd;
       &quot;name&quot;: &quot;test&quot;,&#xd;
