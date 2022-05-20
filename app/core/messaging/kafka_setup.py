@@ -141,7 +141,7 @@ async def _consume(consumer: AIOKafkaConsumer, callback: Callable):
 
     async for message in consumer:
         headers = message.headers
-        context: Optional[Context] = _get_context(headers)
+        context = _get_context(headers)
         name = f"{message.topic}:{message.partition}:{message.offset}"
 
         with tracer.start_as_current_span(name, context):
