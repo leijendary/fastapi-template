@@ -11,8 +11,8 @@ class AppConfig(BaseSettings):
     workers = 1
     environment: str = "local"
     language_default: str = "en"
-    internationalization_path: str = "app/core/libraries/i18n/"
-    message_path: str = "app/core/libraries/messages/"
+    internationalization_path: str = "resources/i18n/"
+    message_path: str = "resources/messages/"
 
     class Config:
         env_prefix = ""

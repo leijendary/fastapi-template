@@ -1,12 +1,9 @@
-import json
-
 from app.constants import INDEX_SAMPLE
 from app.core.search import elasticsearch_setup
+from app.core.search.elasticsearch_settings import NGRAM_ANALYZER
 
 sample = {
-    "settings": json.load(
-        open("app/core/search/ngram-analyzer.settings.json")
-    ),
+    "settings": NGRAM_ANALYZER,
     "mappings": {
         "properties": {
             "column_1": {

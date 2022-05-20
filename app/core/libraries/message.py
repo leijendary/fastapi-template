@@ -5,7 +5,7 @@ from functools import lru_cache
 from app.core.configs.app_config import app_config
 
 _config = app_config()
-message_path = _config.message_path
+_message_path = _config.message_path
 
 
 @lru_cache
@@ -13,10 +13,10 @@ def load_message():
     message = {}
 
     for file_name in [
-        file for file in os.listdir(message_path)
+        file for file in os.listdir(_message_path)
         if file.endswith(".json")
     ]:
-        with open(message_path + file_name) as json_file:
+        with open(_message_path + file_name) as json_file:
             lang = file_name.split(".")[0]
             message[lang] = json.load(json_file)
 
