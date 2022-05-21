@@ -6,6 +6,7 @@ from aiokafka import AIOKafkaConsumer
 from aiokafka.producer.producer import AIOKafkaProducer
 from aiokafka.structs import ConsumerRecord
 from opentelemetry.context.context import Context
+from opentelemetry.propagators.b3 import B3MultiFormat
 from opentelemetry.trace import get_tracer
 from opentelemetry.trace.propagation.tracecontext import \
     TraceContextTextMapPropagator
@@ -19,8 +20,8 @@ _config = kafka_config()
 logger = get_logger(__name__)
 tracer = get_tracer(__name__)
 
-_HEADER_B3 = "b3"
-_CARRIER_TRACEPARENT = "traceparent"
+_header_trace_key = B3MultiFormat.SINGLE_HEADER_KEY
+_header_trace_parent = TraceContextTextMapPropagator._TRACEPARENT_HEADER_NAME
 
 
 class KafkaProducer:
@@ -40,7 +41,7 @@ class KafkaProducer:
     @classmethod
     async def send(cls, topic: str, value: Dict, key: str = None):
         span = single_span()
-        headers = [("b3", span.encode(UTF_8))]
+        headers = [(_header_trace_key, span.encode(UTF_8))]
 
         await cls.instance.send(topic, value, key, headers=headers)
 
@@ -161,9 +162,9 @@ async def _consume(consumer: AIOKafkaConsumer, callback: Callable):
 
 def _get_context(headers: Sequence[Tuple[str, bytes]]) -> Optional[Context]:
     for header in headers:
-        if header[0] == _HEADER_B3:
+        if header[0] == _header_trace_key:
             carrier = {
-                _CARRIER_TRACEPARENT: header[1].decode(UTF_8)
+                _header_trace_parent: header[1].decode(UTF_8)
             }
 
             return TraceContextTextMapPropagator().extract(carrier=carrier)
