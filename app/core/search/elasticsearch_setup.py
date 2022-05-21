@@ -10,8 +10,8 @@ _config = elasticsearch_config()
 logger = get_logger(__name__)
 
 # Override elasticsearch log level
-tracer = logging.getLogger("elasticsearch")
-tracer.setLevel(_config.log_level)
+_logger = logging.getLogger("elasticsearch")
+_logger.setLevel(_config.log_level)
 
 
 class Elasticsearch:
@@ -21,11 +21,8 @@ class Elasticsearch:
     def init(cls):
         cls.instance = AsyncElasticsearch(
             hosts=_config.hosts.split(","),
-            use_ssl=_config.use_ssl,
-            verify_certs=_config.verify_certs,
-            ca_certs=_config.ca_certs,
-            client_cert=_config.client_cert,
-            client_key=_config.client_key
+            basic_auth=(_config.username, _config.password),
+            ca_certs=_config.ca_certs
         )
 
 

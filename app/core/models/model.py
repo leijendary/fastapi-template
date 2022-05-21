@@ -7,10 +7,10 @@ from fastapi_pagination import create_page
 from pydantic import BaseModel
 from pydantic.fields import ModelField
 from tortoise.backends.base.client import BaseDBAsyncClient
+from tortoise.expressions import Q
 from tortoise.fields import DatetimeField
 from tortoise.fields.data import TextField, BigIntField
 from tortoise.models import Model as TortoiseModel
-from tortoise.query_utils import Q
 from tortoise.queryset import QuerySet
 
 from app.core.constants import CONNECTION_PRIMARY, CONNECTION_READONLY

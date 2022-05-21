@@ -7,12 +7,10 @@ from pydantic import BaseSettings
 
 class ElasticsearchConfig(BaseSettings):
     hosts: Optional[str]
+    username: Optional[str]
+    password: Optional[str]
+    ca_certs = "ssl/elasticsearch.crt"
     log_level = WARNING
-    use_ssl = False
-    verify_certs = False
-    ca_certs: str = None
-    client_cert: str = None
-    client_key: str = None
 
     class Config:
         env_prefix = "elasticsearch_"

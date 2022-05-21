@@ -16,6 +16,7 @@ data:
   KAFKA_GROUP_ID: local.test
   KAFKA_BROKERS: kafka-service.kafka.svc.cluster.local:30092
   ELASTICSEARCH_HOSTS: elasticsearch-service.elasticstack.svc.cluster.local:30200
+  ELASTICSEARCH_USERNAME: elastic
   SECURITY_JWKS_URL: https://leijendary.us.auth0.com/.well-known/jwks.json
   SECURITY_AUDIENCE: http://localhost:8080
   CACHE_REDIS_HOST: redis-service.cache.svc.cluster.local

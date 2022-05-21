@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Any, TypeVar
+from typing import Any, TypeVar, Tuple, Optional, Dict
 
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
@@ -11,16 +11,7 @@ T = TypeVar("T")
 
 class DataResponse(JSONResponse):
     def render(self, data: Any, meta=None) -> bytes:
-        if meta is None:
-            meta = {"type": "object"}
-
-        if data and {"items", "total", "page", "size"} <= set(data):
-            meta = page_meta(data, meta)
-            data = data["items"]
-
-        if data and {"content", "size", "limit", "next_token"} <= set(data):
-            meta = seek_meta(data, meta)
-            data = data["content"]
+        data, meta = parse(data, meta)
 
         if isinstance(data, list):
             meta["type"] = "array"
@@ -42,10 +33,26 @@ class DataResponse(JSONResponse):
         return super().render(jsonable_encoder(content))
 
 
-def page_meta(data: T, meta=None):
+def parse(data: T, meta: Optional[Dict]) -> Tuple[T, Any]:
     if meta is None:
-        meta = {}
+        meta = {"type": "object"}
 
+    if data and {"items", "total", "page", "size"} <= set(data):
+        meta = page_meta(data, meta)
+        data = data["items"]
+
+        return data, meta
+
+    if data and {"content", "size", "limit", "next_token"} <= set(data):
+        meta = seek_meta(data, meta)
+        data = data["content"]
+
+        return data, meta
+
+    return data, meta
+
+
+def page_meta(data: T, meta: Dict):
     return {
         **meta,
         "count": len(data["items"]),
@@ -55,10 +62,7 @@ def page_meta(data: T, meta=None):
     }
 
 
-def seek_meta(data: T, meta=None):
-    if meta is None:
-        meta = {}
-
+def seek_meta(data: T, meta: Dict):
     return {
         **meta,
         "size": data["size"],

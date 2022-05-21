@@ -2,7 +2,7 @@ from typing import List
 from uuid import UUID
 
 from fastapi.datastructures import UploadFile
-from tortoise.query_utils import Q
+from tortoise.expressions import Q
 from tortoise.transactions import in_transaction
 
 from app.api.v1.data.sample_in import SampleIn
