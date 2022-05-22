@@ -1,3 +1,5 @@
+from typing import Dict
+
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 
@@ -12,7 +14,7 @@ router = APIRouter(
 )
 
 
-@router.get(path="/", status_code=200)
+@router.get(path="/", response_model=Dict[str, str], status_code=200)
 async def healthcheck():
     body = {
         "status": "UP",
