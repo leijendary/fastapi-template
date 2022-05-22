@@ -111,7 +111,8 @@ def cache_get(
 def cache_put(
         namespace: str,
         identifier="id",
-        key_builder=result_key_builder
+        key_builder=result_key_builder,
+        publish=False
 ):
     def wrapper(func):
         @wraps(func)
@@ -132,7 +133,7 @@ def cache_put(
                 key_builder=key_builder
             )
 
-            await set(key, result)
+            await set(key, result, publish)
 
             return result
 
@@ -207,13 +208,22 @@ def is_no_store(request: Request):
     return request and request.headers.get("Cache-Control") == "no-store"
 
 
-async def set(key: str, value: Any):
+async def set(key: str, value: Any, publish=False):
     if hasattr(value, "json"):
         value = value.json()
     else:
         value = json.dumps(value)
 
-    await redis().set(key, value, _config.ttl)
+    if publish:
+        async with redis().pipeline() as pipe:
+            await (
+                pipe
+                    .set(key, value, _config.ttl)
+                    .publish(key, value)
+                    .execute()
+            )
+    else:
+        await redis().set(key, value, _config.ttl)
 
 
 async def get(key: str):
@@ -228,7 +238,7 @@ async def delete(keys: List[str]):
 
 async def get_with_ttl(key: str):
     async with redis().pipeline() as pipe:
-        value, ttl = await (pipe.get(key).ttl(key).execute())
+        value, ttl = await pipe.get(key).ttl(key).execute()
         value = json.loads(value) if value else None
 
         return value, ttl

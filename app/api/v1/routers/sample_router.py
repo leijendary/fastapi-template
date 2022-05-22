@@ -6,6 +6,7 @@ from fastapi.param_functions import Depends, Security
 from fastapi_pagination.default import Page
 from starlette.requests import Request
 from starlette.responses import HTMLResponse, Response, StreamingResponse
+from starlette.websockets import WebSocket
 
 from app.api.v1.data.file_in import FileIn
 from app.api.v1.data.sample_in import SampleIn
@@ -94,6 +95,15 @@ async def client():
     return HTMLResponse(response)
 
 
+@router.websocket("/{id}", "sample.listen")
+async def listen(
+        websocket: WebSocket,
+        id: UUID,
+        _=Security(check_scope, scopes=["urn:sample:listen:v1"])
+):
+    await sample_service.listen(websocket, CACHE_KEY, id)
+
+
 @router.get(
     path="/",
     response_model=Seek[SampleListOut],
@@ -134,7 +144,7 @@ async def save(sample_in: SampleIn, request: Request):
     status_code=200,
     dependencies=[Security(check_scope, scopes=["urn:sample:update:v1"])]
 )
-@cache_put(namespace=CACHE_KEY)
+@cache_put(namespace=CACHE_KEY, publish=True)
 # Request is here to cater the headers for caching
 async def update(id: UUID, sample_in: SampleIn, request: Request):
     return await sample_service.update(id, sample_in)

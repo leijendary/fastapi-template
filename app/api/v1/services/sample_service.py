@@ -3,6 +3,7 @@ from typing import List, Dict
 from uuid import UUID
 
 from fastapi.datastructures import UploadFile
+from starlette.websockets import WebSocket
 from tortoise.expressions import Q
 from tortoise.transactions import in_transaction
 
@@ -23,6 +24,7 @@ from app.core.messaging.kafka_setup import producer
 from app.core.models.model import to_seek
 from app.core.storages import s3_storage
 from app.core.utils.file_util import get_name
+from app.core.utils.websocket_util import redis_subscribe
 from app.models.sample import Sample
 from app.models.sample_translation import SampleTranslation
 
@@ -39,6 +41,12 @@ _FIELDS_FOR_SELECT = [
 ]
 _EXCLUSIONS = {"field_1", "field_2", "translations"}
 _TRANSLATIONS = "translations"
+
+
+async def listen(websocket: WebSocket, cache_key: str, id: UUID):
+    key = f"{cache_key}:{id}"
+
+    await redis_subscribe(websocket, key)
 
 
 async def seek(query, params: SeekParams) -> Seek[SampleListOut]:
