@@ -29,10 +29,10 @@ async def save(sample: Sample):
     document = mapping(sample)
 
     # Save the object in elasticsearch
-    await elasticsearch().index(
+    await elasticsearch().create(
         index=INDEX_SAMPLE,
-        body=document,
-        id=sample.id
+        id=sample.id,
+        body=document
     )
 
 

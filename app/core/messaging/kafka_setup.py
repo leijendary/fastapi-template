@@ -7,7 +7,7 @@ from aiokafka.producer.producer import AIOKafkaProducer
 from aiokafka.structs import ConsumerRecord
 from opentelemetry.context.context import Context
 from opentelemetry.propagators.b3 import B3MultiFormat
-from opentelemetry.trace import get_tracer
+from opentelemetry.trace import get_tracer, SpanKind
 from opentelemetry.trace.propagation.tracecontext import \
     TraceContextTextMapPropagator
 
@@ -26,6 +26,7 @@ _header_trace_parent = TraceContextTextMapPropagator._TRACEPARENT_HEADER_NAME
 
 class KafkaProducer:
     instance: AIOKafkaProducer
+    span_kind = SpanKind.PRODUCER
 
     @classmethod
     async def init(cls):
@@ -39,11 +40,25 @@ class KafkaProducer:
         await cls.instance.start()
 
     @classmethod
-    async def send(cls, topic: str, value: Dict, key: str = None):
+    async def send(
+            cls,
+            topic: str,
+            value: Dict,
+            key: str = None,
+            partition: int = None
+    ):
         span = single_span()
         headers = [(_header_trace_key, span.encode(UTF_8))]
+        name = f"Produce {topic}:{partition}"
 
-        await cls.instance.send(topic, value, key, headers=headers)
+        with tracer.start_span(name=name, kind=cls.span_kind):
+            await cls.instance.send(
+                topic,
+                value,
+                key,
+                partition,
+                headers=headers
+            )
 
         logger.info(f"Sent to topic {topic} key={key} value={value}")
 
@@ -139,13 +154,14 @@ async def consume(
 
 async def _consume(consumer: AIOKafkaConsumer, callback: Callable):
     message: ConsumerRecord
+    span_kind = SpanKind.CONSUMER
 
     async for message in consumer:
         headers = message.headers
         context = _get_context(headers)
-        name = f"{message.topic}:{message.partition}:{message.offset}"
+        name = f"Consume {message.topic}:{message.partition}:{message.offset}"
 
-        with tracer.start_as_current_span(name, context):
+        with tracer.start_as_current_span(name, context, kind=span_kind):
             topic = message.topic
             partition = message.partition
             offset = message.offset
