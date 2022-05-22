@@ -11,6 +11,9 @@ T = TypeVar("T")
 
 class DataResponse(JSONResponse):
     def render(self, data: Any, meta=None) -> bytes:
+        if self.status_code == 204:
+            return b""
+
         data, meta = parse(data, meta)
 
         if isinstance(data, list):

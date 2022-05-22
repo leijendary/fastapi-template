@@ -223,7 +223,7 @@ async def get(key: str):
 
 
 async def delete(keys: List[str]):
-    await redis().delete(keys)
+    await redis().delete(*keys)
 
 
 async def get_with_ttl(key: str):
