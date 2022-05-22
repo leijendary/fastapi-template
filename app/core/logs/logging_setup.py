@@ -6,7 +6,7 @@ from logging import StreamHandler, getLogger, setLogRecordFactory, \
 from uvicorn.config import LOGGING_CONFIG
 
 from app.core.configs.logging_config import logging_config
-from app.core.monitoring.tracing import trace_id, span_id
+from app.core.monitoring.tracing import get_trace_id, get_span_id
 
 _config = logging_config()
 _level = _config.level
@@ -33,8 +33,8 @@ def get_logger(name: str):
 
 def _log_record_factory(*args, **kwargs) -> LogRecord:
     record = _old_factory(*args, **kwargs)
-    record.trace_id = trace_id() or ""
-    record.span_id = span_id() or ""
+    record.trace_id = get_trace_id() or ""
+    record.span_id = get_span_id() or ""
 
     return record
 

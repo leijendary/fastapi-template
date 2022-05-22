@@ -4,8 +4,8 @@ from typing import List
 from fastapi.encoders import jsonable_encoder
 from starlette.responses import JSONResponse
 
-from .error_source import ErrorSource
-from ..monitoring.tracing import trace_id
+from app.core.data.error_source import ErrorSource
+from app.core.monitoring.tracing import get_trace_id
 
 
 class ErrorResponse(JSONResponse):
@@ -13,10 +13,10 @@ class ErrorResponse(JSONResponse):
         if meta is None:
             meta = {}
 
-        t_id = trace_id()
+        trace_id = get_trace_id()
 
-        if t_id:
-            meta["trace_id"] = t_id
+        if trace_id:
+            meta["trace_id"] = trace_id
 
         content = {
             "errors": errors,

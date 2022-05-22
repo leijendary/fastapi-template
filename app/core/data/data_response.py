@@ -4,7 +4,7 @@ from typing import Any, TypeVar, Tuple, Optional, Dict
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 
-from app.core.monitoring.tracing import trace_id
+from app.core.monitoring.tracing import get_trace_id
 
 T = TypeVar("T")
 
@@ -16,10 +16,10 @@ class DataResponse(JSONResponse):
         if isinstance(data, list):
             meta["type"] = "array"
 
-        t_id = trace_id()
+        trace_id = get_trace_id()
 
-        if t_id:
-            meta["trace_id"] = t_id
+        if trace_id:
+            meta["trace_id"] = trace_id
 
         content = {
             "data": data,

@@ -27,11 +27,11 @@ def create_app() -> FastAPI:
         default_response_class=DataResponse,
     )
 
+    startup.add_handlers(application)
+    shutdown.add_handlers(application)
     middleware.add_middlewares(application)
     exception.add_handlers(application)
     route.include_routers(application)
-    startup.add_handlers(application)
-    shutdown.add_handlers(application)
 
     FastAPIInstrumentor.instrument_app(
         application,

@@ -39,30 +39,30 @@ def span_context() -> SpanContext:
     return get_current_span().get_span_context()
 
 
-def trace_id() -> Optional[str]:
+def get_trace_id() -> Optional[str]:
     context = span_context()
-    t_id = context.trace_id
+    trace_id = context.trace_id
 
-    if not t_id:
+    if not trace_id:
         return None
 
-    return format_trace_id(t_id)
+    return format_trace_id(trace_id)
 
 
-def span_id() -> Optional[str]:
+def get_span_id() -> Optional[str]:
     context = span_context()
-    s_id = context.span_id
+    span_id = context.span_id
 
-    if not s_id:
+    if not span_id:
         return None
 
-    return format_span_id(s_id)
+    return format_span_id(span_id)
 
 
 def single_span() -> str:
     context = span_context()
-    t_id = trace_id()
-    s_id = span_id()
+    trace_id = get_trace_id()
+    span_id = get_span_id()
     sampled = "01" if context.trace_flags.sampled else "00"
 
-    return f"00-{t_id}-{s_id}-{sampled}"
+    return f"00-{trace_id}-{span_id}-{sampled}"
