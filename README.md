@@ -8,6 +8,7 @@
 # Technologies Used:
 
 - FastAPI
+- Uvicorn
 - Gunicorn
 - Tortoise ORM
 - Dotenv
