@@ -33,10 +33,10 @@ async def save(sample: Sample):
     document = mapping(sample)
 
     # Save the object in elasticsearch
-    await elasticsearch().create(
+    await elasticsearch().index(
         index=INDEX_SAMPLE,
-        id=sample.id,
-        body=document
+        body=document,
+        id=sample.id
     )
 
 
@@ -57,10 +57,10 @@ async def update(sample: Sample):
     document = mapping(sample)
 
     # Update the object in elasticsearch
-    await elasticsearch().update(
+    await elasticsearch().index(
         index=INDEX_SAMPLE,
-        id=sample.id,
-        body=document
+        body=document,
+        id=sample.id
     )
 
 

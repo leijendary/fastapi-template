@@ -123,7 +123,7 @@ async def update(id: UUID, sample_in: SampleIn) -> SampleOut:
         await sample.fetch_related(_TRANSLATIONS, using_db=connection)
 
     # Update the model in elasticsearch
-    await sample_search.save(sample)
+    await sample_search.update(sample)
 
     # Send the data to kafka
     await producer().send(TOPIC_SAMPLE_CREATE, sample.kafka_dict())
