@@ -1,4 +1,5 @@
 fastapi==0.78.0
+uvicorn[standard]==0.17.6
 gunicorn==20.1.0
 asyncpg==0.25.0
 tortoise-orm[asyncpg]==0.19.1
