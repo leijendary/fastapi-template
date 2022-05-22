@@ -9,7 +9,8 @@ class ElasticsearchConfig(BaseSettings):
     hosts: Optional[str]
     username: Optional[str]
     password: Optional[str]
-    ca_certs = "ssl/elasticsearch.crt"
+    use_ssl = False
+    ca_certs: str = None
     log_level = WARNING
 
     class Config:

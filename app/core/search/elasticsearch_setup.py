@@ -19,10 +19,17 @@ class Elasticsearch:
 
     @classmethod
     def init(cls):
+        scheme = "https" if _config.use_ssl else "http"
+        http_auth = (
+            (_config.username, _config.password)
+            if _config.username and _config.password else None
+        )
+
         cls.instance = AsyncElasticsearch(
             hosts=_config.hosts.split(","),
-            basic_auth=(_config.username, _config.password),
-            ca_certs=_config.ca_certs
+            scheme=scheme,
+            use_ssl=_config.use_ssl,
+            http_auth=http_auth
         )
 
 

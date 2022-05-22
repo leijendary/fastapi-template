@@ -31,7 +31,7 @@ async def save(sample: Sample):
     # Save the object in elasticsearch
     await elasticsearch().index(
         index=INDEX_SAMPLE,
-        document=document,
+        body=document,
         id=sample.id
     )
 
