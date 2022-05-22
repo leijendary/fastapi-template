@@ -16,14 +16,14 @@ from app.core.utils.date_util import to_epoch
 # Override datetime encoder for the json response
 ENCODERS_BY_TYPE[datetime] = to_epoch
 
-_app_config = app_config()
+_config = app_config()
 
 
 def create_app() -> FastAPI:
     # App instance
     application = FastAPI(
-        title=_app_config.name,
-        version=_app_config.version,
+        title=_config.name,
+        version=_config.version,
         default_response_class=DataResponse,
     )
 
@@ -45,18 +45,18 @@ def create_app() -> FastAPI:
 app = create_app()
 
 if __name__ == "__main__":
-    security_config = security_config()
-    logging_config = logging_config()
-    reload = _app_config.environment == "local"
+    security = security_config()
+    logging = logging_config()
+    reload = _config.environment == "local"
 
     uvicorn.run(
         "main:app",
         host="0.0.0.0",
-        port=_app_config.port,
+        port=_config.port,
         reload=reload,
-        access_log=logging_config.access,
+        access_log=logging.access,
         use_colors=False,
-        ssl_certfile=security_config.ssl_certfile,
-        ssl_keyfile=security_config.ssl_keyfile,
+        ssl_certfile=security.ssl_certfile,
+        ssl_keyfile=security.ssl_keyfile,
         server_header=False
     )
