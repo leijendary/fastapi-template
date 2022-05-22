@@ -30,6 +30,7 @@
     - Instrumentation - asyncpg
     - Instrumentation - FastAPI
     - Instrumentation - HTTPX
+    - Instrumentation - Redis
 
 # FastAPI Microservice Template
 
