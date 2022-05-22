@@ -1,3 +1,7 @@
+from typing import List, Tuple
+
+from elasticsearch._async.helpers import async_bulk
+
 from app.api.v1.data.sample_search_out import SampleSearchOut
 from app.constants import INDEX_SAMPLE, RESOURCE_SAMPLE_DOCUMENT
 from app.core.data.params import SortParams
@@ -34,6 +38,19 @@ async def save(sample: Sample):
         id=sample.id,
         body=document
     )
+
+
+async def save_bulk(samples: List[Sample]) -> Tuple[int, int]:
+    actions = [
+        {
+            "_index": INDEX_SAMPLE,
+            "_id": sample.id,
+            "_source": mapping(sample)
+        }
+        for sample in samples
+    ]
+
+    return await async_bulk(elasticsearch(), actions, stats_only=True)
 
 
 async def update(sample: Sample):

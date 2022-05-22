@@ -1,4 +1,5 @@
-from typing import List
+from time import time
+from typing import List, Dict
 from uuid import UUID
 
 from fastapi.datastructures import UploadFile
@@ -143,6 +144,19 @@ async def delete(id: UUID) -> None:
 
     # Send the data to kafka
     await producer().send(TOPIC_SAMPLE_DELETE, {"id": str(id)})
+
+
+async def reindex() -> Dict:
+    result = await Sample.all().prefetch_related(_TRANSLATIONS)
+    start = time()
+    success, failed = await sample_search.save_bulk(result)
+    end = time()
+
+    return {
+        "success": success,
+        "failed": failed,
+        "time": end - start
+    }
 
 
 def file_download(bucket: str, folder: str, name: str) -> FileStream:

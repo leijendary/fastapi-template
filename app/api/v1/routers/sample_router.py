@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Dict, Any
 from uuid import UUID
 
 from fastapi import APIRouter
@@ -45,6 +45,15 @@ async def search_list(query, params: SortParams = Depends()):
 )
 async def search_get(id: UUID):
     return await sample_search.get(id)
+
+
+@router.post(
+    path="/search/reindex/",
+    response_model=Dict[str, Any],
+    status_code=200
+)
+async def search_reindex():
+    return await sample_service.reindex()
 
 
 @router.get(path="/files/{bucket}/{folder}/{name}/", status_code=200)
