@@ -8,7 +8,7 @@
 # Technologies Used:
 
 - FastAPI
-- Unicorn
+- Gunicorn
 - Tortoise ORM
 - Dotenv
 - Aerich
@@ -19,7 +19,6 @@
 - HTTPX
 - Redis
 - Boto3 (AWS SDK)
-- Python Multipart
 - PyCryptodome
 - PyTest
 - Starlette Context
