@@ -1,7 +1,7 @@
 from tortoise.fields import CharField, IntField, SmallIntField
 from tortoise.fields.relational import ForeignKeyField
 
-from .model import Model
+from app.core.models.model import Model
 
 
 class TranslationModel(Model):
