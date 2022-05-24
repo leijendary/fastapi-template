@@ -4,6 +4,7 @@ from uuid import UUID
 
 from fastapi.datastructures import UploadFile
 from starlette.websockets import WebSocket
+from tortoise.exceptions import DoesNotExist
 from tortoise.expressions import Q
 from tortoise.transactions import in_transaction
 
@@ -68,15 +69,15 @@ async def seek(query, params: SeekParams) -> Seek[SampleListOut]:
 
 
 async def get(id: UUID) -> SampleOut:
-    sample = await (
-        Sample
-            .filter(pk=id)
-            .only(*_FIELDS_FOR_SELECT)
-            .prefetch_related(_TRANSLATIONS)
-            .get_or_none()
-    )
-
-    if not sample:
+    try:
+        sample = await (
+            Sample
+                .filter(pk=id)
+                .only(*_FIELDS_FOR_SELECT)
+                .prefetch_related(_TRANSLATIONS)
+                .get()
+        )
+    except DoesNotExist:
         raise ResourceNotFoundException(RESOURCE_SAMPLE, id)
 
     return SampleOut(**sample.dict())
@@ -106,15 +107,15 @@ async def save(sample_in: SampleIn) -> SampleOut:
 
 
 async def update(id: UUID, sample_in: SampleIn) -> SampleOut:
-    sample = await (
-        Sample
-            .select_for_update()
-            .filter(pk=id)
-            .prefetch_related(_TRANSLATIONS)
-            .get_or_none()
-    )
-
-    if not sample:
+    try:
+        sample = await (
+            Sample
+                .select_for_update()
+                .filter(pk=id)
+                .prefetch_related(_TRANSLATIONS)
+                .get()
+        )
+    except DoesNotExist:
         raise ResourceNotFoundException(RESOURCE_SAMPLE, id)
 
     async with in_transaction(CONNECTION_PRIMARY) as connection:
@@ -141,9 +142,9 @@ async def update(id: UUID, sample_in: SampleIn) -> SampleOut:
 
 
 async def delete(id: UUID) -> None:
-    sample = await Sample.select_for_update().filter(pk=id).get_or_none()
-
-    if not sample:
+    try:
+        sample = await Sample.select_for_update().filter(pk=id).get()
+    except DoesNotExist:
         raise ResourceNotFoundException(RESOURCE_SAMPLE, id)
 
     await sample.soft_delete()
@@ -197,10 +198,7 @@ def mapping(sample_in: SampleIn, sample: Sample = None) -> Sample:
         "column_2": sample_in.field_2
     }
 
-    if sample:
-        return sample.update_from_dict(mapped)
-
-    return Sample(**mapped)
+    return sample.update_from_dict(mapped) if sample else Sample(**mapped)
 
 
 def mapping_translations(
