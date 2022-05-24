@@ -232,7 +232,7 @@ async def get(key: str):
     return json.loads(value) if value else None
 
 
-async def delete(keys: List[str]):
+async def delete(*keys: str):
     await redis().delete(*keys)
 
 

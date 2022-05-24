@@ -70,10 +70,10 @@ async def seek(query, params: SeekParams) -> Seek[SampleListOut]:
 async def get(id: UUID) -> SampleOut:
     sample = await (
         Sample
-            .filter(id=id)
+            .filter(pk=id)
             .only(*_FIELDS_FOR_SELECT)
             .prefetch_related(_TRANSLATIONS)
-            .first()
+            .get_or_none()
     )
 
     if not sample:
@@ -106,9 +106,9 @@ async def update(id: UUID, sample_in: SampleIn) -> SampleOut:
     sample = await (
         Sample
             .select_for_update()
-            .filter(id=id)
+            .filter(pk=id)
             .prefetch_related(_TRANSLATIONS)
-            .first()
+            .get_or_none()
     )
 
     if not sample:
@@ -140,7 +140,7 @@ async def update(id: UUID, sample_in: SampleIn) -> SampleOut:
 
 
 async def delete(id: UUID) -> None:
-    sample = await Sample.select_for_update().filter(id=id).first()
+    sample = await Sample.select_for_update().filter(pk=id).get_or_none()
 
     if not sample:
         raise ResourceNotFoundException(RESOURCE_SAMPLE, id)

@@ -4,10 +4,11 @@ from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 from jose.exceptions import ExpiredSignatureError
 from pydantic.error_wrappers import ValidationError
-from tortoise.exceptions import IntegrityError
+from tortoise.exceptions import IntegrityError, DoesNotExist
 
 from app.core.errors.access_denied_error import access_denied_handler
 from app.core.errors.client_error import client_error_handler
+from app.core.errors.does_not_exist_error import does_not_exist_handler
 from app.core.errors.expired_token_error import expired_token_handler
 from app.core.errors.generic_error import generic_handler
 from app.core.errors.integrity_error import integrity_handler
@@ -32,6 +33,7 @@ functions = {
     ExpiredSignatureError: expired_token_handler,
     AccessDeniedException: access_denied_handler,
     ResourceNotFoundException: resource_not_found_handler,
+    DoesNotExist: does_not_exist_handler,
     SearchNotFoundError: search_not_found_handler,
     IntegrityError: integrity_handler,
     RequestValidationError: validation_handler,

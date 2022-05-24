@@ -2,6 +2,7 @@
   "generic": "Internal Server Error",
   "bad_request": "Bad Request",
   "resource_not_found": "Resource {0} with the identifier {1} was not found",
+  "does_not_exist": "Element from {0} does not exist",
   "search_not_found": "Search {0} with the identifier {1} was not found",
   "file_not_found": "File {0} not found",
   "invalid_format": "Field {0} with the value of {1} is not a valid format of {2}",

@@ -156,5 +156,5 @@ async def update(id: UUID, sample_in: SampleIn, request: Request):
     dependencies=[Security(check_scope, scopes=["urn:sample:delete:v1"])]
 )
 @cache_evict(namespace=CACHE_KEY)
-async def file_delete(id: UUID):
+async def delete(id: UUID):
     await sample_service.delete(id)
