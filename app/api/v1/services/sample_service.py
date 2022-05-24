@@ -84,7 +84,10 @@ async def get(id: UUID) -> SampleOut:
 
 async def save(sample_in: SampleIn) -> SampleOut:
     async with in_transaction(CONNECTION_PRIMARY) as connection:
-        sample = await Sample.create(**mapping(sample_in), using_db=connection)
+        sample = mapping(sample_in)
+
+        await sample.save(using_db=connection)
+
         translations = mapping_translations(sample, sample_in.translations)
 
         # Create the translations
@@ -116,11 +119,9 @@ async def update(id: UUID, sample_in: SampleIn) -> SampleOut:
 
     async with in_transaction(CONNECTION_PRIMARY) as connection:
         # Update the instance from the database
-        await (
-            sample
-                .update_from_dict(mapping(sample_in))
-                .save(using_db=connection)
-        )
+        sample = mapping(sample_in, sample)
+
+        await sample.save(using_db=connection)
 
         translations = mapping_translations(sample, sample_in.translations)
 
@@ -189,18 +190,23 @@ def file_delete(bucket: str, folder: str, name: str):
     s3_storage.delete_file(bucket, f"{folder}/{name}")
 
 
-def mapping(sample_in: SampleIn):
-    return {
+def mapping(sample_in: SampleIn, sample: Sample = None) -> Sample:
+    mapped = {
         **sample_in.dict(exclude=_EXCLUSIONS),
         "column_1": sample_in.field_1,
-        "column_2": sample_in.field_2,
+        "column_2": sample_in.field_2
     }
+
+    if sample:
+        return sample.update_from_dict(mapped)
+
+    return Sample(**mapped)
 
 
 def mapping_translations(
         sample: Sample,
         translations: List[SampleTranslationIn]
-):
+) -> List[SampleTranslation]:
     return [
         SampleTranslation(**translation.dict(), reference=sample)
         for translation in translations
