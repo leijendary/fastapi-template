@@ -58,12 +58,7 @@ async def seek(query, params: SeekParams) -> Seek[SampleListOut]:
         Q(translations__description__icontains=query),
         join_type=Q.OR
     )
-    queryset = (
-        Sample
-            .filter(q)
-            .only(*_FIELDS_FOR_SELECT)
-            .distinct()
-    )
+    queryset = Sample.filter(q).only(*_FIELDS_FOR_SELECT).distinct()
 
     return await to_seek(queryset, params, SampleListOut)
 
