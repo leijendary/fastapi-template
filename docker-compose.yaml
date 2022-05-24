@@ -11,6 +11,7 @@ services:
       - redis_network
       - kafka_network
       - elastic_network
+      - jaeger_network
     deploy:
       resources:
         limits:
@@ -32,4 +33,7 @@ networks:
     external: true
   elastic_network:
     name: elastic_network
+    external: true
+  jaeger_network:
+    name: jaeger_network
     external: true

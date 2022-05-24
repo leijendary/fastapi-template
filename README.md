@@ -16,6 +16,7 @@
 - AIO Kafka
 - Elasticsearch
 - FastAPI Pagination
+- Multipart
 - JOSE
 - HTTPX
 - Redis
