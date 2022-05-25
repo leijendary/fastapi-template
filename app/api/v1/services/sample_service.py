@@ -15,12 +15,14 @@ from app.api.v1.data.sample_translation_in import SampleTranslationIn
 from app.api.v1.search import sample_search
 from app.constants import (RESOURCE_SAMPLE, TOPIC_SAMPLE_CREATE,
                            TOPIC_SAMPLE_DELETE)
+from app.core.configs.database_config import readonly_database_config
 from app.core.constants import CONNECTION_PRIMARY
 from app.core.data.file_stream import FileStream
 from app.core.data.params import SeekParams
 from app.core.data.seek import Seek
 from app.core.exceptions.resource_not_found_exception import \
     ResourceNotFoundException
+from app.core.logs.logging_setup import get_logger
 from app.core.messaging.kafka_setup import producer
 from app.core.models.model import to_seek
 from app.core.storages import s3_storage
@@ -42,6 +44,9 @@ _FIELDS_FOR_SELECT = [
 ]
 _EXCLUSIONS = {"field_1", "field_2", "translations"}
 _TRANSLATIONS = "translations"
+_batch_size = readonly_database_config().batch_size
+
+logger = get_logger(__name__)
 
 
 async def listen(websocket: WebSocket, cache_key: str, id: UUID):
@@ -152,14 +157,29 @@ async def delete(id: UUID) -> None:
 
 
 async def reindex() -> Dict:
-    result = await Sample.all().prefetch_related(_TRANSLATIONS)
+    success = 0
+    failed = 0
     start = time()
-    success, failed = await sample_search.save_bulk(result)
+    count = await Sample.all().count()
+
+    logger.info(f"Syncing {count} items")
+
+    batch = await _batch_by_row_id(0)
+
+    while batch:
+        success_count, failed_count = await sample_search.save_bulk(batch)
+        success = success + success_count
+        failed = failed + failed_count
+        row_id = batch[-1].row_id
+        batch = await _batch_by_row_id(row_id)
+
     end = time()
 
     return {
         "success": success,
         "failed": failed,
+        "count": count,
+        "processed": success + failed,
         "time": end - start
     }
 
@@ -204,3 +224,19 @@ def mapping_translations(
         SampleTranslation(**translation.dict(), reference=sample)
         for translation in translations
     ]
+
+
+async def _batch_by_row_id(row_id: int) -> List[Sample]:
+    q = Q(row_id__gt=row_id)
+    result = await (
+        Sample
+            .filter(q)
+            .only(*_FIELDS_FOR_SELECT)
+            .prefetch_related(_TRANSLATIONS)
+            .order_by("row_id")
+            .limit(_batch_size)
+    )
+
+    logger.info(f"Found {len(result)} for row_id greater than {row_id}")
+
+    return result

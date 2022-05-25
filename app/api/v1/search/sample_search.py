@@ -1,4 +1,4 @@
-from typing import List, Tuple
+from typing import Tuple, Iterable
 
 from elasticsearch._async.helpers import async_bulk
 
@@ -40,7 +40,7 @@ async def save(sample: Sample):
     )
 
 
-async def save_bulk(samples: List[Sample]) -> Tuple[int, int]:
+async def save_bulk(samples: Iterable[Sample]) -> Tuple[int, int]:
     actions = [
         {
             "_index": INDEX_SAMPLE,

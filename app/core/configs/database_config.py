@@ -12,6 +12,7 @@ class DatabaseConfig(BaseSettings):
     password: Optional[str]
     connection_min_size: int = 10
     connection_max_size: int = 20
+    batch_size: int = 5000
 
 
 class PrimaryDatabaseConfig(DatabaseConfig):
