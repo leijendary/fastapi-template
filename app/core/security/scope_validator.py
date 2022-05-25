@@ -26,7 +26,7 @@ def validate_scope(scopes, claims):
     scope = claims["scope"] if "scope" in claims else None
 
     if not scope:
-        raise AccessDeniedException("No scope provided", sources=_sources)
+        raise AccessDeniedException("No scope provided", [], _sources)
 
     split = scope.split(" ")
 
