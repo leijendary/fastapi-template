@@ -9,7 +9,7 @@ from app.models.sample_translation import SampleTranslation
 
 class Sample(LocalizedModel, SeekableMixin, AuditableMixin, DeletableMixin):
     id = UUIDField(pk=True)
-    column_1 = CharField(max_length=150)
+    column_1 = CharField(max_length=150, unique=True, index=True)
     column_2 = CharField(null=True, max_length=1000)
     amount = FloatField(min=0.01, max=999999999.99)
     translations: ManyToManyRelation[SampleTranslation] = ManyToManyField(

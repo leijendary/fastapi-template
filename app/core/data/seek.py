@@ -1,5 +1,6 @@
 import json
 from base64 import b64encode, b64decode
+from dataclasses import dataclass
 from datetime import datetime
 from typing import Generic, TypeVar, List, Optional
 
@@ -44,10 +45,10 @@ class Seek(BaseModel, Generic[T]):
         )
 
 
+@dataclass
 class SeekToken:
-    def __init__(self, created_at: datetime, row_id: int):
-        self.created_at = created_at
-        self.row_id = row_id
+    created_at: datetime
+    row_id: int
 
     @classmethod
     def from_token(cls, next_token: str):

@@ -28,6 +28,10 @@ async def unique_violation_handler(
 ) -> ErrorResponse:
     detail = exc.detail
     field = re.search("Key \((.+?)\)=", detail).group(1)
+
+    if "::" in field:
+        field = re.search("\((.+?)::", field).group(1)
+
     value = re.search("=\((.+?)\)", detail).group(1)
     sources = ["body", exc.table_name, field]
     code = "validation.already_exists"
