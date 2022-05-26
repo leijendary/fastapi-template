@@ -3,8 +3,6 @@ from logging import LogRecord, Formatter
 from logging import StreamHandler, getLogger, setLogRecordFactory, \
     getLogRecordFactory
 
-from uvicorn.config import LOGGING_CONFIG
-
 from app.core.configs.logging_config import logging_config
 from app.core.monitoring.tracing import get_trace_id, get_span_id
 
@@ -14,9 +12,6 @@ _format = _config.format
 _date_format = _config.date_format
 _formatter = Formatter(fmt=_config.format, datefmt=_config.date_format)
 _old_factory = getLogRecordFactory()
-
-# Override uvicorn log format
-LOGGING_CONFIG["formatters"]["default"]["fmt"] = _config.format
 
 
 def get_logger(name: str):

@@ -8,8 +8,7 @@
 # Technologies Used:
 
 - FastAPI
-- Uvicorn
-- Gunicorn
+- Hypercorn[uvloop]
 - Tortoise ORM
 - Dotenv
 - Aerich
@@ -37,4 +36,4 @@
 
 ### To run the code:
 
-`python main.py`
+`python -m hypercorn main:app --config python:hypercorn_conf`

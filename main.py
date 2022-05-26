@@ -1,6 +1,5 @@
 from datetime import datetime
 
-import uvicorn
 from fastapi import FastAPI
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from pydantic.json import ENCODERS_BY_TYPE
@@ -8,22 +7,24 @@ from pydantic.json import ENCODERS_BY_TYPE
 from app import exception, shutdown, startup
 from app.api import middleware, route
 from app.core.configs.app_config import app_config
-from app.core.configs.logging_config import logging_config
-from app.core.configs.security_config import security_config
 from app.core.data.data_response import DataResponse
+from app.core.logs.logging_setup import get_logger
 from app.core.utils.date_util import to_epoch
 
 # Override datetime encoder for the json response
 ENCODERS_BY_TYPE[datetime] = to_epoch
 
-_config = app_config()
+_app_config = app_config()
+logger = get_logger(__name__)
 
 
 def create_app() -> FastAPI:
+    logger.info(f"Running in {_app_config.environment} environment")
+
     # App instance
     application = FastAPI(
-        title=_config.name,
-        version=_config.version,
+        title=_app_config.name,
+        version=_app_config.version,
         default_response_class=DataResponse,
     )
 
@@ -43,20 +44,3 @@ def create_app() -> FastAPI:
 
 # Create an instance of the app
 app = create_app()
-
-if __name__ == "__main__":
-    security = security_config()
-    logging = logging_config()
-    reload = _config.environment == "local"
-
-    uvicorn.run(
-        "main:app",
-        host="0.0.0.0",
-        port=_config.port,
-        reload=reload,
-        access_log=logging.access,
-        use_colors=False,
-        ssl_certfile=security.ssl_certfile,
-        ssl_keyfile=security.ssl_keyfile,
-        server_header=False
-    )
