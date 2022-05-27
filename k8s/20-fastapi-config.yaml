@@ -6,21 +6,21 @@ metadata:
 data:
   DATABASE_PRIMARY_NAME: fastapi_microservice
   DATABASE_PRIMARY_HOST: postgres-service.database.svc.cluster.local
-  DATABASE_PRIMARY_PORT: "30432"
+  DATABASE_PRIMARY_PORT: "5432"
   DATABASE_PRIMARY_USER: postgres
   DATABASE_READONLY_NAME: fastapi_microservice
   DATABASE_READONLY_HOST: postgres-service.database.svc.cluster.local
-  DATABASE_READONLY_PORT: "30432"
+  DATABASE_READONLY_PORT: "5432"
   DATABASE_READONLY_USER: postgres
   KAFKA_CLIENT_ID: local.test.fastapi
   KAFKA_GROUP_ID: local.test
-  KAFKA_BROKERS: kafka-service.kafka.svc.cluster.local:30092
-  ELASTICSEARCH_HOSTS: elasticsearch-service.elasticstack.svc.cluster.local:30200
+  KAFKA_BROKERS: kafka-service.kafka.svc.cluster.local:9092
+  ELASTICSEARCH_HOSTS: elasticsearch-service.elasticstack.svc.cluster.local:9200
   ELASTICSEARCH_USERNAME: elastic
   SECURITY_JWKS_URL: https://leijendary.us.auth0.com/.well-known/jwks.json
   SECURITY_AUDIENCE: http://localhost:8080
   CACHE_REDIS_HOST: redis-service.cache.svc.cluster.local
-  CACHE_REDIS_PORT: "30379"
+  CACHE_REDIS_PORT: "6379"
   CLIENT_SAMPLE_URL: https://www.google.com/
   MONITORING_HOST: jaeger-service.monitoring.svc.cluster.local
-  MONITORING_PORT: "30250"
+  MONITORING_PORT: "14250"
