@@ -4,6 +4,7 @@ from hashlib import md5
 from typing import Any, Callable, Optional
 
 from opentelemetry.instrumentation.redis import RedisInstrumentor
+from opentelemetry.trace import get_tracer
 from redis.asyncio import Redis
 from starlette.requests import Request
 from starlette.responses import Response
@@ -22,6 +23,7 @@ KEY_PAYLOAD = "value"
 
 _config = cache_config()
 logger = get_logger(__name__)
+tracer = get_tracer(__name__)
 
 RedisInstrumentor().instrument()
 
@@ -90,10 +92,12 @@ def cache_get(
                 kwargs=kwargs,
                 key_builder=key_builder
             )
-            result, ttl = await get_with_ttl(key)
+            result = await get(key)
 
             if result:
                 if response:
+                    ttl = await time_to_live(key)
+
                     with_headers(result, ttl, request, response)
 
                 return result
@@ -215,34 +219,29 @@ def is_no_store(request: Request):
 async def set(key: str, value: Any, publish=False):
     value = serializer(value)
 
-    if publish:
-        async with redis().pipeline() as pipe:
-            await (
-                pipe
-                    .set(key, value, _config.ttl)
-                    .publish(key, value)
-                    .execute()
-            )
-    else:
+    with tracer.start_span(name="SET"):
         await redis().set(key, value, _config.ttl)
+
+    if publish:
+        with tracer.start_span(name="PUBLISH"):
+            await redis().publish(key, value)
 
 
 async def get(key: str):
-    value = await redis().get(key)
+    with tracer.start_span(name="GET"):
+        value = await redis().get(key)
 
-    return deserializer(value) if value else None
+        return deserializer(value) if value else None
+
+
+async def time_to_live(key: str):
+    with tracer.start_span(name="TTL"):
+        return await redis().ttl(key)
 
 
 async def delete(*keys: str):
-    await redis().delete(*keys)
-
-
-async def get_with_ttl(key: str):
-    async with redis().pipeline() as pipe:
-        value, ttl = await pipe.get(key).ttl(key).execute()
-        value = deserializer(value) if value else None
-
-        return value, ttl
+    with tracer.start_span(name="DEL"):
+        await redis().delete(*keys)
 
 
 def serializer(value: Any) -> Any:

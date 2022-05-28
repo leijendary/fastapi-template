@@ -10,7 +10,7 @@ from app.core.cache.redis_setup import redis, KEY_PAYLOAD
 from app.core.logs.logging_setup import get_logger
 from app.core.monitoring.tracing import header_trace_parent, header_trace_key
 
-_kind = SpanKind.INTERNAL
+_kind = SpanKind.SERVER
 logger = get_logger(__name__)
 tracer = get_tracer(__name__)
 
@@ -20,7 +20,7 @@ async def redis_subscribe(websocket: WebSocket, key: str, timeout=1.0):
 
     pubsub = redis().pubsub()
     await pubsub.subscribe(key)
-    name = f"Websocket to {key}"
+    name = f"Websocket send to {key}"
 
     try:
         while True:
