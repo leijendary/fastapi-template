@@ -11,10 +11,14 @@ async def redis_subscribe(websocket: WebSocket, key: str, timeout=1.0):
     pubsub = redis().pubsub()
     await pubsub.subscribe(key)
 
-    while True:
-        message = await pubsub.get_message(True, timeout)
+    try:
+        while True:
+            message = await pubsub.get_message(True, timeout)
 
-        if message:
-            data = json.loads(message["data"])
+            if message:
+                data = json.loads(message["data"])
 
-            await websocket.send_json(data)
+                await websocket.send_json(data)
+    except RuntimeError:
+        await websocket.close()
+        await pubsub.close()
