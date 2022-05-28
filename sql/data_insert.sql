@@ -8,7 +8,7 @@ $$
                               created_at,
                               modified_at, created_by,
                               modified_by)
-            values (gen_random_uuid(), concat('Test sql loop insert', r), r,
+            values (gen_random_uuid(), concat('Test sql loop insert ', r), r,
                     999999999.99, now(), now(), 'postgres',
                     'postgres') returning id
         )
