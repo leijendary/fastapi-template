@@ -79,7 +79,7 @@ class Router:
         return CONNECTION_READONLY
 
 
-def as_form(cls: Type[BaseModel]):
+def form(cls: Type[BaseModel]):
     new_parameters = []
 
     for _, model_field in cls.__fields__.items():

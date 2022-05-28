@@ -2,10 +2,10 @@ from fastapi.datastructures import UploadFile
 from fastapi.params import File, Form
 from pydantic import BaseModel
 
-from app.core.models import model
+from app.core.models.model import form
 
 
-@model.as_form
+@form
 class FileIn(BaseModel):
     file: UploadFile = File(...)
     bucket: str = Form(...)
