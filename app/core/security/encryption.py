@@ -21,7 +21,7 @@ def encrypt(plaintext: str):
     cipher = AES.new(_key, MODE_GCM, nonce=nonce)
     ciphertext, tag = cipher.encrypt_and_digest(plaintext.encode(UTF_8))
     encrypted = nonce + ciphertext + tag
-    
+
     return encrypted.hex()
 
 

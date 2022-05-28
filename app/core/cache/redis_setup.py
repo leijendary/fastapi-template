@@ -1,7 +1,7 @@
 import json
 from functools import wraps
 from hashlib import md5
-from typing import Any, Callable, List, Optional
+from typing import Any, Callable, Optional
 
 from opentelemetry.instrumentation.redis import RedisInstrumentor
 from redis.asyncio import Redis
@@ -15,6 +15,10 @@ from app.core.configs.cache_config import cache_config
 from app.core.constants import UTF_8
 from app.core.data.data_response import DataResponse
 from app.core.logs.logging_setup import get_logger
+from app.core.monitoring.tracing import single_span, header_trace_key
+from app.core.utils.dict_util import to_dict
+
+KEY_PAYLOAD = "value"
 
 _config = cache_config()
 logger = get_logger(__name__)
@@ -209,10 +213,7 @@ def is_no_store(request: Request):
 
 
 async def set(key: str, value: Any, publish=False):
-    if hasattr(value, "json"):
-        value = value.json()
-    else:
-        value = json.dumps(value)
+    value = serializer(value)
 
     if publish:
         async with redis().pipeline() as pipe:
@@ -229,7 +230,7 @@ async def set(key: str, value: Any, publish=False):
 async def get(key: str):
     value = await redis().get(key)
 
-    return json.loads(value) if value else None
+    return deserializer(value) if value else None
 
 
 async def delete(*keys: str):
@@ -239,6 +240,21 @@ async def delete(*keys: str):
 async def get_with_ttl(key: str):
     async with redis().pipeline() as pipe:
         value, ttl = await pipe.get(key).ttl(key).execute()
-        value = json.loads(value) if value else None
+        value = deserializer(value) if value else None
 
         return value, ttl
+
+
+def serializer(value: Any) -> Any:
+    data = {
+        KEY_PAYLOAD: to_dict(value),
+        header_trace_key: single_span()
+    }
+
+    return json.dumps(data)
+
+
+def deserializer(value: str) -> Any:
+    data = json.loads(value)
+
+    return data[KEY_PAYLOAD]

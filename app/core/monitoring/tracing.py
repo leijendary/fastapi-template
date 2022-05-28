@@ -9,9 +9,14 @@ from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from opentelemetry.trace import format_trace_id, format_span_id, SpanContext
 from opentelemetry.trace import get_current_span
+from opentelemetry.trace.propagation.tracecontext import \
+    TraceContextTextMapPropagator
 
 from app.core.configs.app_config import app_config
 from app.core.configs.monitoring_config import monitoring_config
+
+header_trace_key = B3MultiFormat.SINGLE_HEADER_KEY
+header_trace_parent = TraceContextTextMapPropagator._TRACEPARENT_HEADER_NAME
 
 _app_config = app_config()
 _monitoring_config = monitoring_config()

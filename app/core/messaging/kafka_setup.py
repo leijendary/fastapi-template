@@ -6,7 +6,6 @@ from aiokafka import AIOKafkaConsumer
 from aiokafka.producer.producer import AIOKafkaProducer
 from aiokafka.structs import ConsumerRecord
 from opentelemetry.context.context import Context
-from opentelemetry.propagators.b3 import B3MultiFormat
 from opentelemetry.trace import get_tracer, SpanKind
 from opentelemetry.trace.propagation.tracecontext import \
     TraceContextTextMapPropagator
@@ -14,14 +13,12 @@ from opentelemetry.trace.propagation.tracecontext import \
 from app.core.configs.kafka_config import kafka_config
 from app.core.constants import UTF_8
 from app.core.logs.logging_setup import get_logger
-from app.core.monitoring.tracing import single_span
+from app.core.monitoring.tracing import single_span, header_trace_key, \
+    header_trace_parent
 
 _config = kafka_config()
 logger = get_logger(__name__)
 tracer = get_tracer(__name__)
-
-_header_trace_key = B3MultiFormat.SINGLE_HEADER_KEY
-_header_trace_parent = TraceContextTextMapPropagator._TRACEPARENT_HEADER_NAME
 
 
 class KafkaProducer:
@@ -48,7 +45,7 @@ class KafkaProducer:
             partition: int = None
     ):
         span = single_span()
-        headers = [(_header_trace_key, span.encode(UTF_8))]
+        headers = [(header_trace_key, span.encode(UTF_8))]
         name = f"Produce {topic}:{partition}"
 
         with tracer.start_span(name=name, kind=cls.span_kind):
@@ -178,9 +175,9 @@ async def _consume(consumer: AIOKafkaConsumer, callback: Callable):
 
 def _get_context(headers: Sequence[Tuple[str, bytes]]) -> Optional[Context]:
     for header in headers:
-        if header[0] == _header_trace_key:
+        if header[0] == header_trace_key:
             carrier = {
-                _header_trace_parent: header[1].decode(UTF_8)
+                header_trace_parent: header[1].decode(UTF_8)
             }
 
             return TraceContextTextMapPropagator().extract(carrier=carrier)
