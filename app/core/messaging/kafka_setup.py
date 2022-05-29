@@ -46,7 +46,7 @@ class KafkaProducer:
     ):
         span = single_span()
         headers = [(header_trace_key, span.encode(UTF_8))]
-        name = f"Produce {topic}:{partition}"
+        name = f"Produce {topic}"
 
         with tracer.start_span(name=name, kind=cls.span_kind):
             await cls.instance.send(
@@ -156,7 +156,7 @@ async def _consume(consumer: AIOKafkaConsumer, callback: Callable):
     async for message in consumer:
         headers = message.headers
         context = _get_context(headers)
-        name = f"Consume {message.topic}:{message.partition}:{message.offset}"
+        name = f"Consume {message.topic}"
 
         with tracer.start_as_current_span(name, context, kind=span_kind):
             topic = message.topic
