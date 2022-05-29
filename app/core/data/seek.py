@@ -59,9 +59,9 @@ class SeekToken:
         return cls(**loaded)
 
     def next_token(self) -> str:
-        d = to_dict(self)
-        json_str = json.dumps(d)
-        encrypted = encrypt(json_str)
+        data = to_dict(self)
+        string = json.dumps(data)
+        encrypted = encrypt(string)
         encoded = encrypted.encode(UTF_8)
 
         return b64encode(encoded).decode(UTF_8)
