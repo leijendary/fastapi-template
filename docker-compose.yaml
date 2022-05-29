@@ -14,10 +14,10 @@ services:
       - jaeger_network
     deploy:
       resources:
-        limits:
+        reservations:
           memory: 512M
           cpus: "0.25"
-        reservations:
+        limits:
           memory: 512M
           cpus: "0.25"
 
